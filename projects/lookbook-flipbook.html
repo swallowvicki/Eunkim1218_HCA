@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flipbook Lookbook · Mobile Builder</title>
+<style>
+  /* ============================================================================================
+     FLIPBOOK LOOKBOOK — a standalone MOBILE-FIRST builder (deliberately NOT the linesheet editor).
+     The phone frame IS the workspace: you build the flipbook in the exact view buyers will get.
+       · Edit mode    — upload a full-bleed image per page, tap a spot → pick an item → numbered pin
+       · Preview mode — the buyer experience: flip pages, tap dots → product sheet → add to cart → order
+     Self-contained (inline SVG data-URI demo images) so it also works offline via file://.
+     ============================================================================================ */
+  :root {
+    --primary: #e11d74;
+    --primary-soft: #fdecf4;
+    --fg: #17171b;
+    --fg-secondary: #55555c;
+    --fg-muted: #8e8e96;
+    --border: #e6e4e0;
+    --border-strong: #c9c7c2;
+    --card: #ffffff;
+    --bg: #f7f6f3;
+    --base-muted: #f2f2f2;
+    --destructive: #dc2626;
+    --ok: #14804a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg); color: var(--fg); font-size: 14px; line-height: 1.45;
+    display: flex; flex-direction: column; align-items: center; overflow-x: hidden;
+  }
+
+  /* ── top bar (builder chrome, outside the phone) ── */
+  .top {
+    width: 100%; display: flex; align-items: center; gap: 14px;
+    padding: 14px 22px; background: var(--card); border-bottom: 1px solid var(--border);
+  }
+  .top a.back { color: var(--fg-secondary); text-decoration: none; font-size: 13px; }
+  .top a.back:hover { color: var(--fg); }
+  .top h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+  .top .hint { font-size: 12px; color: var(--fg-muted); }
+  .mode { margin-left: auto; display: flex; background: var(--base-muted); border-radius: 9px; padding: 3px; }
+  .mode button {
+    border: none; background: none; font-family: inherit; font-size: 12.5px; font-weight: 600;
+    color: var(--fg-secondary); padding: 6px 16px; border-radius: 7px; cursor: pointer;
+  }
+  .mode button.is-on { background: var(--card); color: var(--fg); box-shadow: 0 1px 3px rgba(23,23,27,.12); }
+  body[data-mode="preview"] .mode button[data-mode-btn="preview"],
+  body[data-mode="edit"] .mode button[data-mode-btn="edit"] { }
+
+  /* ── stage: arrows + phone ── */
+  .stage { flex: 1 0 auto; display: flex; align-items: center; gap: 22px; padding: 26px 16px 12px; }
+  .turn {
+    width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--card); color: var(--fg-secondary); font-size: 20px; line-height: 1;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(23,23,27,.08);
+  }
+  .turn:hover:not(:disabled) { color: var(--fg); border-color: var(--border-strong); }
+  .turn:disabled { opacity: .3; cursor: default; }
+
+  .phone {
+    width: 375px; height: 730px; background: #000; border-radius: 44px; padding: 10px;
+    box-shadow: 0 26px 70px rgba(0,0,0,.35); flex: 0 0 auto; position: relative;
+  }
+  .screen {
+    width: 100%; height: 100%; border-radius: 34px; overflow: hidden; background: #fff;
+    display: flex; flex-direction: column; position: relative;
+  }
+  .p-head {
+    flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
+    padding: 12px 16px 10px; border-bottom: 1px solid var(--border); background: #fff; z-index: 4;
+  }
+  .p-brand { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+  .p-sub { font-size: 10.5px; color: var(--fg-muted); }
+  .p-cart {
+    margin-left: auto; position: relative; border: none; background: none; cursor: pointer;
+    color: var(--fg); padding: 4px; display: none;
+  }
+  body[data-mode="preview"] .p-cart { display: inline-flex; }
+  .p-cart svg { width: 20px; height: 20px; }
+  .cart-n {
+    position: absolute; top: -3px; right: -5px; min-width: 15px; height: 15px; padding: 0 4px;
+    border-radius: 999px; background: var(--primary); color: #fff; font-size: 9.5px; font-weight: 700;
+    display: none; align-items: center; justify-content: center;
+  }
+  .cart-n.show { display: inline-flex; }
+
+  /* ── the book ── */
+  .book { flex: 1 1 auto; position: relative; perspective: 1400px; background: #111; overflow: hidden; }
+  .page {
+    position: absolute; inset: 0; background: #fff; backface-visibility: hidden;
+    transform-origin: left center; display: none;
+  }
+  .page.cur { display: block; }
+  .page.flip-out { display: block; z-index: 3; animation: flipOut .38s ease-in forwards; }
+  .page.flip-in { display: block; z-index: 2; animation: flipIn .38s ease-out; }
+  .page.flip-back-out { display: block; z-index: 2; animation: flipIn .38s ease-in reverse; }
+  .page.flip-back-in { display: block; z-index: 3; animation: flipOut .38s ease-out reverse; }
+  @keyframes flipOut { from { transform: rotateY(0deg); } to { transform: rotateY(-88deg); } }
+  @keyframes flipIn { from { opacity: .55; transform: translateX(6%);} to { opacity: 1; transform: translateX(0);} }
+  .page img.pg { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; }
+
+  /* empty page (edit) */
+  .pg-empty {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 9px; background: #fdfcfa; color: var(--fg-secondary);
+    border: 2px dashed var(--border-strong); margin: 14px; border-radius: 12px; cursor: pointer; text-align: center;
+  }
+  .pg-empty .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; }
+  .pg-empty .ic svg { width: 17px; height: 17px; }
+  .pg-empty b { font-size: 13.5px; color: var(--fg); }
+  .pg-empty span { font-size: 11px; color: var(--fg-muted); }
+  body[data-mode="preview"] .pg-empty { cursor: default; }
+
+  /* edit affordances on a filled page */
+  .pg-tools { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 5; }
+  body[data-mode="preview"] .pg-tools { display: none; }
+  .pg-tools button {
+    height: 28px; padding: 0 10px; border: none; border-radius: 7px; background: rgba(23,23,27,.72);
+    color: #fff; font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
+  }
+  .pg-tools button:hover { background: rgba(23,23,27,.9); }
+  .edit-hint {
+    position: absolute; left: 0; right: 0; bottom: 12px; text-align: center; font-size: 11px;
+    color: rgba(255,255,255,.92); text-shadow: 0 1px 3px rgba(0,0,0,.5); pointer-events: none; z-index: 4;
+  }
+  body[data-mode="preview"] .edit-hint { display: none; }
+
+  /* ── pins ── */
+  .pin {
+    position: absolute; transform: translate(-50%, -50%); z-index: 6;
+    width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 2px solid var(--primary);
+    color: var(--primary); font-size: 11px; font-weight: 700; display: flex; align-items: center;
+    justify-content: center; cursor: grab; box-shadow: 0 1px 5px rgba(0,0,0,.3); user-select: none; touch-action: none;
+  }
+  /* a pin that has no item yet — numbered, draggable, pulsing until an item is attached */
+  .pin.unlinked { border-style: dashed; animation: pinPulse 1.1s ease-in-out infinite; }
+  @keyframes pinPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(225,29,116,.4);} 50% { box-shadow: 0 0 0 8px rgba(225,29,116,0);} }
+  /* the ONE way to create a link: this button drops a numbered pin onto the page */
+  .add-link-btn {
+    position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 7;
+    display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px;
+    border: none; border-radius: 999px; background: var(--primary); color: #fff;
+    font-family: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(225,29,116,.4);
+  }
+  .add-link-btn:hover { filter: brightness(.95); }
+  .add-link-btn.is-max { background: var(--base-muted); color: var(--fg-muted); box-shadow: none; cursor: default; }
+  body[data-mode="preview"] .add-link-btn { display: none; }
+  /* preview: Instagram-style dots */
+  body[data-mode="preview"] .pin {
+    width: 16px; height: 16px; border: 2.5px solid #fff; background: rgba(255,255,255,.55);
+    color: transparent; cursor: pointer; animation: dotPulse 2.2s ease-in-out infinite;
+  }
+  @keyframes dotPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,.55);} 50% { box-shadow: 0 0 0 7px rgba(255,255,255,0);} }
+
+  /* pin mini card (edit) */
+  .pin-card {
+    position: absolute; z-index: 8; min-width: 176px; max-width: 230px; background: #fff;
+    border: 1px solid var(--border); border-radius: 11px; box-shadow: 0 12px 30px rgba(0,0,0,.3);
+    padding: 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .pin-card img { width: 32px; height: 40px; border-radius: 6px; object-fit: cover; flex: 0 0 auto; }
+  .pin-card .m { min-width: 0; }
+  .pin-card .n { font-size: 11.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pin-card .s { font-size: 10px; color: var(--fg-muted); }
+  .pin-card button {
+    border: none; background: none; padding: 4px 6px; border-radius: 6px; font-family: inherit;
+    font-size: 10.5px; font-weight: 600; color: var(--fg-secondary); cursor: pointer; white-space: nowrap;
+  }
+  .pin-card button:first-of-type { margin-left: auto; }
+  .pin-card button:hover { background: var(--base-muted); color: var(--fg); }
+  .pin-card button.danger:hover { background: var(--destructive); color: #fff; }
+
+  /* ── page footer: dots + counter ── */
+  .p-foot {
+    flex: 0 0 auto; display: flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 10px 14px; background: #fff; border-top: 1px solid var(--border); z-index: 4;
+  }
+  .p-foot .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-strong); cursor: pointer; }
+  .p-foot .dot.on { background: var(--primary); width: 16px; border-radius: 999px; }
+  .p-foot .cnt { margin-left: 8px; font-size: 10.5px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+
+  /* ── page strip (edit chrome below the phone) ── */
+  .strip-wrap { flex: 0 0 auto; padding: 14px 16px 26px; width: 100%; display: flex; justify-content: center; }
+  body[data-mode="preview"] .strip-wrap { visibility: hidden; }
+  .strip { display: flex; align-items: center; gap: 9px; }
+  .strip .label { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--fg-muted); margin-right: 3px; }
+  .th {
+    position: relative; width: 46px; height: 62px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: var(--base-muted); cursor: pointer; overflow: hidden; padding: 0; flex: 0 0 auto;
+  }
+  .th img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+  .th.cur { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+  .th .no { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: rgba(23,23,27,.78); color: #fff; font-size: 8.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .th .del { position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%; background: rgba(23,23,27,.78); color: #fff; font-size: 9px; line-height: 1; display: none; align-items: center; justify-content: center; }
+  .th:hover .del { display: flex; }
+  .th .del:hover { background: var(--destructive); }
+  .th-add {
+    width: 46px; height: 62px; border-radius: 8px; border: 1.5px dashed var(--border-strong);
+    background: none; color: var(--fg-secondary); font-size: 17px; cursor: pointer; flex: 0 0 auto;
+  }
+  .th-add:hover { color: var(--primary); border-color: var(--primary); }
+  .th-add:disabled { opacity: .3; cursor: default; }
+  .strip .max { font-size: 10.5px; color: var(--fg-muted); margin-left: 4px; }
+
+  /* ── bottom sheets (inside the phone) ── */
+  .sheet-dim { position: absolute; inset: 0; background: rgba(0,0,0,.4); z-index: 10; opacity: 0; pointer-events: none; transition: opacity .2s; border-radius: 34px; }
+  .sheet-dim.show { opacity: 1; pointer-events: auto; }
+  .sheet {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 11; background: #fff;
+    border-radius: 18px 18px 34px 34px; box-shadow: 0 -8px 30px rgba(0,0,0,.25);
+    transform: translateY(105%); transition: transform .26s cubic-bezier(.3,.9,.3,1);
+    max-height: 78%; display: flex; flex-direction: column;
+  }
+  .sheet.show { transform: translateY(0); }
+  .sheet .grab { width: 36px; height: 4px; border-radius: 999px; background: var(--border-strong); margin: 9px auto 3px; flex: 0 0 auto; }
+  .sheet .sh-head { display: flex; align-items: center; gap: 8px; padding: 6px 16px 10px; flex: 0 0 auto; }
+  .sheet .sh-title { font-size: 13.5px; font-weight: 700; }
+  .sheet .sh-x { margin-left: auto; border: none; background: none; font-size: 16px; color: var(--fg-muted); cursor: pointer; padding: 4px; }
+  .sheet .sh-body { overflow-y: auto; padding: 0 14px 16px; }
+
+  /* item picker sheet */
+  .ip-search { width: calc(100% - 28px); margin: 0 14px 10px; height: 34px; border: 1px solid var(--border); border-radius: 9px; padding: 0 11px; font-family: inherit; font-size: 12.5px; }
+  .ip-row {
+    width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid var(--border);
+    border-radius: 10px; background: #fff; cursor: pointer; font-family: inherit; text-align: left; margin-bottom: 7px;
+  }
+  .ip-row:hover { border-color: var(--primary); }
+  .ip-row img { width: 38px; height: 48px; border-radius: 6px; object-fit: cover; flex: 0 0 auto; }
+  .ip-row .n { font-size: 12.5px; font-weight: 600; }
+  .ip-row .s { font-size: 10.5px; color: var(--fg-muted); }
+  .ip-row .pr { margin-left: auto; font-size: 12px; font-weight: 700; }
+
+  /* product sheet (preview) */
+  .pd { display: flex; gap: 12px; padding: 2px 2px 6px; }
+  .pd img { width: 108px; height: 140px; border-radius: 10px; object-fit: cover; flex: 0 0 auto; }
+  .pd .n { font-size: 14.5px; font-weight: 700; line-height: 1.3; }
+  .pd .s { font-size: 11px; color: var(--fg-muted); margin-top: 2px; }
+  .pd .pr { font-size: 15px; font-weight: 700; margin-top: 8px; }
+  .pd .ws { font-size: 10.5px; color: var(--fg-muted); }
+  .qty { display: inline-flex; align-items: center; gap: 0; border: 1px solid var(--border); border-radius: 9px; margin-top: 10px; overflow: hidden; }
+  .qty button { width: 30px; height: 30px; border: none; background: none; font-size: 15px; color: var(--fg-secondary); cursor: pointer; }
+  .qty button:hover { background: var(--base-muted); }
+  .qty b { min-width: 30px; text-align: center; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .cta {
+    display: block; width: 100%; height: 44px; border: none; border-radius: 12px; background: var(--primary);
+    color: #fff; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 12px;
+  }
+  .cta:hover { filter: brightness(.95); }
+  .cta.ghost { background: var(--base-muted); color: var(--fg); }
+
+  /* cart sheet */
+  .cl { display: flex; align-items: center; gap: 10px; padding: 8px 2px; border-bottom: 1px solid var(--border); }
+  .cl img { width: 36px; height: 46px; border-radius: 6px; object-fit: cover; }
+  .cl .n { font-size: 12px; font-weight: 600; }
+  .cl .s { font-size: 10.5px; color: var(--fg-muted); }
+  .cl .amt { margin-left: auto; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .cl .rm { border: none; background: none; color: var(--fg-muted); cursor: pointer; font-size: 13px; padding: 4px; }
+  .cl .rm:hover { color: var(--destructive); }
+  .cart-total { display: flex; justify-content: space-between; padding: 12px 2px 0; font-size: 13.5px; font-weight: 700; }
+  .cart-empty { text-align: center; color: var(--fg-muted); font-size: 12.5px; padding: 26px 0 18px; }
+
+  /* order done overlay */
+  .done-ov {
+    position: absolute; inset: 0; z-index: 14; background: #fff; border-radius: 34px; display: none;
+    flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 30px;
+  }
+  .done-ov.show { display: flex; }
+  .done-ov .ok { width: 52px; height: 52px; border-radius: 50%; background: #e7f5ee; color: var(--ok); display: flex; align-items: center; justify-content: center; }
+  .done-ov .ok svg { width: 26px; height: 26px; }
+  .done-ov b { font-size: 16px; }
+  .done-ov p { font-size: 12px; color: var(--fg-secondary); }
+
+  .toast {
+    position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #17171b; color: #fff; font-size: 12.5px; padding: 10px 18px; border-radius: 10px;
+    opacity: 0; pointer-events: none; transition: all .25s; z-index: 50;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body data-mode="edit">
+
+<header class="top">
+  <a class="back" href="#">‹ Back to Linesheet</a>
+  <h1>Flipbook Lookbook</h1>
+  <span class="hint" data-top-hint>Mobile-only · build it in the exact view buyers will see</span>
+  <div class="mode">
+    <button type="button" data-mode-btn="edit" class="is-on">Edit</button>
+    <button type="button" data-mode-btn="preview">Preview</button>
+  </div>
+</header>
+
+<main class="stage">
+  <button class="turn" data-turn="-1" aria-label="Previous page">‹</button>
+
+  <div class="phone">
+    <div class="screen">
+      <div class="p-head">
+        <div>
+          <div class="p-brand">Magic Vegas 2026 — Denim Drop</div>
+          <div class="p-sub" data-head-sub>Flipbook · edit mode</div>
+        </div>
+        <button class="p-cart" data-open-cart aria-label="Cart">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 3h2.2l2.4 12.2a1.6 1.6 0 0 0 1.6 1.3h7.9a1.6 1.6 0 0 0 1.6-1.3L20.5 7H6"/></svg>
+          <span class="cart-n" data-cart-n>0</span>
+        </button>
+      </div>
+
+      <div class="book" data-book></div>
+
+      <div class="p-foot" data-foot></div>
+
+      <!-- sheets live INSIDE the phone -->
+      <div class="sheet-dim" data-dim></div>
+
+      <div class="sheet" data-sheet="picker">
+        <div class="grab"></div>
+        <div class="sh-head"><span class="sh-title">Pick the item for this pin</span><button class="sh-x" data-sheet-x>✕</button></div>
+        <input class="ip-search" type="text" placeholder="Search items" data-ip-search>
+        <div class="sh-body" data-ip-list></div>
+      </div>
+
+      <div class="sheet" data-sheet="product">
+        <div class="grab"></div>
+        <div class="sh-head"><span class="sh-title">Item</span><button class="sh-x" data-sheet-x>✕</button></div>
+        <div class="sh-body" data-pd-body></div>
+      </div>
+
+      <div class="sheet" data-sheet="cart">
+        <div class="grab"></div>
+        <div class="sh-head"><span class="sh-title">Cart</span><button class="sh-x" data-sheet-x>✕</button></div>
+        <div class="sh-body" data-cart-body></div>
+      </div>
+
+      <div class="done-ov" data-done>
+        <span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></span>
+        <b>Order placed</b>
+        <p>The vendor received your order.<br>You'll get an SMS confirmation shortly.</p>
+        <button class="cta ghost" data-done-x style="width:auto; padding:0 26px;">Back to Lookbook</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="turn" data-turn="1" aria-label="Next page">›</button>
+</main>
+
+<section class="strip-wrap">
+  <div class="strip" data-strip></div>
+</section>
+
+<input type="file" accept="image/jpeg,image/png" hidden data-file>
+<div class="toast" data-toast></div>
+
+<script>
+(function () {
+  'use strict';
+  var PAGE_MAX = 10;
+
+  /* ── demo data (self-contained SVG images so file:// works) ─────────────── */
+  function svgData(w, h, c1, c2, label) {
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '">'
+      + '<rect width="100%" height="100%" fill="' + c1 + '"/>'
+      + '<rect y="' + Math.round(h * 0.55) + '" width="100%" height="' + Math.round(h * 0.45) + '" fill="' + c2 + '"/>'
+      + '<text x="50%" y="50%" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="' + Math.round(w / 12) + '" fill="rgba(255,255,255,0.9)" font-weight="700">' + label + '</text>'
+      + '</svg>';
+    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+  function mkItem(id, name, sku, price, c1, c2, label) {
+    return { id: id, name: name, sku: sku, price: price,
+      img: svgData(300, 380, c1, c2, label),
+      // an item's own photo set — a page image can be picked straight from here
+      gallery: [ svgData(750, 1100, c1, c2, label + ' · Front'), svgData(750, 1100, c2, c1, label + ' · Back'), svgData(750, 1100, c1, c1, label + ' · Detail') ] };
+  }
+  var ITEMS = [
+    mkItem(0, 'Teddy Bear Motif Knit Sweater', 'FS25-OVSHIRT-101', 13.75, '#d9b8a5', '#b58a72', 'Teddy Knit'),
+    mkItem(1, 'Multi Stripe Crewneck Sweater', 'FS25-OVSHIRT-102', 24.50, '#7d9bbd', '#4e6f94', 'Stripe Crew'),
+    mkItem(2, 'Waffle Knit Crewneck Sweater', 'FS25-OVSHIRT-103', 18.00, '#3d3d45', '#26262c', 'Waffle Knit'),
+    mkItem(3, 'Sleeveless Knit Sweater Vest', 'FS25-OVSHIRT-104', 42.99, '#e8e3da', '#cbc2b2', 'Knit Vest')
+  ];
+  var PIN_MAX = 3;   // ③ 한 이미지당 핀 최대 3개 (same cap Shopify's shoppable-image sections use)
+  var itemById = function (id) { return ITEMS.find(function (x) { return x.id === id; }); };
+
+  /* pages: { img: dataURL|null, pins: [{x, y (%), itemId}] } */
+  var pages = [
+    { img: svgData(750, 1100, '#2e3e52', '#1d2836', 'LOOK 01'), pins: [{ x: 32, y: 30, itemId: 0 }, { x: 66, y: 62, itemId: 1 }] },
+    { img: svgData(750, 1100, '#8a5a44', '#6e4030', 'LOOK 02'), pins: [{ x: 50, y: 48, itemId: 2 }] },
+    { img: null, pins: [] }
+  ];
+  var cur = 0;                       // current page index
+  var linkTarget = null;             // pin index the item picker is choosing for
+  var cart = [];                     // { itemId, qty }
+  var flipping = false;
+
+  var book = document.querySelector('[data-book]');
+  var foot = document.querySelector('[data-foot]');
+  var strip = document.querySelector('[data-strip]');
+  var fileInput = document.querySelector('[data-file]');
+  var dim = document.querySelector('[data-dim]');
+  var headSub = document.querySelector('[data-head-sub]');
+
+  var isPreview = function () { return document.body.dataset.mode === 'preview'; };
+  /* Buyers only ever see finished pages — in preview, empty pages drop out of the flow entirely. */
+  function navList() {
+    var out = [];
+    pages.forEach(function (pg, i) { if (!isPreview() || pg.img) out.push(i); });
+    return out;
+  }
+  function stepPage(dir) {
+    var list = navList();
+    var pos = list.indexOf(cur);
+    var ni = list[pos + dir];
+    if (ni != null) goTo(ni);
+  }
+
+  /* ── render: book ────────────────────────────────────────────────────────── */
+  function pinHTML(p, i) {
+    var unlinked = (p.itemId == null);
+    if (unlinked && isPreview()) return '';   // buyers never see item-less pins
+    return '<span class="pin' + (unlinked ? ' unlinked' : '') + '" data-pin="' + i + '" style="left:' + p.x + '%;top:' + p.y + '%">' + (i + 1) + '</span>';
+  }
+  function renderBook() {
+    book.innerHTML = pages.map(function (pg, i) {
+      var inner;
+      if (pg.img) {
+        inner = '<img class="pg" src="' + pg.img + '" alt="" draggable="false">'
+          + '<div class="pg-tools"><button type="button" data-replace>Replace image</button></div>'
+          + pg.pins.map(pinHTML).join('')
+          + (pg.pins.length >= PIN_MAX
+              ? '<button type="button" class="add-link-btn is-max" disabled>Links 3/3 · max</button>'
+              : '<button type="button" class="add-link-btn" data-add-link>+ Add link · ' + pg.pins.length + '/' + PIN_MAX + '</button>')
+          + (pg.pins.length === 0 ? '<div class="edit-hint" style="bottom:58px">"+ Add link" — pick the item, then drag the numbered pin onto the garment</div>' : '');
+      } else {
+        inner = '<div class="pg-empty" data-upload>'
+          + '<span class="ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11V3M5 6l3-3 3 3M3 11v1.5A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5V11"/></svg></span>'
+          + '<b>Upload page image</b><span>Full-bleed photo · JPG or PNG</span></div>';
+      }
+      return '<div class="page' + (i === cur ? ' cur' : '') + '" data-page="' + i + '">' + inner + '</div>';
+    }).join('');
+    renderFoot();
+    renderStrip();
+    var list = navList();
+    document.querySelector('[data-turn="-1"]').disabled = list.indexOf(cur) <= 0;
+    document.querySelector('[data-turn="1"]').disabled = list.indexOf(cur) >= list.length - 1;
+  }
+  function renderFoot() {
+    var list = navList();
+    foot.innerHTML = list.map(function (i) {
+      return '<span class="dot' + (i === cur ? ' on' : '') + '" data-goto="' + i + '"></span>';
+    }).join('') + '<span class="cnt">' + (list.indexOf(cur) + 1) + ' / ' + list.length + '</span>';
+  }
+  function renderStrip() {
+    strip.innerHTML = '<span class="label">PAGES</span>' + pages.map(function (pg, i) {
+      return '<button type="button" class="th' + (i === cur ? ' cur' : '') + '" data-goto="' + i + '">'
+        + '<span class="no">' + (i + 1) + '</span>'
+        + (pg.img ? '<img src="' + pg.img + '" alt="">' : '')
+        + (pages.length > 1 ? '<span class="del" data-del="' + i + '">✕</span>' : '')
+        + '</button>';
+    }).join('')
+    + '<button type="button" class="th-add" data-add' + (pages.length >= PAGE_MAX ? ' disabled' : '') + '>+</button>'
+    + '<span class="max">' + pages.length + '/' + PAGE_MAX + '</span>';
+  }
+
+  /* ── page turning (book flip) ────────────────────────────────────────────── */
+  function goTo(i, instant) {
+    if (i < 0 || i >= pages.length || i === cur || flipping) return;
+    linkTarget = null;
+    closeSheets();
+    closePinCard();
+    if (instant) { cur = i; renderBook(); return; }
+    var fwd = i > cur;
+    var from = book.querySelector('.page[data-page="' + cur + '"]');
+    var to = book.querySelector('.page[data-page="' + i + '"]');
+    if (!from || !to) { cur = i; renderBook(); return; }
+    flipping = true;
+    from.classList.remove('cur');
+    from.classList.add(fwd ? 'flip-out' : 'flip-in');
+    to.classList.add(fwd ? 'flip-in' : 'flip-out');
+    if (!fwd) { to.classList.remove('flip-out'); to.classList.add('flip-back-in'); from.classList.remove('flip-in'); from.classList.add('flip-back-out'); }
+    setTimeout(function () { flipping = false; cur = i; renderBook(); }, 380);
+  }
+  document.querySelectorAll('[data-turn]').forEach(function (b) {
+    b.addEventListener('click', function () { stepPage(parseInt(b.dataset.turn, 10)); });
+  });
+  document.addEventListener('click', function (e) {
+    var g = e.target.closest && e.target.closest('[data-goto]');
+    if (g) goTo(parseInt(g.dataset.goto, 10));
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') stepPage(-1);
+    if (e.key === 'ArrowRight') stepPage(1);
+    if (e.key === 'Escape') { closeSheets(); closePinCard(); }
+  });
+  /* swipe (preview and edit both) */
+  var swipeX = null;
+  book.addEventListener('pointerdown', function (e) { if (!e.target.closest('.pin')) swipeX = e.clientX; });
+  book.addEventListener('pointerup', function (e) {
+    if (swipeX == null) return;
+    var dx = e.clientX - swipeX; swipeX = null;
+    if (Math.abs(dx) > 60) stepPage(dx < 0 ? 1 : -1);
+  });
+
+  /* ── strip: add / delete ─────────────────────────────────────────────────── */
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('[data-add]')) {
+      if (pages.length >= PAGE_MAX) return;
+      pages.push({ img: null, pins: [] });
+      goTo(pages.length - 1, true);
+    }
+    var del = e.target.closest && e.target.closest('[data-del]');
+    if (del) {
+      e.stopPropagation();
+      var di = parseInt(del.dataset.del, 10);
+      pages.splice(di, 1);
+      if (cur >= pages.length) cur = pages.length - 1;
+      renderBook();
+    }
+  }, true);
+
+  /* ── upload / replace ────────────────────────────────────────────────────── */
+  var uploadTarget = null;
+  document.addEventListener('click', function (e) {
+    if (isPreview()) return;
+    if (e.target.closest && e.target.closest('[data-upload]')) { uploadTarget = cur; fileInput.click(); }
+    if (e.target.closest && e.target.closest('[data-replace]')) { uploadTarget = cur; fileInput.click(); }
+  });
+  fileInput.addEventListener('change', function () {
+    var f = fileInput.files && fileInput.files[0];
+    fileInput.value = '';
+    if (!f || uploadTarget == null) return;
+    var rd = new FileReader();
+    rd.onload = function () { pages[uploadTarget].img = rd.result; uploadTarget = null; renderBook(); };
+    rd.readAsDataURL(f);
+  });
+
+  /* ── EDIT: "+ Add link" drops a numbered pin → drag it into place → tap it to attach an item.
+        (The user's flow, spelled out: 버튼 → 번호 핀 → 드래그 이동 → 그 번호에 아이템 링크.) ── */
+  document.addEventListener('click', function (e) {
+    if (!(e.target.closest && e.target.closest('[data-add-link]')) || isPreview()) return;
+    var pg = pages[cur];
+    if (!pg || !pg.img) return;
+    if (pg.pins.length >= PIN_MAX) { toast('Up to ' + PIN_MAX + ' links per image'); return; }
+    // THE flow (user-spec): "+ Add link" → the numbered pin appears AND the item picker opens right
+    // away. Pick the item → done → drag the number onto the garment. Close without picking → the
+    // pin is discarded (no orphan pins to clean up).
+    var n = pg.pins.length;
+    pg.pins.push({ x: 50 + ((n % 3) - 1) * 9, y: 40 + (n % 4) * 7, itemId: null });
+    linkTarget = n;
+    renderBook();
+    openPicker();
+  });
+
+  /* item picker sheet */
+  function openPicker(filter) {
+    var list = document.querySelector('[data-ip-list]');
+    var q = (filter || '').toLowerCase();
+    list.innerHTML = ITEMS
+      .filter(function (it) { return !q || (it.name + it.sku).toLowerCase().indexOf(q) !== -1; })
+      .map(function (it) {
+        return '<button type="button" class="ip-row" data-pick-item="' + it.id + '">'
+          + '<img src="' + it.img + '" alt=""><span><span class="n">' + it.name + '</span><br><span class="s">' + it.sku + '</span></span>'
+          + '<span class="pr">$' + it.price.toFixed(2) + '</span></button>';
+      }).join('') || '<div class="cart-empty">No items match.</div>';
+    openSheet('picker');
+  }
+  document.querySelector('[data-ip-search]').addEventListener('input', function (e) { openPicker(e.target.value); });
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-pick-item]');
+    if (!b || linkTarget == null) return;
+    var pin = pages[cur].pins[linkTarget];
+    if (pin) pin.itemId = parseInt(b.dataset.pickItem, 10);
+    linkTarget = null;
+    closeSheets();
+    renderBook();
+    toast('Item linked to pin ' + (pages[cur].pins.indexOf(pin) + 1));
+  });
+
+  /* ── pins: edit card / drag · preview product sheet ──────────────────────── */
+  function closePinCard() { book.querySelectorAll('.pin-card').forEach(function (el) { el.remove(); }); }
+  var pinDrag = null;
+  book.addEventListener('pointerdown', function (e) {
+    var pin = e.target.closest('.pin');
+    if (!pin || pin.classList.contains('pending') || isPreview()) return;
+    e.preventDefault();
+    var pageEl = pin.closest('.page');
+    pinDrag = { el: pin, pageEl: pageEl, idx: parseInt(pin.dataset.pin, 10), moved: false };
+    try { pin.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  book.addEventListener('pointermove', function (e) {
+    if (!pinDrag) return;
+    var r = pinDrag.pageEl.getBoundingClientRect();
+    var x = Math.min(96, Math.max(4, (e.clientX - r.left) / r.width * 100));
+    var y = Math.min(94, Math.max(4, (e.clientY - r.top) / r.height * 100));
+    pinDrag.el.style.left = x + '%';
+    pinDrag.el.style.top = y + '%';
+    pinDrag.moved = true;
+  });
+  book.addEventListener('pointerup', function () {
+    if (!pinDrag) return;
+    var d = pinDrag; pinDrag = null;
+    var pin = pages[cur].pins[d.idx];
+    if (d.moved && pin) {
+      pin.x = Math.round(parseFloat(d.el.style.left) * 10) / 10;
+      pin.y = Math.round(parseFloat(d.el.style.top) * 10) / 10;
+      renderStrip();
+    } else if (!d.moved) {
+      var tapped = pages[cur].pins[d.idx];
+      if (tapped && tapped.itemId == null) {
+        linkTarget = d.idx;          // unlinked pin: tapping it goes straight to the item picker
+        openPicker();
+      } else {
+        openEditPinCard(d.el, d.idx);
+      }
+    }
+  });
+  function openEditPinCard(pinEl, idx) {
+    closePinCard();
+    var pin = pages[cur].pins[idx];
+    var it = itemById(pin.itemId);
+    var pageEl = pinEl.closest('.page');
+    var card = document.createElement('div');
+    card.className = 'pin-card';
+    card.innerHTML = '<img src="' + it.img + '" alt=""><span class="m"><span class="n">' + it.name + '</span><br><span class="s">' + it.sku + ' · $' + it.price.toFixed(2) + '</span></span>'
+      + '<button type="button" data-pc-change>Change</button><button type="button" class="danger" data-pc-remove>Remove</button>';
+    var x = parseFloat(pinEl.style.left), y = parseFloat(pinEl.style.top);
+    card.style.left = (x > 52 ? Math.max(2, x - 56) : Math.min(52, x + 5)) + '%';
+    card.style.top = Math.min(82, Math.max(4, y + 5)) + '%';
+    card.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (e.target.closest('[data-pc-remove]')) { pages[cur].pins.splice(idx, 1); closePinCard(); renderBook(); return; }
+      if (e.target.closest('[data-pc-change]')) {
+        closePinCard();
+        linkTarget = idx;
+        openPicker();
+      }
+    });
+    pageEl.appendChild(card);
+    setTimeout(function () {
+      document.addEventListener('click', function onDoc(ev) {
+        if (!card.contains(ev.target)) { closePinCard(); document.removeEventListener('click', onDoc, true); }
+      }, true);
+    }, 0);
+  }
+  /* preview: tap a dot → product sheet with order actions */
+  book.addEventListener('click', function (e) {
+    if (!isPreview()) return;
+    var pin = e.target.closest('.pin');
+    if (!pin) return;
+    e.stopPropagation();
+    var tp = pages[cur].pins[parseInt(pin.dataset.pin, 10)];
+    if (tp && tp.itemId != null) openProduct(tp.itemId);
+  });
+  var pdQty = 1;
+  function openProduct(itemId) {
+    var it = itemById(itemId);
+    pdQty = 1;
+    var body = document.querySelector('[data-pd-body]');
+    function paint() {
+      body.innerHTML = '<div class="pd"><img src="' + it.img + '" alt="">'
+        + '<div><div class="n">' + it.name + '</div><div class="s">' + it.sku + '</div>'
+        + '<div class="pr">$' + it.price.toFixed(2) + ' <span class="ws">/ WS unit</span></div>'
+        + '<div class="qty"><button type="button" data-q="-1">−</button><b>' + pdQty + '</b><button type="button" data-q="1">+</button></div>'
+        + '</div></div>'
+        + '<button class="cta" type="button" data-add-cart="' + it.id + '">Add to cart · $' + (it.price * pdQty).toFixed(2) + '</button>';
+    }
+    paint();
+    body.onclick = function (e) {
+      var q = e.target.closest('[data-q]');
+      if (q) { pdQty = Math.max(1, pdQty + parseInt(q.dataset.q, 10)); paint(); return; }
+      var add = e.target.closest('[data-add-cart]');
+      if (add) {
+        var id = parseInt(add.dataset.addCart, 10);
+        var line = cart.find(function (l) { return l.itemId === id; });
+        if (line) line.qty += pdQty; else cart.push({ itemId: id, qty: pdQty });
+        updateCartBadge();
+        closeSheet('product');
+        toast('Added to cart');
+      }
+    };
+    openSheet('product');
+  }
+
+  /* ── cart + order ────────────────────────────────────────────────────────── */
+  function updateCartBadge() {
+    var n = cart.reduce(function (a, l) { return a + l.qty; }, 0);
+    var el = document.querySelector('[data-cart-n]');
+    el.textContent = n;
+    el.classList.toggle('show', n > 0);
+  }
+  function openCart() {
+    var body = document.querySelector('[data-cart-body]');
+    if (!cart.length) {
+      body.innerHTML = '<div class="cart-empty">Your cart is empty.<br>Tap the dots on a look to add items.</div>';
+    } else {
+      var total = 0;
+      body.innerHTML = cart.map(function (l, i) {
+        var it = itemById(l.itemId);
+        total += it.price * l.qty;
+        return '<div class="cl"><img src="' + it.img + '" alt=""><span><span class="n">' + it.name + '</span><br><span class="s">' + it.sku + ' · ×' + l.qty + '</span></span>'
+          + '<span class="amt">$' + (it.price * l.qty).toFixed(2) + '</span><button class="rm" data-cl-rm="' + i + '">✕</button></div>';
+      }).join('')
+      + '<div class="cart-total"><span>Total</span><span>$' + total.toFixed(2) + '</span></div>'
+      + '<button class="cta" type="button" data-order>Order</button>';
+    }
+    body.onclick = function (e) {
+      var rm = e.target.closest('[data-cl-rm]');
+      if (rm) { cart.splice(parseInt(rm.dataset.clRm, 10), 1); updateCartBadge(); openCart(); return; }
+      if (e.target.closest('[data-order]')) {
+        closeSheets();
+        document.querySelector('[data-done]').classList.add('show');
+        cart = [];
+        updateCartBadge();
+      }
+    };
+    openSheet('cart');
+  }
+  document.querySelector('[data-open-cart]').addEventListener('click', openCart);
+  document.querySelector('[data-done-x]').addEventListener('click', function () {
+    document.querySelector('[data-done]').classList.remove('show');
+  });
+
+  /* ── sheets plumbing ─────────────────────────────────────────────────────── */
+  function openSheet(name) {
+    document.querySelectorAll('.sheet').forEach(function (sh) { sh.classList.toggle('show', sh.dataset.sheet === name); });
+    dim.classList.add('show');
+  }
+  function closeSheet() { closeSheets(); }
+  function closeSheets() {
+    document.querySelectorAll('.sheet.show').forEach(function (sh) { sh.classList.remove('show'); });
+    dim.classList.remove('show');
+    // A pin only exists WITH an item: abandoning the picker removes the just-created pin.
+    if (linkTarget != null) {
+      var pg = pages[cur];
+      if (pg && pg.pins[linkTarget] && pg.pins[linkTarget].itemId == null) {
+        pg.pins.splice(linkTarget, 1);
+        linkTarget = null;
+        renderBook();
+        return;
+      }
+    }
+    linkTarget = null;
+  }
+  dim.addEventListener('click', closeSheets);
+  document.querySelectorAll('[data-sheet-x]').forEach(function (b) { b.addEventListener('click', closeSheets); });
+
+  /* ── mode toggle ─────────────────────────────────────────────────────────── */
+  document.querySelectorAll('[data-mode-btn]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.body.dataset.mode = b.dataset.modeBtn;
+      document.querySelectorAll('[data-mode-btn]').forEach(function (x) { x.classList.toggle('is-on', x === b); });
+      headSub.textContent = b.dataset.modeBtn === 'preview' ? 'Flipbook · buyer preview — tap a dot to shop' : 'Flipbook · edit mode';
+      document.querySelector('[data-top-hint]').textContent = b.dataset.modeBtn === 'preview'
+        ? 'Buyer view · dots are shoppable — tap one, add to cart, order'
+        : 'Mobile-only · build it in the exact view buyers will see';
+      closeSheets(); closePinCard();
+      var list = navList();
+      if (list.indexOf(cur) === -1 && list.length) cur = list[0];   // preview never opens on an empty page
+      renderBook();
+    });
+  });
+
+  /* ── toast ───────────────────────────────────────────────────────────────── */
+  var toastT = null;
+  function toast(msg) {
+    var el = document.querySelector('[data-toast]');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { el.classList.remove('show'); }, 1800);
+  }
+
+  renderBook();
+})();
+</script>
+</body>
+</html>

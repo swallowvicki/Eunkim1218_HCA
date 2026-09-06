@@ -1,0 +1,1850 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Sans:wght@500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%2317151A'/%3E%3Ctext x='32' y='43' font-family='Georgia,serif' font-style='italic' font-size='30' fill='%23FAF9F6' text-anchor='middle'%3Eek%3C/text%3E%3C/svg%3E">
+<title>Eunhyui Kim — UX Portfolio · 2026</title>
+<style>
+:root{
+  --bg:#FAF9F6; --panel:#FFFFFF;
+  --ink:#17151A; --ink2:#3A3740; --muted:#847E74; --line:#E8E4DD;
+  --fg:#E1622B; --fg-soft:#FBEEE4; --fg-ink:#A24A1C;      /* FashionGo */
+  --sc:#DE3E7E; --sc-soft:#FCE9F1; --sc-ink:#A62B5C;      /* Shopcord */
+  --sans:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --maxw:1160px;
+  --shadow:0 1px 2px rgba(20,18,24,.04), 0 14px 34px rgba(20,18,24,.07);
+  --shadow-sm:0 1px 2px rgba(20,18,24,.04), 0 6px 16px rgba(20,18,24,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-.006em}
+h1,h2,h3,h4,h5{font-weight:700;line-height:1.08;letter-spacing:-.03em}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(22px,5vw,48px)}
+.kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ===== nav ===== */
+.nav{position:sticky;top:0;z-index:50;background:rgba(250,250,248,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;flex-direction:column;cursor:pointer;line-height:1.1}
+.brand b{font-weight:700;font-size:16px;letter-spacing:-.02em}
+.brand small{color:var(--muted);font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;margin-top:1px}
+.nav ul{display:flex;gap:6px;list-style:none}
+.nav ul a{display:block;padding:8px 15px;border-radius:99px;color:var(--ink2);font-size:14px;font-weight:600;cursor:pointer;transition:background .18s,color .18s}
+.nav ul a:hover{background:#fff;color:var(--ink)}
+.nav ul a.on{background:var(--ink);color:#fff}
+@media(max-width:720px){.nav ul{gap:2px}.nav ul a{padding:7px 10px;font-size:12.5px}.brand small{display:none}}
+
+/* ===== pages ===== */
+.page{display:none;animation:fade .4s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+section{padding:clamp(48px,7vw,84px) 0}
+.sec-head{max-width:64ch;margin-bottom:clamp(28px,4vw,44px)}
+.sec-head h2{font-size:clamp(1.9rem,3.6vw,2.6rem);margin:12px 0 14px}
+.sec-head p{color:var(--muted);font-size:clamp(15px,1.6vw,17px)}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 13px;border-radius:99px;background:#fff;border:1px solid var(--line);color:var(--ink2)}
+
+/* ===== hero (home) ===== */
+.hero{position:relative;overflow:hidden;padding:clamp(56px,9vw,110px) 0 clamp(40px,6vw,64px);
+  background:radial-gradient(58% 48% at 84% 6%,rgba(222,62,126,.13),transparent 62%),
+             radial-gradient(52% 46% at 10% 92%,rgba(225,98,43,.11),transparent 60%),
+             var(--bg)}
+.hero .lead-chip{margin-bottom:22px}
+.hero h1{font-size:clamp(2.7rem,7vw,5.2rem);letter-spacing:-.04em;max-width:15ch}
+.hero .lead{font-size:clamp(17px,2vw,21px);color:var(--ink2);max-width:56ch;margin-top:22px}
+.hero .sig{margin-top:26px;color:var(--muted);font-size:14.5px;font-weight:500}
+.hero .cta-row{margin-top:34px;display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:12px 20px;border-radius:99px;border:1px solid var(--line);background:#fff;color:var(--ink);transition:transform .18s,box-shadow .18s,background .18s}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.btn.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.dark:hover{background:#000}
+
+/* ===== tracks (home explanation) ===== */
+.tracks{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+a.track{border-radius:20px;padding:28px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s}
+a.track:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.track .th{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.dotbadge{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;flex:none}
+.track h3{font-size:19px}
+.track.fgt .dotbadge{background:var(--fg)} .track.fgt h3{color:var(--fg-ink)}
+.track.sct .dotbadge{background:var(--sc)} .track.sct h3{color:var(--sc-ink)}
+.track ul{list-style:none;display:grid;gap:10px;margin:0 0 16px}
+.track li{position:relative;padding-left:18px;font-size:14.5px;color:var(--ink2)}
+.track li:before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%}
+.track.fgt li:before{background:var(--fg)} .track.sct li:before{background:var(--sc)}
+.track .go{font-size:13.5px;font-weight:700}
+.track.fgt .go{color:var(--fg)} .track.sct .go{color:var(--sc)}
+@media(max-width:720px){.tracks{grid-template-columns:1fr}}
+
+/* ===== stats ===== */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:26px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+.stat .big{font-size:clamp(2rem,3.4vw,2.6rem);font-weight:800;letter-spacing:-.04em}
+.stat .lbl{color:var(--muted);font-size:13px;margin-top:6px}
+.stat:nth-child(1) .big{color:var(--fg)} .stat:nth-child(2) .big{color:var(--sc)}
+.stat:nth-child(3) .big{color:var(--ink)} .stat:nth-child(4) .big{color:var(--ink)}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr}}
+
+/* ===== method cards ===== */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.mcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow-sm)}
+.mcard .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;margin-bottom:16px;font-weight:800;color:#fff;font-size:15px}
+.mcard h4{font-size:16px;margin-bottom:9px}
+.mcard p{font-size:13.5px;color:var(--muted)}
+.toolchain{margin-top:26px;color:var(--muted);font-size:14px}
+.toolchain b{color:var(--ink2)}
+@media(max-width:900px){.cards{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.cards{grid-template-columns:1fr}}
+
+/* ===== page header (fashiongo / shopcord) ===== */
+.phead{padding:clamp(40px,6vw,72px) 0 8px;position:relative}
+.phead .num{font-size:clamp(3rem,8vw,5.5rem);font-weight:800;letter-spacing:-.05em;line-height:1}
+.phead.fg .num{color:var(--fg)} .phead.sc .num{color:var(--sc)}
+.phead h2{font-size:clamp(2.2rem,5vw,3.4rem);margin:6px 0 12px}
+.phead .sub{color:var(--muted);font-size:clamp(15px,1.8vw,18px);max-width:60ch}
+.phead .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.phead.fg .chips .chip{background:var(--fg-soft);border-color:transparent;color:var(--fg-ink)}
+.phead.sc .chips .chip{background:var(--sc-soft);border-color:transparent;color:var(--sc-ink)}
+
+/* ===== case study ===== */
+.case{padding:clamp(40px,5vw,62px) 0;border-top:1px solid var(--line)}
+.case .grid{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(32px,5vw,56px);align-items:center}
+.ckicker{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.case h3{font-size:clamp(1.6rem,2.8vw,2.05rem);margin:8px 0 8px}
+.case .tag{color:var(--muted);font-size:16px;margin-bottom:24px}
+.block{margin-bottom:18px}
+.block .blabel{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.block p{font-size:14.5px;color:var(--ink2)}
+.block ul{list-style:none;display:grid;gap:7px;margin-top:2px}
+.block li{position:relative;padding-left:18px;font-size:14.5px;color:var(--ink2)}
+.block li:before{content:"";position:absolute;left:1px;top:9px;width:6px;height:6px;border-radius:50%;background:currentColor}
+.outcome{display:inline-flex;align-items:center;gap:10px;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:600;margin-top:6px}
+.outcome b{font-size:10.5px;letter-spacing:.12em}
+[data-accent=fg] .ckicker,[data-accent=fg] .blabel,[data-accent=fg] .block li:before{color:var(--fg)}
+[data-accent=fg] .block ul{color:var(--fg)}
+[data-accent=fg] .outcome{background:var(--fg-soft);color:var(--fg-ink)}
+[data-accent=sc] .ckicker,[data-accent=sc] .blabel,[data-accent=sc] .block li:before{color:var(--sc)}
+[data-accent=sc] .block ul{color:var(--sc)}
+[data-accent=sc] .outcome{background:var(--sc-soft);color:var(--sc-ink)}
+.outcome b{opacity:.9}.outcome span{color:var(--ink)}
+.block li{color:var(--ink2)}
+@media(max-width:860px){.case .grid{grid-template-columns:1fr;gap:30px}}
+
+/* ===== live prototype preview ===== */
+.preview{display:block}
+.frame{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
+.preview:hover .frame{transform:translateY(-5px);box-shadow:0 20px 50px rgba(20,18,24,.14)}
+.frame img{width:100%;object-fit:cover;object-position:top}
+.preview.desktop .frame img{height:306px}
+.preview.wide .frame img{height:340px}
+.preview.mobile{max-width:290px;margin:0 auto}
+.preview.mobile .frame img{height:454px}
+.frame .ovl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(23,21,26,0);opacity:0;transition:.2s}
+.preview:hover .frame .ovl{background:rgba(23,21,26,.42);opacity:1}
+.frame .ovl span{background:#fff;color:var(--ink);font-weight:700;font-size:13px;padding:10px 18px;border-radius:99px;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+.open{display:inline-flex;align-items:center;gap:9px;margin-top:14px;font-size:13px;font-weight:700;color:var(--ink)}
+.mobile-open{text-align:center}
+.lv{font-size:9px;font-weight:800;letter-spacing:.08em;color:#fff;background:#22A06B;padding:3px 8px;border-radius:99px}
+
+/* ===== flagship ===== */
+.flagship{background:var(--sc-soft);border-radius:24px;padding:clamp(28px,4vw,42px);margin-top:24px;border:1px solid #F5D6E4}
+.fchip{display:inline-block;background:var(--sc);color:#fff;font-size:11px;font-weight:800;letter-spacing:.12em;padding:5px 12px;border-radius:99px;margin-bottom:14px}
+.flagship h3{font-size:clamp(1.7rem,3vw,2.2rem);margin-bottom:8px}
+.flagship .tag{color:var(--sc-ink);font-size:16px;margin-bottom:22px;max-width:70ch}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.dcard{background:#fff;border-radius:16px;padding:20px;border:1px solid #F5D6E4}
+.dcard .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;margin-bottom:12px;color:#fff;font-weight:800;font-size:12px}
+.dcard h4{font-size:15px;margin-bottom:7px}
+.dcard p{font-size:12.5px;color:var(--muted)}
+@media(max-width:860px){.fgrid{grid-template-columns:1fr}}
+
+/* ===== ecosystem ===== */
+.eco{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:stretch;margin-top:8px}
+a.enode{border-radius:18px;padding:22px;display:block;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s}
+a.enode:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.enode h4{font-size:17px;margin-bottom:3px}
+.enode .role{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px}
+.enode p{font-size:13px;color:var(--ink2);margin-bottom:12px}
+.enode .port{font-size:11.5px;font-weight:700}
+.enode.n1 h4,.enode.n1 .port{color:var(--sc)} .enode.n2 h4,.enode.n2 .port{color:var(--sc-ink)} .enode.n3 h4,.enode.n3 .port{color:var(--fg)}
+.earrow{align-self:center;color:var(--muted);font-size:20px}
+.econote{margin-top:20px;color:var(--ink2);font-size:14px}
+.ecostack{margin-top:6px;color:var(--muted);font-size:13px}
+@media(max-width:860px){.eco{grid-template-columns:1fr}.earrow{transform:rotate(90deg);text-align:center}}
+
+/* ===== comparison ===== */
+.btnlink{display:inline-flex;align-items:center;gap:9px;background:var(--ink);color:#fff;font-size:13.5px;font-weight:600;padding:12px 20px;border-radius:99px;margin-bottom:26px;transition:transform .2s,box-shadow .2s}
+.btnlink:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.compare{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:26px}
+.ccard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow-sm)}
+.ccard.win{background:var(--sc-soft);border-color:#F5D6E4}
+.ccard .ch{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.ccard .cb{width:44px;height:44px;border-radius:12px;color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px;flex:none}
+.ccard h4{font-size:17px}
+.ccard .sub{font-weight:700;font-size:13.5px;margin-bottom:8px}
+.ccard p{color:var(--muted);font-size:13.5px}
+.ccard .adopt{margin-top:14px;font-weight:800;color:var(--sc)}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.scell{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.scell .sl{font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--sc);text-transform:uppercase;margin-bottom:7px}
+.scell p{font-size:13px;color:var(--ink2)}
+@media(max-width:860px){.compare{grid-template-columns:1fr}.strip{grid-template-columns:1fr 1fr}}
+
+/* ===== about me ===== */
+.about-grid{display:grid;grid-template-columns:280px 1fr;gap:clamp(30px,5vw,52px);align-items:start}
+.about-photo{display:grid;gap:18px}
+.ph-avatar{width:210px;height:250px;border-radius:18px;background:repeating-linear-gradient(45deg,#F2ECEE,#F2ECEE 11px,#F8F3F5 11px,#F8F3F5 22px);border:1px dashed #E7D6DD;display:grid;place-items:center;color:#C0A9B2;font-size:13px;font-weight:600}
+.ph-list{display:grid;gap:11px}
+.ph-line{display:flex;gap:12px;font-size:14px;align-items:baseline}
+.ph-line span{width:54px;color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.06em;flex:none}
+.ph-line em{font-style:normal;color:var(--ink)}
+.about-bio{max-width:62ch}
+.ph-note{display:inline-block;background:var(--fg-soft);border:1px dashed var(--fg);color:var(--fg-ink);font-size:12.5px;font-weight:700;padding:9px 15px;border-radius:12px;margin-bottom:22px}
+.ph-para{height:14px;border-radius:7px;background:#EFEBE7;margin-bottom:13px}
+.ph-para.w90{width:90%}.ph-para.w70{width:70%}.ph-para.w50{width:50%}
+.ph-sub{font-weight:700;font-size:16px;margin:26px 0 12px}
+@media(max-width:720px){.about-grid{grid-template-columns:1fr}}
+
+/* ===== closing ===== */
+.closing{background:linear-gradient(120deg,var(--sc-soft),var(--fg-soft));border-radius:24px;padding:clamp(34px,6vw,60px);text-align:center;margin:8px 0 20px}
+.closing h2{font-size:clamp(1.8rem,4vw,2.8rem);max-width:20ch;margin:12px auto 16px}
+.closing p{color:var(--ink2);font-size:16px;max-width:66ch;margin:0 auto 30px}
+.closing .sig{margin-top:26px;color:var(--muted);font-size:13.5px}
+.foot{border-top:1px solid var(--line);color:var(--muted);text-align:center;padding:26px;font-size:12.5px}
+
+
+/* ===== deep-dive cards ===== */
+.ddgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.ddcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:10px;transition:transform .2s,box-shadow .2s}
+a.ddcard:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.ddcard .cat{align-self:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:99px;background:var(--fg-soft);color:var(--fg-ink)}
+.ddcard h4{font-size:17px}
+.ddcard p{font-size:13px;color:var(--muted);flex:1}
+.ddcard .rd{font-size:13px;font-weight:700;color:var(--fg)}
+.ddcard.soon .rd{color:var(--muted);font-weight:600}
+.ddcard.soon{background:linear-gradient(180deg,#fff, #FCFAF7)}
+@media(max-width:860px){.ddgrid{grid-template-columns:1fr}}
+
+/* ===== to-fill placeholders ===== */
+.block.tofill p{color:var(--muted);font-style:italic;border:1px dashed #DED9D2;background:#FCFBF9;padding:8px 12px;border-radius:9px;font-size:13px}
+
+/* ===== case study detail page ===== */
+.cs-back{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--muted);margin-bottom:26px;cursor:pointer}
+.cs-back:hover{color:var(--ink)}
+.cs-hero h2{font-size:clamp(2.2rem,5vw,3.2rem);margin:14px 0 10px}
+.cs-hero .sub{color:var(--muted);font-size:17px;max-width:60ch}
+.cs-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:30px 0 8px}
+.cs-meta .m{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.cs-meta .m b{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.cs-meta .m span{font-size:14px;font-weight:600}
+.tldr{background:var(--fg-soft);border-radius:18px;padding:24px 26px;margin:26px 0 10px}
+.tldr .tl-label{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--fg-ink);text-transform:uppercase;margin-bottom:10px}
+.tldr ul{list-style:none;display:grid;gap:8px}
+.tldr li{position:relative;padding-left:18px;font-size:14.5px}
+.tldr li:before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--fg)}
+.csec{padding:clamp(30px,4vw,46px) 0;border-top:1px solid var(--line)}
+.csec .n{font-size:13px;font-weight:800;color:var(--fg);letter-spacing:.08em;margin-bottom:6px}
+.csec h3{font-size:clamp(1.35rem,2.4vw,1.7rem);margin-bottom:14px}
+.csec p{font-size:14.5px;color:var(--ink2);max-width:72ch;margin-bottom:12px}
+.imgslot{border:1.5px dashed #DED9D2;background:#FCFBF9;border-radius:14px;min-height:220px;display:grid;place-items:center;color:#B7B0A6;font-size:13px;font-weight:600;margin:16px 0}
+.fillhint{display:inline-block;background:var(--fg-soft);border:1px dashed var(--fg);color:var(--fg-ink);font-size:12px;font-weight:700;padding:7px 13px;border-radius:10px}
+.impact-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0}
+.impact-slots .isl{border:1.5px dashed #DED9D2;background:#FCFBF9;border-radius:14px;padding:20px;text-align:center;color:#B7B0A6}
+.impact-slots .isl b{display:block;font-size:26px;font-weight:800;margin-bottom:4px}
+@media(max-width:860px){.cs-meta{grid-template-columns:1fr 1fr}.impact-slots{grid-template-columns:1fr}}
+
+
+/* ===== before / after ===== */
+.ba-label{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:99px;margin-bottom:10px}
+.ba-before .ba-label{background:#F1EEE9;color:var(--muted)}
+.ba-after .ba-label{background:var(--sc-soft);color:var(--sc-ink)}
+.ba-before{border:1px solid var(--line);background:#FCFBF9;border-radius:16px;padding:18px 20px}
+.ba-before ul{list-style:none;display:grid;gap:7px}
+.ba-before li{position:relative;padding-left:16px;font-size:13px;color:var(--muted)}
+.ba-before li:before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#C9C2B8}
+.ba-arrow{text-align:center;color:var(--sc);font-weight:800;font-size:18px;margin:10px 0}
+
+
+/* ===== chip jump ===== */
+.phead .chip[data-jump]{cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s,color .15s}
+.phead .chip[data-jump]:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.phead.fg .chip.on{background:var(--fg);color:#fff}
+.phead.sc .chip.on{background:var(--sc);color:#fff}
+.case,.ddcard{scroll-margin-top:84px}
+.case.flash .grid{animation:jumpPulse 1.6s ease 1;border-radius:20px}
+.ddcard.flash{animation:jumpPulse 1.6s ease 1}
+@keyframes jumpPulse{0%{box-shadow:0 0 0 0 rgba(222,62,126,.45)}35%{box-shadow:0 0 0 10px rgba(222,62,126,.16)}100%{box-shadow:0 0 0 0 rgba(222,62,126,0)}}
+
+/* ===== case study images ===== */
+.csimg{width:100%;border:1px solid var(--line);border-radius:14px;margin:16px 0;box-shadow:var(--shadow-sm);background:#fff}
+.csimg-cap{font-size:12px;color:var(--muted);margin:-8px 0 16px}
+
+
+/* ===== live prototype cards (FG) ===== */
+.lpgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.lpcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s;scroll-margin-top:84px}
+.lpcard:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.lpcard.flash{animation:jumpPulse 1.6s ease 1}
+.lpcard .lp-img{display:block;position:relative}
+.lpcard .lp-img img{width:100%;height:190px;object-fit:cover;object-position:top;display:block;border-bottom:1px solid var(--line)}
+.lpcard .lp-img .ovl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(23,21,26,0);opacity:0;transition:all .2s}
+.lpcard .lp-img:hover .ovl{background:rgba(23,21,26,.38);opacity:1}
+.lpcard .lp-img .ovl span{background:#fff;color:var(--ink);font-weight:700;font-size:12.5px;padding:9px 16px;border-radius:22px}
+.lpcard .lp-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.lpcard .cat{align-self:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:99px;background:var(--fg-soft);color:var(--fg-ink)}
+.lpcard h4{font-size:16.5px}
+.lpcard p{font-size:13px;color:var(--muted);flex:1}
+.lpcard .lp-links{display:flex;flex-wrap:wrap;gap:6px 14px}
+@media(max-width:860px){.lpgrid{grid-template-columns:1fr}}
+
+
+/* ===== case prev/next nav ===== */
+.cs-nav{display:flex;justify-content:space-between;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:26px;margin-top:10px;flex-wrap:wrap}
+.cs-next{display:inline-flex;flex-direction:column;align-items:flex-end;gap:2px;cursor:pointer;text-align:right}
+.cs-next small{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cs-next b{font-size:15.5px;color:var(--fg-ink);transition:color .15s}
+.cs-next:hover b{color:var(--fg)}
+
+/* ===== contact row ===== */
+.contact-row{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:16px;font-size:13.5px;font-weight:600}
+.contact-row a{color:var(--ink2);border-bottom:1px solid var(--line);padding-bottom:1px;transition:color .15s,border-color .15s}
+.contact-row a:hover{color:var(--ink);border-color:var(--ink)}
+footer.foot a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+
+
+/* ===== experience timeline ===== */
+.xp{display:grid;gap:0;margin-top:6px}
+.xp-item{display:grid;grid-template-columns:118px 1fr;gap:16px;padding:13px 0;border-bottom:1px solid var(--line)}
+.xp-item:last-child{border-bottom:none}
+.xp-item .yr{font-size:12.5px;font-weight:700;color:var(--muted);padding-top:2px}
+.xp-item h5{font-size:14.5px;margin:0 0 2px;font-weight:700}
+.xp-item .co{font-size:13px;color:var(--fg-ink);font-weight:600}
+.xp-item p{font-size:12.5px;color:var(--muted);margin-top:4px}
+.bio-p{font-size:15px;color:var(--ink2);margin-bottom:14px;line-height:1.7}
+.bio-sub{font-size:16px;font-weight:700;margin:26px 0 6px;color:var(--ink)}
+.str-list{list-style:none;display:grid;gap:8px;padding:0}
+.str-list li{position:relative;padding-left:18px;font-size:14px;color:var(--ink2)}
+.str-list li:before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--fg)}
+
+.lpcard .cat.sc{background:var(--sc-soft);color:var(--sc-ink)}
+.open.sc{color:var(--sc)}
+.lpcard .lp-body a[data-page]{cursor:pointer}
+
+.sec-head.wide{max-width:none}
+@media(min-width:900px){.sec-head.wide h2{white-space:nowrap;font-size:clamp(1.8rem,2.9vw,2.35rem)}}
+
+
+/* ===== mchiu-style theme ===== */
+h1,h2,h3,h4,h5,.stat .big,.phead .num,.brand b,.xp-item h5{font-family:"Instrument Sans",var(--sans);letter-spacing:-.035em;font-weight:700}
+.nav{background:transparent;border-bottom:none;backdrop-filter:none;padding:14px 0 4px}
+.nav .wrap{background:var(--panel);border:1px solid var(--line);border-radius:99px;height:58px;box-shadow:0 2px 10px rgba(30,25,20,.05);padding:0 22px}
+.nav ul a.on{background:var(--ink);color:#fff}
+.brand b{font-size:17px}
+.lpcard,.ddcard,.mcard,.stat,.track,.enode,.tldr,.ccard,.cs-meta .m,.impact-slots .isl,.panel,.scell{border-radius:28px}
+.lpcard .lp-img img{border-radius:0}
+.csimg{border-radius:22px}
+.chip,.phead .chips .chip{border-radius:99px}
+
+/* ===== bento home ===== */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:34px 0 60px}
+.btile{background:var(--panel);border:1px solid var(--line);border-radius:32px;padding:26px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:8px;min-height:216px;box-shadow:0 2px 10px rgba(30,25,20,.04);transition:transform .22s,box-shadow .22s}
+a.btile{cursor:pointer}
+a.btile:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(30,25,20,.10)}
+.btile.span2{grid-column:span 2}
+.b-hero{flex-direction:row;align-items:center;gap:22px;justify-content:flex-start}
+.b-hero .hi{font-size:15.5px;color:var(--ink2);line-height:1.65}
+.b-hero .hi b{font-family:"Instrument Sans",var(--sans)}
+.avatar-wrap{flex:none;width:132px;height:132px;border-radius:50%;overflow:hidden;background:#F6E8DC}
+.btile .big-ico{font-size:44px;line-height:1}
+.btile .t-num{font-family:"Instrument Sans",var(--sans);font-size:46px;font-weight:800;line-height:1}
+.btile .t-lbl{font-size:13px;color:var(--muted);font-weight:600}
+.btile .t-go{font-size:13px;font-weight:700;margin-top:2px}
+.b-fg{background:#FBEEE4}.b-fg .t-num,.b-fg .t-go{color:var(--fg-ink)}
+.b-sc{background:#FCE9F1}.b-sc .t-num,.b-sc .t-go{color:var(--sc-ink)}
+.b-quote{justify-content:center}
+.b-quote p{font-family:"Instrument Sans",var(--sans);font-size:clamp(1.2rem,2vw,1.55rem);font-weight:700;line-height:1.35}
+.b-quote small{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.b-contact{align-items:center;text-align:center;justify-content:center}
+.b-contact .cap{font-size:13px;font-weight:700;color:var(--ink2)}
+.b-contact .sub{font-size:11.5px;color:var(--muted)}
+.gmailM{width:52px;height:38px}
+.liM{width:44px;height:44px;border-radius:10px;background:#0A66C2;color:#fff;display:grid;place-items:center;font-family:"Instrument Sans";font-weight:800;font-size:22px}
+@media(max-width:960px){.bento{grid-template-columns:repeat(2,1fr)}.btile.span2{grid-column:span 2}}
+@media(max-width:560px){.bento{grid-template-columns:1fr}.btile.span2{grid-column:span 1}.b-hero{flex-direction:column;text-align:center}}
+
+
+/* ===== refined polish ===== */
+.btile,.lpcard,.ddcard,.mcard{border-color:rgba(28,25,23,.055);box-shadow:0 1px 2px rgba(28,25,23,.03),0 10px 30px rgba(28,25,23,.05)}
+a.btile:hover,a.ddcard:hover,.lpcard:hover{box-shadow:0 2px 4px rgba(28,25,23,.04),0 22px 44px rgba(28,25,23,.10)}
+.nav .wrap{border:none;box-shadow:0 1px 2px rgba(28,25,23,.05),0 10px 26px rgba(28,25,23,.07);height:56px}
+.btile .t-num{font-size:40px;letter-spacing:-.045em}
+.btile{padding:28px}
+.b-quote p{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400;font-size:clamp(1.5rem,2.4vw,2rem);letter-spacing:0}
+.ico-c{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:#F4F1EB}
+.ico-c svg{width:22px;height:22px;stroke:var(--ink);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.liM{width:40px;height:40px;border-radius:12px;font-family:"Instrument Sans";font-size:19px}
+.b-contact .cap{font-weight:600}
+.b-hero .hi{font-size:15px}
+
+/* ===== design system section ===== */
+.dsgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:26px}
+.dsgrid figure{margin:0;background:var(--panel);border:1px solid rgba(28,25,23,.055);border-radius:22px;overflow:hidden;box-shadow:0 1px 2px rgba(28,25,23,.03),0 10px 30px rgba(28,25,23,.05)}
+.dsgrid img{width:100%;height:250px;object-fit:cover;object-position:top;display:block;border-bottom:1px solid var(--line)}
+.dsgrid figcaption{padding:12px 16px;font-size:12.5px;font-weight:600;color:var(--ink2)}
+.dsgrid figcaption small{display:block;color:var(--muted);font-weight:500;margin-top:1px}
+@media(max-width:900px){.dsgrid{grid-template-columns:1fr 1fr}}
+
+
+/* ===== editorial refit ===== */
+.nav{padding:0;background:rgba(250,249,246,.92);backdrop-filter:blur(10px)}
+.nav .wrap{background:transparent;box-shadow:none;border-radius:0;border-bottom:1px solid var(--line);height:64px;padding:0}
+.nav ul{gap:0}
+.nav ul a{border-radius:0;padding:21px 0 19px;margin-left:30px;background:none!important;color:var(--muted);font-weight:600;font-size:13.5px}
+.nav ul a:hover{color:var(--ink)}
+.nav ul a.on{color:var(--ink);box-shadow:inset 0 -2px 0 var(--ink)}
+.brand small{display:none}
+.chip,.phead .chips .chip{background:transparent!important;border:1px solid var(--line);color:var(--muted);font-weight:600}
+.phead .chips .chip:hover{border-color:var(--ink);color:var(--ink)}
+.lpcard,.ddcard,.mcard,.stat,.track,.enode,.ccard,.cs-meta .m,.impact-slots .isl,.panel,.scell,.dsgrid figure{border-radius:18px;box-shadow:none;border:1px solid var(--line)}
+a.ddcard:hover,.lpcard:hover,a.btile:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(24,22,20,.07)}
+.lpcard .cat,.ddcard .cat{background:transparent!important;padding:0;border:none;color:var(--muted)!important;letter-spacing:.14em;font-size:10.5px}
+.tldr{border-radius:18px;background:#F4F1EA}
+.tldr .tl-label{color:var(--ink)}
+.kicker{color:var(--muted)}
+.csimg{border-radius:14px;border:1px solid var(--line);box-shadow:none}
+
+/* ===== editorial home ===== */
+.ed-meta{display:flex;justify-content:space-between;gap:14px;padding:22px 0;border-bottom:1px solid var(--line);font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);flex-wrap:wrap}
+.ed-hero{padding:clamp(48px,8vw,96px) 0 clamp(30px,4vw,48px)}
+.ed-h1{font-size:clamp(2.5rem,6.4vw,4.9rem);line-height:1.04;letter-spacing:-.04em;max-width:20ch}
+.ed-h1 em{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-.015em}
+.ed-sub{margin-top:26px;font-size:clamp(15px,1.7vw,17.5px);color:var(--muted);max-width:52ch;line-height:1.7}
+.ed-stats{display:flex;flex-wrap:wrap;gap:14px 44px;padding:22px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.ed-stats b{font-family:"Instrument Sans",var(--sans);font-weight:700;color:var(--ink);font-size:15px;margin-right:7px;letter-spacing:-.02em}
+.ed-label{font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:clamp(44px,6vw,72px) 0 8px}
+.work-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,420px) 40px;gap:clamp(20px,4vw,54px);align-items:center;padding:30px 0;border-top:1px solid var(--line);cursor:pointer}
+.work-row:last-of-type{border-bottom:1px solid var(--line)}
+.wr-num{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.1em}
+.work-row h3{font-size:clamp(1.7rem,3.4vw,2.5rem);letter-spacing:-.035em;margin:6px 0 8px;transition:color .15s}
+.work-row p{font-size:14.5px;color:var(--muted);max-width:46ch}
+.wr-tags{display:block;margin-top:12px;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.wr-media{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#fff}
+.wr-media img{width:100%;height:215px;object-fit:cover;object-position:top;display:block;transition:transform .5s ease}
+.work-row:hover .wr-media img{transform:scale(1.035)}
+.wr-arrow{font-size:26px;color:var(--muted);transition:transform .25s,color .25s;justify-self:end}
+.work-row:hover .wr-arrow{transform:translateX(6px);color:var(--ink)}
+.hl{display:grid;grid-template-columns:minmax(150px,240px) 1fr auto 22px;gap:18px;align-items:baseline;padding:17px 0;border-top:1px solid var(--line);cursor:pointer;color:var(--ink)}
+.hl:last-of-type{border-bottom:1px solid var(--line)}
+.hl span{font-family:"Instrument Sans",var(--sans);font-weight:700;font-size:17px;letter-spacing:-.02em}
+.hl small{color:var(--muted);font-size:13.5px}
+.hl b{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400;font-size:15px;color:var(--ink2)}
+.hl i{font-style:normal;color:var(--muted);transition:transform .2s;justify-self:end}
+.hl:hover i{transform:translateX(4px);color:var(--ink)}
+.ed-contact{display:flex;flex-wrap:wrap;gap:12px 36px;margin:clamp(44px,6vw,72px) 0 64px;font-size:14px;font-weight:600}
+.ed-contact a{color:var(--ink2);border-bottom:1px solid var(--line);padding-bottom:2px}
+.ed-contact a:hover{color:var(--ink);border-color:var(--ink)}
+@media(max-width:820px){.work-row{grid-template-columns:1fr;gap:16px}.wr-arrow{display:none}.hl{grid-template-columns:1fr;gap:4px}.hl i{display:none}}
+
+
+/* ===== ds steps ===== */
+.ds-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:28px 0 30px}
+.ds-step{padding:20px 22px;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
+.ds-step small{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--muted)}
+.ds-step b{display:block;font-family:"Instrument Sans",var(--sans);font-size:15.5px;letter-spacing:-.02em;margin:7px 0 6px}
+.ds-step p{font-size:12.5px;color:var(--muted);line-height:1.6}
+.ds-foot{margin-top:22px;font-size:14px;color:var(--ink2)}
+.ds-foot a{font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);cursor:pointer}
+.ds-foot a:hover{border-color:var(--ink)}
+@media(max-width:900px){.ds-steps{grid-template-columns:1fr 1fr}}
+
+
+/* ===== work rows on track pages ===== */
+.work-list{margin-top:4px}
+.work-row .wr-kicker{display:block;font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.wr-outcome{display:block;margin-top:12px;font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-size:15.5px;color:var(--ink2)}
+.wr-links{margin-top:12px;display:flex;gap:18px;align-items:center}
+.work-row.sm{grid-template-columns:minmax(0,1fr) minmax(220px,320px) 40px;padding:24px 0}
+.work-row.sm h3{font-size:clamp(1.25rem,2vw,1.6rem)}
+.work-row.sm .wr-media img{height:158px}
+.work-row .wr-media img{height:230px}
+
+
+/* ===== gap fixes: framing · motion · craft ===== */
+::selection{background:#1A1918;color:#fff}
+.wr-media{background:#fff;box-shadow:0 1px 2px rgba(24,22,20,.05),0 26px 50px -28px rgba(24,22,20,.22)}
+.csimg{box-shadow:0 24px 48px -26px rgba(24,22,20,.20)}
+.dsgrid img{border-bottom:1px solid var(--line)}
+@media(prefers-reduced-motion:no-preference){
+ .rv{opacity:0;transform:translateY(16px);transition:opacity .65s cubic-bezier(.2,.6,.2,1),transform .65s cubic-bezier(.2,.6,.2,1)}
+ .rv.on{opacity:1;transform:none}
+}
+#localTime{color:var(--muted);font-weight:600;border-bottom:none}
+
+
+/* ===== micro-interactions ===== */
+@media(prefers-reduced-motion:no-preference){
+ .ed-meta,.ed-h1,.ed-sub{opacity:0;transform:translateY(18px);animation:heroUp .8s cubic-bezier(.2,.65,.2,1) forwards}
+ .ed-h1{animation-delay:.08s}.ed-sub{animation-delay:.18s}
+ @keyframes heroUp{to{opacity:1;transform:none}}
+ .modal-card{transform:translateY(14px) scale(.985);opacity:0;transition:transform .28s cubic-bezier(.2,.65,.2,1),opacity .28s}
+ .modal.on .modal-card{transform:none;opacity:1}
+ .modal-backdrop{opacity:0;transition:opacity .25s}
+ .modal.on .modal-backdrop{opacity:1}
+}
+.nav ul a{position:relative}
+.nav ul a::after{content:"";position:absolute;left:0;right:100%;bottom:14px;height:2px;background:var(--ink);transition:right .25s cubic-bezier(.2,.65,.2,1)}
+.nav ul a:hover::after{right:0}
+.nav ul a.on::after{right:0}
+.nav ul a.on{box-shadow:none}
+.hl,.work-row{transition:background .2s}
+.hl:hover{background:rgba(24,22,20,.025)}
+
+@media(min-width:860px){.nowrap-lg{white-space:nowrap;font-size:clamp(1.7rem,3.4vw,2.6rem)!important}}
+
+.about-bio{max-width:none}
+
+.dsgrid figure{cursor:zoom-in;transition:transform .2s,box-shadow .2s}
+.dsgrid figure:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(24,22,20,.10)}
+.dsgrid figure img{transition:transform .35s ease}
+.dsgrid figure:hover img{transform:scale(1.045)}
+
+/* ===== modal ===== */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:2.4vh 2.4vw}
+.modal.on{display:flex}
+.modal-backdrop{position:absolute;inset:0;background:rgba(23,21,26,.5);backdrop-filter:blur(4px)}
+.modal-card{position:relative;z-index:2;width:min(1240px,95vw);height:94vh;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.35);display:flex;flex-direction:column}
+.modal-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--line);flex:none}
+.modal-title{font-weight:700;font-size:15px}
+.modal-actions{display:flex;align-items:center;gap:16px}
+.modal-ext{color:var(--muted);font-size:12.5px;font-weight:600}
+.modal-ext:hover{color:var(--ink)}
+.modal-close{background:#F2EFEA;color:var(--ink);border:none;width:32px;height:32px;border-radius:50%;font-size:13px;cursor:pointer;display:grid;place-items:center}
+.modal-close:hover{background:#E7E2DB}
+.modal-frame{flex:1;width:100%;border:none;background:#fff}
+
+/* nav bar was flush to the viewport edge below 1256px while page content stayed inset */
+.nav .wrap{padding:0 clamp(22px,5vw,48px)}
+
+/* case-body Figma captures: same click-to-zoom affordance as the design-system grid */
+.csimg{cursor:zoom-in;transition:box-shadow .2s ease}
+.csimg:hover{box-shadow:0 26px 52px -24px rgba(24,22,20,.28)}
+.modal-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modal-actions{flex:none}
+
+/* ===== responsive pass — keep LAST: the editorial rules above are unscoped and would otherwise win ===== */
+@media(max-width:820px){
+  .work-row.sm{grid-template-columns:1fr;gap:16px;padding:22px 0}
+  .work-row .wr-media img,.work-row.sm .wr-media img{height:auto;aspect-ratio:16/10}
+  .work-row,.csec,.ddcard{scroll-margin-top:104px}
+}
+@media(max-width:720px){
+  /* brand + 4 labels never fit on one line at phone widths — stack into two rows */
+  .nav .wrap{flex-direction:column;align-items:stretch;height:auto}
+  .brand{padding:11px 0 0}
+  .nav ul{gap:0;justify-content:space-between;margin-top:5px}
+  .nav ul a{margin-left:0;padding:9px 0 11px;font-size:13px;white-space:nowrap}
+  .nav ul a::after{bottom:4px}
+  /* full-bleed modal: desktop prototypes need every pixel on a phone */
+  .modal{padding:0}
+  .modal-card{width:100vw;height:100dvh;max-height:100dvh;border-radius:0}
+  .modal-bar{padding:10px 14px;gap:10px}
+  .modal-title{font-size:13.5px}
+  .modal-actions{gap:12px}
+  .modal-ext{font-size:11.5px;white-space:nowrap}
+  .phead .chips{gap:6px}
+}
+@media(max-width:560px){
+  .dsgrid{grid-template-columns:1fr}
+  .dsgrid img{height:auto}
+  .ds-steps{grid-template-columns:1fr}
+  .cs-meta{grid-template-columns:1fr}
+  .xp-item{grid-template-columns:1fr;gap:3px}
+  .cs-nav{gap:18px}
+  .cs-next{align-items:flex-start;text-align:left}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap">
+  <div class="brand" data-page="home"><b>Eunhyui Kim</b><small>Project Review · 2026</small></div>
+  <ul>
+    <li><a data-page="about">About</a></li>
+    <li><a data-page="method">How I Work</a></li>
+    <li><a data-page="fashiongo">FashionGo</a></li>
+    <li><a data-page="shopcord">Shopcord</a></li>
+    <li><a data-page="etc">Etc</a></li>
+  </ul>
+</div></nav>
+
+<main>
+
+<!-- ============ HOME ============ -->
+<div class="page active" id="page-home">
+  <section style="padding:0 0 10px"><div class="wrap">
+    <div class="ed-meta"><span>Eunhyui Kim</span><span>Senior UX Designer</span><span>Portfolio · 2026</span></div>
+    <div class="ed-hero">
+      <h1 class="ed-h1">Hi, I&rsquo;m Eunhyui Kim.<br>I architect <em>complex systems</em><br>and craft <em>beautiful brands</em>.</h1>
+      <p class="ed-sub">Senior UX Designer — 13+ years from brand &amp; campaign design to B2B platforms, fluent in the systems underneath them: <b>ERP, WMS, CRM</b>. I structure how products work, and craft how they look. Every prototype in this review was built with AI, and runs live on this page.</p>
+    </div>
+    <div class="ed-stats">
+      <span><b>15</b>live prototypes</span>
+      <span><b>6</b>deep-dive case studies</span>
+      <span><b>13+</b>years in UI/UX</span>
+      <span><b>AI × shadcn</b>design that ships</span>
+    </div>
+
+    <div class="ed-label">Selected work</div>
+    <a class="work-row" data-page="fashiongo">
+      <div class="wr-body"><span class="wr-num">01</span><h3>FashionGo</h3><p>Elevating a live wholesale marketplace — Net Terms, itemized returns, settlement, free shipping, relabeling.</p><span class="wr-tags">9 projects · 6 case studies · 3 live prototypes</span></div>
+      <div class="wr-media"><img src="assets/order-management.png" alt="FashionGo work"></div>
+      <span class="wr-arrow">→</span>
+    </a>
+    <a class="work-row" data-page="shopcord">
+      <div class="wr-body"><span class="wr-num">02</span><h3>Shopcord</h3><p>Architecting a new B2B ecosystem — seller console, buyer store and payments, from first screen to first revenue.</p><span class="wr-tags">12 projects · built entirely with AI · every prototype runs live</span></div>
+      <div class="wr-media"><img src="assets/phase2.jpg" alt="Shopcord work"></div>
+      <span class="wr-arrow">→</span>
+    </a>
+
+    <div class="ed-label">Highlights</div>
+    <div class="hl-list">
+      <a class="hl" data-page="case-net-terms"><span>Net Terms</span><small>one split payment across two gateways</small><b>+10% revenue</b><i>→</i></a>
+      <a class="hl" data-page="sc-phase2"><span>SMS Chat</span><small>a two-way vendor–buyer inbox, shipped</small><b>flagship</b><i>→</i></a>
+      <a class="hl" data-page="sc-billing"><span>Payment &amp; Billing</span><small>Shopcord&rsquo;s first revenue-generating release</small><b>Oct 1</b><i>→</i></a>
+      <a class="hl" data-page="case-labelit"><span>Label It</span><small>factory, buyer and vendor — one flow</small><b>first AI-era project</b><i>→</i></a>
+      <a class="hl" data-page="method"><span>How I Work</span><small>design system → AI prototype → handoff</small><b>my method</b><i>→</i></a>
+    </div>
+
+    <div class="ed-contact">
+      <a href="mailto:eunkim1218@gmail.com">eunkim1218@gmail.com</a>
+      <a href="https://www.linkedin.com/in/eunhye-kim-6506561a7" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <span id="localTime">Southern California</span>
+    </div>
+  </div></section>
+</div>
+
+<!-- ============ ABOUT ============ -->
+<div class="page" id="page-about">
+  <section><div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">About Me</div>
+      <h2>Hello, I'm Eunhyui Kim</h2>
+      <p>Senior UX Designer · 13+ years in UI/UX</p>
+    </div>
+    <div class="about-grid">
+      <div class="about-photo">
+        <div class="ph-avatar ek-mark" style="background:transparent;border:none;width:200px;height:200px;border-radius:50%;overflow:hidden"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Eunhyui Kim monogram"><circle cx="100" cy="100" r="100" fill="#17151A"/><text x="100" y="130" text-anchor="middle" font-family="'Instrument Serif',Georgia,serif" font-style="italic" font-size="94" fill="#FAF9F6">ek</text></svg></div>
+        <div class="ph-list">
+          <div class="ph-line"><span>Role</span><em>Senior UX Designer</em></div>
+          <div class="ph-line"><span>Focus</span><em>B2B platforms · financial &amp; enterprise systems</em></div>
+          <div class="ph-line"><span>Email</span><em><a href="mailto:eunkim1218@gmail.com">eunkim1218@gmail.com</a></em></div>
+          <div class="ph-line"><span>Links</span><em><a href="https://www.linkedin.com/in/eunhye-kim-6506561a7" target="_blank" rel="noopener">LinkedIn</a></em></div>
+        </div>
+      </div>
+      <div class="about-bio">
+        <p class="bio-p">I&rsquo;m a Senior UX Designer with <b>13+ years</b> across e-commerce, B2B platforms, and the financial and operational systems underneath them — including <b>LOS and pipeline management systems</b> across three mortgage lenders, alongside ERP, WMS and CRM.</p>
+        <p class="bio-p">That finance-systems background — loan submission, document management, rate &amp; commission calculation, and funding — carries directly into how I approach <b>FashionGo and Shopcord</b> today: B2B wholesale platforms where buyers, vendors, factories and internal teams all have to meet in one flow, often around payment and settlement (Net Terms, Settlement 1.0). I&rsquo;ve always worked close to the code — HTML/CSS since my first job — and since adopting AI, I design by <b>building</b>: working prototypes over static mockups, so decisions get made on the real thing.</p>
+        <p class="bio-p">Before platforms, I spent nearly a decade in <b>brand &amp; marketing design</b> — logos, catalogs, campaigns, motion — and shipped eight production websites end to end as lead designer. It&rsquo;s why my systems don&rsquo;t just work; they <b>look and feel like a brand</b>.</p>
+        <div class="bio-sub">Experience</div>
+        <div class="xp">
+          <div class="xp-item"><div class="yr">2022.8 — Present</div><div><h5>Senior UX Designer</h5><div class="co">NHN Global</div><p>FashionGo &amp; Shopcord — B2B wholesale commerce across buyer, vendor, payment and internal surfaces. </p></div></div>
+          <div class="xp-item"><div class="yr">2021.1 — 2022.7</div><div><h5>UI/UX Designer</h5><div class="co">JBB, Inc</div><p>E-commerce, WMS, ERP, intranet and a shipment compilation system — plus marketing design and HTML/CSS.</p></div></div>
+          <div class="xp-item"><div class="yr">2019.3 — 2020.12</div><div><h5>UI/UX Designer</h5><div class="co">AmWest Funding Corp. (mortgage lender)</div><p>Designed the LOS and pipeline management system end to end: loan submission, document management, rate &amp; commission calculation, and funding — plus corporate web, intranet and HTML/CSS email templates.</p></div></div>
+          <div class="xp-item"><div class="yr">2015.4 — 2019.3</div><div><h5>UI/UX Designer</h5><div class="co">Bada International Inc</div><p>Responsive e-commerce websites and marketing design.</p></div></div>
+          <div class="xp-item"><div class="yr">2013.1 — 2015.4</div><div><h5>UI/UX Designer</h5><div class="co">Needbell Inc</div><p>Websites, graphic design and HTML email templates.</p></div></div>
+        </div>
+        <div class="bio-sub">Freelance / Part-time</div>
+        <div class="xp">
+          <div class="xp-item"><div class="yr">Freelance</div><div><h5>UI/UX Designer</h5><div class="co">New Wave Lending · Lender Mac (mortgage lenders)</div><p>Designed LOS and pipeline management systems end to end: loan submission, document management, rate &amp; commission calculation, and funding.</p></div></div>
+        </div>
+        <div class="bio-sub">Toolbox</div>
+        <div class="xp">
+          <div class="xp-item"><div class="yr">Design</div><div><p style="margin-top:0"><b>Figma</b> — professional daily driver, after years shipped in <b>Sketch</b> and <b>Adobe XD</b> before it. Tools change; the craft transfers. · <b>Adobe CC</b> — Illustrator, Photoshop, Premiere</p></div></div>
+          <div class="xp-item"><div class="yr">Front-end</div><div><p style="margin-top:0">Working knowledge of front-end development — HTML/CSS · shadcn/ui component model · design tokens → CSS variables</p></div></div>
+          <div class="xp-item"><div class="yr">AI</div><div><p style="margin-top:0">Fluent with <b>Claude</b> and <b>Codex</b> — when the industry shifts tools, I shift early. AI-built prototypes are how I design and validate now</p></div></div>
+          <div class="xp-item"><div class="yr">Languages</div><div><p style="margin-top:0">English · Korean</p></div></div>
+        </div>
+        <div class="bio-sub">Strengths</div>
+        <ul class="str-list">
+          <li><b>Financial &amp; lending systems</b> — designed LOS and pipeline management systems across three mortgage lenders, covering loan submission, document management, rate &amp; commission calculation and funding; plus payment and settlement flows (Net Terms, Settlement 1.0)</li>
+          <li><b>Enterprise systems fluency</b> — ERP, WMS, CRM: a decade of designing inside them, and many projects led on exactly that strength</li>
+          <li><b>End to end</b> — from IA and flows to HTML/CSS and dev handoff; designs that survive engineering</li>
+          <li><b>AI-accelerated prototyping</b> — working prototypes instead of static mockups; decisions made on evidence</li>
+          <li><b>Cross-surface thinking</b> — buyer, vendor, internal and even factory users, designed as one flow</li>
+          <li><b>Brand &amp; visual craft</b> — 9 years of logos, catalogs and campaigns before platforms; systems that look like a brand</li>
+        </ul>
+      </div>
+    </div>
+  </div></section>
+</div>
+
+<!-- ============ METHOD ============ -->
+<div class="page" id="page-method">
+  <section><div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">How I Work · My edge</div>
+      <h2>AI-accelerated design, end to end</h2>
+      <p>I don't stop at static mockups. I use AI to build, validate, and hand off — turning design intent into working software and shrinking the loop between idea and evidence.</p>
+    </div>
+    <div class="cards">
+      <div class="mcard"><div class="ic" style="background:var(--fg)">1</div><h4>Figma → Prototype</h4><p>I translate Figma designs into working, clickable HTML/React screens — dozens of them — so stakeholders test the real thing, not a picture.</p></div>
+      <div class="mcard"><div class="ic" style="background:var(--sc)">2</div><h4>PRD → Policy</h4><p>I interrogate the PRD with AI to nail states, permissions and edge cases, then bake the right behavior into the UI — traceable to the spec.</p></div>
+      <div class="mcard"><div class="ic" style="background:var(--fg)">3</div><h4>Design → Handoff</h4><p>I annotate finished screens and push clean specs back to Figma and engineering, so intent survives the handoff.</p></div>
+      <div class="mcard"><div class="ic" style="background:var(--sc)">4</div><h4>QA → Ship → Report</h4><p>I run QA myself, get changes into releases, manage maintenance tickets, and write the weekly report — one continuous loop.</p></div>
+    </div>
+    <div style="margin-top:56px">
+      <div class="sec-head wide" style="margin-bottom:6px">
+        <div class="kicker">Design system</div>
+        <h2 style="font-size:clamp(1.5rem,2.6vw,2rem)">One system — from tokens to shipped code</h2>
+        <p>Screens here aren&rsquo;t drawn one-off. I build the system first, then compose every page from it — the same way engineering does. Four moves, in order:</p>
+      </div>
+      <div class="ds-steps">
+        <div class="ds-step"><small>01</small><b>Primitive → semantic tokens</b><p>Raw color ramps become roles — surface, border, brand, danger. A color decision is made once, then referenced everywhere.</p></div>
+        <div class="ds-step"><small>02</small><b>Components, fully spec&rsquo;d</b><p>Every variant × state in one matrix — default, hover, focus, filled, error, disabled. Nothing is left to a developer&rsquo;s guess.</p></div>
+        <div class="ds-step"><small>03</small><b>Patterns &amp; templates</b><p>Components compose into repeatable page patterns — tables, drawers, wizards — so a new screen starts at 80% done.</p></div>
+        <div class="ds-step"><small>04</small><b>1 : 1 with code</b><p>The library mirrors engineering&rsquo;s shadcn setup: tokens land as CSS variables, components land as props. What I design is what ships.</p></div>
+      </div>
+      <div class="dsgrid">
+        <figure><img src="assets/casestudy/ds-tokens.png" alt="Color tokens"><figcaption>Color tokens<small>ramps &amp; semantic roles, defined once</small></figcaption></figure>
+        <figure><img src="assets/casestudy/ds-buttons.png" alt="Button component matrix"><figcaption>Buttons<small>every variant × state, one matrix</small></figcaption></figure>
+        <figure><img src="assets/casestudy/ds-cards.png" alt="Card selection states"><figcaption>Cards<small>selection &amp; content patterns</small></figcaption></figure>
+        <figure><img src="assets/casestudy/ds-inputs.png" alt="Input states"><figcaption>Inputs<small>default → focus → error, annotated</small></figcaption></figure>
+      </div>
+      <p class="ds-foot">Proven on <a data-page="case-labelit">Label It</a> — my first AI-era project designed entirely in shadcn — then reused across Payment &amp; Billing and the Phase 3 item editor.</p>
+    </div>
+    <div class="toolchain"><b>Toolchain</b> — React · TypeScript · Tailwind CSS · shadcn/ui · Vite · Recharts · Figma · Claude · Codex</div>
+  </div></section>
+</div>
+
+<!-- ============ FASHIONGO ============ -->
+<div class="page" id="page-fashiongo">
+  <div class="phead fg"><div class="wrap">
+    <div class="num">01</div>
+    <h2>FashionGo</h2>
+    <div class="sub">Elevating core screens of a live wholesale marketplace.</div>
+    <div class="chips">
+<span class="chip" data-jump="lp-om">MyAccount</span><span class="chip" data-jump="lp-swatch">Vendor Admin</span>
+      <span class="chip" data-jump="lp-orderdetails">Order Details</span><span class="chip" data-jump="lp-orderdetails">RMA</span>
+      <span class="chip" data-jump="dd-netterms">Net Terms</span>
+      <span class="chip" data-jump="dd-return">Itemized Return</span><span class="chip" data-jump="dd-essentials">Essentials</span>
+      <span class="chip" data-jump="dd-freeship">Free Shipping</span><span class="chip" data-jump="dd-settlement">Settlement 1.0</span><span class="chip" data-jump="dd-labelit">Label It</span>
+    </div>
+  </div></div>
+
+  <section><div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Live prototypes</div>
+      <h2>Built, not just drawn</h2>
+      <p>Three FashionGo screens I rebuilt as working prototypes — click any card and it runs right here.</p>
+    </div>
+    <div class="work-list">
+      <a class="work-row sm" id="lp-om" href="projects/order-management.html">
+        <div class="wr-body"><span class="wr-kicker">MyAccount</span><h3>Order Management</h3><p>The buyer&rsquo;s home base — track, re-order and pay at a glance. Shipped desktop + mobile, iterated to v2.</p><div class="wr-links"><span class="open"><span class="lv">LIVE</span> Open prototype ↗</span></div></div>
+        <div class="wr-media"><img src="assets/order-management.png" alt="prototype"></div>
+        <span class="wr-arrow">→</span>
+      </a>
+      <a class="work-row sm" id="lp-swatch" href="projects/swatch/index.html">
+        <div class="wr-body"><span class="wr-kicker">Vendor Admin</span><h3>[VA] Swatch — Item Edit</h3><p>Color-swatch registration designed inside a pixel-faithful rebuild of the real Item Edit page.</p><div class="wr-links"><span class="open"><span class="lv">LIVE</span> Open prototype ↗</span></div></div>
+        <div class="wr-media"><img src="assets/swatch.png" alt="prototype"></div>
+        <span class="wr-arrow">→</span>
+      </a>
+      <a class="work-row sm" id="lp-orderdetails" href="projects/order-details/index.html">
+        <div class="wr-body"><span class="wr-kicker">Vendor Admin</span><h3>Order Details &amp; RMA</h3><p>One clear view of an order — plus an itemized refund summary.</p><div class="wr-links"><span class="open"><span class="lv">LIVE</span> Order Details ↗</span></div></div>
+        <div class="wr-media"><img src="assets/order-details.jpg" alt="prototype"></div>
+        <span class="wr-arrow">→</span>
+      </a>
+    </div>
+  </div></section>
+
+  <section><div class="wrap">
+    <div class="sec-head wide">
+      <div class="kicker">Deep-dive case studies</div>
+      <h2>Problems I solved, not just screens I drew</h2>
+      <p>Six FashionGo projects, told as full case studies — the problem, the constraints, how I worked with PM &amp; engineering, and the impact. Each reads in 5–10 minutes.</p>
+    </div>
+    <div class="work-list">
+      <div class="work-row" id="dd-netterms" data-page="case-net-terms" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">End-to-End Product Design</span><h3>Net Terms</h3><p>One split payment across two gateways — designed so it never feels like two systems.</p><span class="wr-outcome">+10% revenue after launch</span></div>
+        <div class="wr-media"><img src="assets/casestudy/nt-decision2.png" alt="Net Terms"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row" id="dd-return" data-page="case-return" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Complex Flow</span><h3>Itemized Return</h3><p>Whole-order returns become item-level refunds that resolve against every charge component.</p><span class="wr-outcome">buyer-visible refunds — my proposal, adopted</span></div>
+        <div class="wr-media"><img src="assets/casestudy/ir-buyer.png" alt="Itemized Return"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row" id="dd-essentials" data-page="case-essentials" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">B2B / Admin Tool</span><h3>FG Essentials Management Tool</h3><p>A hardcoded promo section, turned into a register → pick → publish tool — because I pushed for it.</p><span class="wr-outcome">0 engineering deploys to update</span></div>
+        <div class="wr-media"><img src="assets/casestudy/es-wa.png" alt="FG Essentials Management Tool"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row" id="dd-freeship" data-page="case-freeship" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Growth / Conversion</span><h3>Single Vendor Free Shipping</h3><p>Free shipping funded 50/50 — with a $300 threshold buyers can close via AI-recommended items.</p><span class="wr-outcome">+5% sales for participating vendors</span></div>
+        <div class="wr-media"><img src="assets/casestudy/fs-bag.png" alt="Single Vendor Free Shipping"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row" id="dd-settlement" data-page="case-settlement" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">New Feature Launch</span><h3>Settlement 1.0</h3><p>From monthly manual invoices to per-transaction settlement — free in 21 days, or 2 days for 3%.</p><span class="wr-outcome">the holding period, priced as a product</span></div>
+        <div class="wr-media"><img src="assets/casestudy/st-settlement.png" alt="Settlement 1.0"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row" id="dd-labelit" data-page="case-labelit" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">End-to-End Product Design</span><h3>Label It — Relabeling</h3><p>Buyers rebrand what they buy — one flow across the factory system, buyer checkout and vendor admin.</p><span class="wr-outcome">first AI-era project · designed in shadcn</span></div>
+        <div class="wr-media"><img src="assets/casestudy/li-factory.png" alt="Label It — Relabeling"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+    </div>
+  </div></section>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</div>
+
+<!-- ============ SHOPCORD ============ -->
+<div class="page" id="page-shopcord">
+  <div class="phead sc"><div class="wrap">
+    <div class="num">02</div>
+    <h2>Shopcord</h2>
+    <div class="sub">Architecting a new B2B ecosystem — from seller to buyer to payment. <b>Every screen of it designed and built with AI.</b></div>
+    <div class="chips">
+<span class="chip" data-jump="c-connect">Connect Admin</span><span class="chip" data-jump="c-itemsetting">Item Setting</span>
+      <span class="chip" data-jump="c-buyerstore">Buyer Store</span><span class="chip" data-jump="c-linesheetbuyer">Linesheet Buyer</span>
+      <span class="chip" data-jump="c-fgpay">FGpay</span><span class="chip" data-jump="c-smsmarketing">SMS Marketing</span>
+      <span class="chip" data-jump="c-phase2">Phase 2</span><span class="chip" data-jump="c-lookbook">Lookbook</span>
+      <span class="chip" data-jump="c-smsonboarding">SMS Onboarding</span><span class="chip" data-jump="c-billing">Payment &amp; Billing</span>
+      <span class="chip" data-jump="c-itemphase3">Item Phase 3</span><span class="chip" data-jump="c-wa">WA console</span>
+    </div>
+  </div></div>
+
+  <section><div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Ecosystem</div>
+      <h2>Three apps, one wholesale flow</h2>
+      <p>Shopcord is three role-specific apps that pass orders between them. I kept them coherent with one tech stack and a shared vocabulary (OPEN/PRE-PACK, 4-tier pricing) so it feels like one product. <b style="color:var(--sc)">Each card opens its live prototype.</b></p>
+    </div>
+    <div class="eco">
+      <a class="enode n1" href="projects/connect-admin.html#/connect"><h4>Connect Admin</h4><div class="role">Seller · dashboard</div><p>Publish items, build linesheets, receive orders, ship &amp; settle.</p><div class="port">Open prototype ↗</div></a>
+      <div class="earrow">→</div>
+      <a class="enode n2" href="projects/buyer-store.html#/landing"><h4>Buyer Store</h4><div class="role">Buyer · shopping</div><p>Browse linesheets, pick quantities, cart &amp; checkout.</p><div class="port">Open prototype ↗</div></a>
+      <div class="earrow">→</div>
+      <a class="enode n3" href="projects/fg-pay.html#/orders"><h4>FGpay</h4><div class="role">Buyer · payment</div><p>Manage payments, track orders, cards &amp; addresses.</p><div class="port">Open prototype ↗</div></a>
+    </div>
+    <div class="econote">At checkout, orders are dispatched to FGpay and the Admin shared API at the same time.</div>
+    <div class="ecostack">Shared stack — React · TypeScript · Tailwind · shadcn/ui · Context API (no global-state library) · mock data</div>
+  </div></section>
+
+  
+
+  <section><div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Case studies · live prototypes</div>
+      <h2>Twelve projects, one ecosystem</h2>
+      <p><b>Every project here was designed and built with AI.</b> Each card opens the full case study — and every prototype runs live inside the presentation.</p>
+    </div>
+    <div class="work-list">
+      <div class="work-row sm" id="c-phase2" data-page="sc-phase2" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Phase 2 · Vendor</span><h3>Vendor Scale-Up + SMS Chat</h3><p>My largest project — 28 build sessions over 4 weeks. I grew the vendor side from linesheets and orders into a real-time, two-way SMS conversation with buyers, then took it through QA and release.</p><div class="wr-links"><a class="open sc" href="projects/phase2.html"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/phase2.jpg" alt="Vendor Scale-Up + SMS Chat"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row sm" id="c-billing" data-page="sc-billing" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Phase 2.5 · My Account</span><h3>Payment &amp; Billing — Before → After</h3><p>Designing Shopcord&rsquo;s first revenue-generating release.</p><div class="wr-links"><a class="open sc" href="projects/myaccount-billing.html"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/myaccount-billing.jpg" alt="Payment &amp;amp; Billing — Before → After"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row sm" id="c-smsonboarding" data-page="sc-smsonboarding" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Phase 2.5</span><h3>SMS Onboarding</h3><p>A compliance-heavy sign-up, redesigned into a 5-step wizard — now built into the real admin app.</p><div class="wr-links"><a class="open sc" href="projects/connect-admin.html#/connect/sms-onboarding/mailchimp"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/sms-onboarding.png" alt="SMS Onboarding"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row sm" id="c-lookbook" data-page="sc-lookbook" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Phase 2.5</span><h3>Lookbook</h3><p>Collapsing a whole tab into one smooth editing flow.</p><div class="wr-links"><a class="open sc" href="projects/lookbook.html"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/lookbook.png" alt="Lookbook"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row sm" id="c-itemphase3" data-page="sc-itemphase3" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Phase 3 · Item</span><h3>Item Editor — Phase 3</h3><p>Rethinking the item editor for the next phase of the catalog.</p><div class="wr-links"><a class="open sc" href="projects/item-phase3.html"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/item-phase3.jpg" alt="Item Editor — Phase 3"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row sm" id="c-linesheetbuyer" data-page="sc-linesheetbuyer" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Buyer Store · Phase 2</span><h3>Linesheet — Buyer Side</h3><p>One buyer store — linesheets, orders and payments finally in one place.</p><div class="wr-links"><a class="open sc" href="projects/linesheet-buyer.html#/intro"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/linesheet-buyer.jpg" alt="Linesheet — Buyer Side"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+    </div>
+    <div class="ed-label" style="margin-top:56px">More projects &amp; live prototypes</div>
+    <div class="work-list">
+      <div class="work-row sm" id="c-connect" data-page="sc-connect" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Connect Admin</span><h3>Seller Console + FG SSO</h3><p>One cockpit for sellers — from catalog to settlement, behind a single sign-on.</p><div class="wr-links"><a class="open sc" href="projects/connect-admin.html#/connect"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/connect-admin.png" alt="Seller Console + FG SSO"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row sm" id="c-buyerstore" data-page="sc-buyerstore" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Buyer Store</span><h3>Mobile Shopping App</h3><p>Wholesale ordering that fits in a pocket — and shares in a link.</p><div class="wr-links"><a class="open sc" href="projects/buyer-store.html#/landing"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/buyer-store.png" alt="Mobile Shopping App"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row sm" id="c-itemsetting" data-page="sc-itemsetting" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">Connect Admin · Vendor</span><h3>Item Setting</h3><p>Publishing a product in one screen — no wizard, no friction.</p><div class="wr-links"><a class="open sc" href="projects/item-setting.html"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/item-setting.png" alt="Item Setting"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row sm" id="c-fgpay" data-page="sc-fgpay" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">FGpay · Buyer Payment</span><h3>Payments &amp; Order Tracking</h3><p>Make payment status legible — and open the door to global buyers.</p><div class="wr-links"><a class="open sc" href="projects/fg-pay.html#/orders"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/fg-pay.png" alt="Payments &amp;amp; Order Tracking"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row sm" id="c-smsmarketing" data-page="sc-smsmarketing" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">SMS Marketing · Connect</span><h3>Registration → Campaigns</h3><p>Guiding sellers through a compliance-heavy sign-up with confidence.</p><div class="wr-links"><a class="open sc" href="projects/sms-marketing.html"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/sms-marketing.png" alt="Registration → Campaigns"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+      <div class="work-row sm" id="c-wa" data-page="sc-wa" style="cursor:pointer">
+        <div class="wr-body"><span class="wr-kicker">WA · internal ops</span><h3>Operations Console</h3><p>Untangling subscription and SMS data for the team behind the scenes.</p><div class="wr-links"><a class="open sc" href="projects/wa.html"><span class="lv">LIVE</span> Open prototype ↗</a></div></div>
+        <div class="wr-media"><img src="assets/wa.png" alt="Operations Console"></div>
+        <span class="wr-arrow">→</span>
+      </div>
+    </div>
+  </div></section>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <section><div class="wrap">
+    <div class="closing">
+      <div class="kicker">In closing</div>
+      <h2 class="nowrap-lg">I don&rsquo;t spec screens — <em style='font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400'>I ship them.</em></h2>
+      <p>From polishing FashionGo's live screens to architecting Shopcord's new ecosystem, I turn ideas into working, tested prototypes and carry them through handoff, QA and release — with AI as a force multiplier at every step.</p>
+      <div class="sig">Eunhyui Kim · Senior UX Designer</div>
+    </div>
+  </div></section>
+</div>
+
+
+
+<!-- ============ CASE STUDY: NET TERMS (template) ============ -->
+<div class="page" id="page-case-net-terms">
+  <section><div class="wrap">
+    <span class="cs-back" data-page="fashiongo">← Back to FashionGo</span>
+    <div class="cs-hero">
+      <span class="chip" style="background:var(--fg-soft);border-color:transparent;color:var(--fg-ink)">End-to-End Product Design · FashionGo</span>
+      <h2>Net Terms</h2>
+      <div class="sub">Bringing Net Terms to FashionGo buyers — a split payment of Net Terms + card, designed so two payment systems never feel like two problems.</div>
+    </div>
+    <div class="cs-meta">
+      <div class="m"><b>Timeline</b><span>4 months</span></div>
+      <div class="m"><b>My role</b><span>Product / UX design — end to end</span></div>
+      <div class="m"><b>Team</b><span>UX team · PM · engineering</span></div>
+      <div class="m"><b>Platform</b><span>FashionGo · Buyer (mobile)</span></div>
+    </div>
+    <div class="tldr">
+      <div class="tl-label">TL;DR</div>
+      <ul>
+        <li>Net Terms rarely pays alone — when the balance falls short, a card covers the rest. But that card runs on a <b>different payment gateway</b> than FashionGo's regular checkout, forcing a second, separate card registration.</li>
+        <li>I split the two card contexts into clearly separated boxes — stored separately at checkout, and registered &amp; managed as two distinct sections in My Account.</li>
+        <li><b>Revenue grew more than 10%</b> after Net Terms launched.</li>
+      </ul>
+    </div>
+
+    <div class="csec"><div class="n">01 · CONTEXT</div><h3>Where this started</h3>
+      <p>FashionGo introduced <b>Net Terms</b> — buy now, pay on credit terms — for wholesale buyers. I designed the buyer-side experience, from how Net Terms appears at checkout to how buyers manage the cards behind it.</p>
+      <img class="csimg" src="assets/casestudy/nt-context.png" alt="Checkout for a non-Net-Terms user"><div class="csimg-cap">Checkout · payment method — the starting point (non–Net Terms user, card only)</div>
+    </div>
+
+    <div class="csec"><div class="n">02 · PROBLEM</div><h3>The problem</h3>
+      <p>Net Terms is not a standalone method: the real flow is <b>Net Terms + card</b>. When a buyer&rsquo;s Net Terms balance can&rsquo;t cover the order, the shortfall is charged to a card. The catch — that card runs on a <b>different PG</b> than the one FashionGo uses for normal card payments, so it must be registered separately. Left as-is, buyers would see two card registrations for &ldquo;the same thing&rdquo; and reasonably assume something was broken.</p>
+    </div>
+
+    <div class="csec"><div class="n">03 · CONSTRAINTS</div><h3>What made it hard</h3>
+      <p>The two payment gateways cannot share a stored card — separate registration was technically unavoidable. The design question became: <b>how do we keep &ldquo;two cards&rdquo; from feeling like a bug?</b></p>
+    </div>
+
+    <div class="csec"><div class="n">04 · PROCESS</div><h3>Exploration &amp; process</h3>
+      <p>The first <b>3 weeks</b> went into UX/UI structure and branding — getting the shape of Net Terms right before drawing screens. From there it became a continuous loop with the PM and engineers: reviewing what could be built <b>fast and accurately</b>, and adjusting the design to match.</p>
+      <img class="csimg" src="assets/casestudy/nt-exceed.png" alt="Exceed Net balance warning states"><div class="csimg-cap">The core edge case — order total exceeds the Net Terms balance</div>
+      <img class="csimg" src="assets/casestudy/nt-nobackup.png" alt="Backup credit card not stored states"><div class="csimg-cap">And its sibling — Net Terms chosen, but no backup card stored yet</div>
+    </div>
+
+    <div class="csec"><div class="n">05 · KEY DECISIONS</div><h3>Three decisions that shaped the design</h3>
+      <p><b>Decision 1 — One payment, not an error.</b> Net Terms + card behaves as a single method at checkout: if the balance falls short, the card quietly covers the remainder instead of failing the order.</p>
+      <img class="csimg" src="assets/casestudy/nt-decision1.png" alt="Exceed balance — split payment info"><div class="csimg-cap">Balance shortfall handled inside checkout — the card covers the remainder, the order never fails</div>
+      <p><b>Decision 2 — Two card contexts, two separate boxes.</b> Each card is saved in its own clearly-labeled box, so buyers always see which card serves which purpose — no silent reuse, no ambiguity.</p>
+      <img class="csimg" src="assets/casestudy/nt-decision2.png" alt="Separate card boxes at checkout"><div class="csimg-cap">Two card contexts as two clearly separated boxes at checkout</div>
+      <p><b>Decision 3 — My Account mirrors the separation.</b> Card registration and management are split into distinct sections in My Account, matching the checkout structure — each card is registered and managed where buyers expect it.</p>
+      <img class="csimg" src="assets/casestudy/nt-decision3.png" alt="My Account — Net Terms submenu"><div class="csimg-cap">My Account · Net Terms — registration &amp; management mirror the same separation</div>
+    </div>
+
+    <div class="csec"><div class="n">06 · COLLABORATION</div><h3>Working with PM, engineering &amp; stakeholders</h3>
+      <p>The hardest debate was about the <b>vendor side</b>. The PM argued vendors must know an order is a Net Terms order — vendors run Auth &amp; Capture, and if a charge declines, the payment method has to change, so surely they need to know.</p>
+<p>I argued from the user&rsquo;s seat: <b>a vendor cares that an order came in — not which rail it pays on.</b> And structurally, the rails can&rsquo;t cross: a Net Terms order can only be re-charged through Net Terms (PG: Balance), a card order only through card (PG: Stripe). Since payment methods can never switch between gateways, telling vendors &ldquo;this is a Net Terms order&rdquo; adds information they can&rsquo;t act on.</p>
+<p>The argument was accepted — we <b>removed the PG / payment-method display from the vendor&rsquo;s order detail page</b> entirely.</p>
+    </div>
+
+    <div class="csec"><div class="n">07 · LAUNCH</div><h3>Shipping it</h3>
+      <p>Shipped with the simplified vendor order detail: vendors never see which gateway an order runs on — and with nothing to misread, capturing payments actually got <b>easier</b>, not harder.</p>
+      <div class="imgslot">Figma / live screen · final design</div>
+    </div>
+
+    <div class="csec"><div class="n">08 · IMPACT</div><h3>What it changed</h3>
+      <div class="impact-slots">
+        <div class="isl" style="border-style:solid;border-color:var(--fg);color:var(--ink)"><b style="color:var(--fg)">+10%</b>revenue growth after launch</div>
+        <div class="isl"><b>—</b>zero payment-method confusion on the vendor side</div>
+      </div>
+      <p>Net Terms lifted revenue by <b>more than 10%</b>. On the vendor side, removing the gateway display eliminated a whole class of confusion — vendors simply capture, without ever needing to know which PG is underneath.</p>
+    </div>
+
+    <div class="csec"><div class="n">09 · LEARNINGS</div><h3>What I'd tell my past self</h3>
+      <p><b>Auth &amp; Capture belongs to the system, not the vendor.</b> Asking vendors to capture manually is pure burden — the right design captures automatically the moment an order ships.</p>
+      <p><b>You can&rsquo;t change a payment system without shipping.</b> Payment states only move when Ship events move them — integrating the two isn&rsquo;t optional, it&rsquo;s the design.</p>
+    </div>
+
+    <div class="cs-nav"><span class="cs-back" data-page="fashiongo" style="margin-bottom:0">← All case studies</span><span class="cs-next" data-page="case-return"><small>Next case study</small><b>Itemized Return →</b></span></div>
+  </div></section>
+</div>
+
+
+
+<!-- ============ CASE STUDY: SETTLEMENT 1.0 ============ -->
+<div class="page" id="page-case-settlement">
+  <section><div class="wrap">
+    <span class="cs-back" data-page="fashiongo">← Back to FashionGo</span>
+    <div class="cs-hero">
+      <span class="chip" style="background:var(--fg-soft);border-color:transparent;color:var(--fg-ink)">New Feature Launch · FashionGo</span>
+      <h2>Settlement 1.0</h2>
+      <div class="sub">From monthly manual invoices to automatic per-transaction settlement — with speed as a product.</div>
+    </div>
+    <div class="cs-meta">
+      <div class="m"><b>Timeline</b><span>~4 months</span></div>
+      <div class="m"><b>My role</b><span>Payout &amp; settlement UX · ERP fit</span></div>
+      <div class="m"><b>Team</b><span>UX team · PM · engineering</span></div>
+      <div class="m"><b>Platform</b><span>FashionGo · VA + WA</span></div>
+    </div>
+    <div class="tldr">
+      <div class="tl-label">TL;DR</div>
+      <ul>
+        <li>FashionGo had <b>no settlement concept at all</b> — every month, CS and the Billing team issued invoices by hand and collected or paid out manually.</li>
+        <li>We replaced it with per-transaction settlement on two tracks: <b>free at Shipped + 21 days</b>, or <b>early at Shipped + 2 days for a 3% fee</b>.</li>
+        <li>Vendors now <b>get paid automatically</b> — no more mailing checks to the company. The change landed as instant relief.</li>
+      </ul>
+    </div>
+
+    <div class="csec"><div class="n">01 · CONTEXT</div><h3>Where this started</h3>
+      <p>FashionGo ran on invoices, not settlement. Each month CS and the Billing team manually issued invoices, chased payments, and paid sellers out — a process whose cost grew with every transaction. Settlement 1.0 replaces it: money settles automatically, per transaction, after a defined holding period.</p>
+      <img class="csimg" src="assets/casestudy/st-settlement.png" alt="Vendor Admin — Payment &amp; Settlement"><div class="csimg-cap">Vendor Admin · Payment &amp; Settlement — &ldquo;Standard Payout: Shipped date + 21 days&rdquo;, with per-transaction settlement rows and Express Payout fees</div>
+    </div>
+
+    <div class="csec"><div class="n">02 · KEY DECISION</div><h3>Two payout tracks — the holding period as a product</h3>
+      <p>Why hold money at all? If nothing comes back, the platform could pay out right after shipping. But when a return or dispute arrives, the platform must still be holding the money to refund the buyer. The holding period is protection — and shortening it is a risk someone has to price.</p>
+      <p><b>Track 1 — Free.</b> Settle at <b>Shipped + 21 days</b>, no fee: the window covers returns and disputes.</p>
+      <p><b>Track 2 — Fast, for 3%.</b> Settle at <b>Shipped + 2 days</b> with a <b>3% fee</b>: the platform absorbs the return risk itself, and the fee prices that risk. Sellers choose between free-but-patient and fast-but-paid.</p>
+    </div>
+
+    <div class="csec"><div class="n">03 · MY PART</div><h3>Making money legible</h3>
+      <p>My focus was the receiving side of that system: making <b>payouts and settlement invoices easy to find, read and trust</b> — and structuring the data so it <b>connects cleanly to ERP systems</b>, since wholesale sellers reconcile everything downstream.</p>
+      <img class="csimg" src="assets/casestudy/st-statement.png" alt="Settlement Statement versions"><div class="csimg-cap">Settlement Statement — release versions compared side by side, itemized down to payout, refund and fee lines</div>
+    </div>
+
+    <div class="csec"><div class="n">05 · IMPACT</div><h3>What it changed</h3>
+      <div class="impact-slots">
+        <div class="isl"><b>—</b>manual monthly invoicing (CS + Billing) replaced by automatic settlement</div>
+        <div class="isl"><b>auto</b>payouts — vendors paid without sending a single check</div>
+      </div>
+      <p>Going from &ldquo;no settlement concept&rdquo; to automatic per-transaction payouts proved right immediately: vendors loved being paid automatically instead of mailing checks, and the monthly CS / Billing invoicing burden disappeared.</p>
+    </div>
+
+    <div class="cs-nav"><span class="cs-back" data-page="fashiongo" style="margin-bottom:0">← All case studies</span><span class="cs-next" data-page="case-labelit"><small>Next case study</small><b>Label It — Relabeling →</b></span></div>
+  </div></section>
+</div>
+
+
+
+<!-- ============ CASE STUDY: SINGLE VENDOR FREE SHIPPING ============ -->
+<div class="page" id="page-case-freeship">
+  <section><div class="wrap">
+    <span class="cs-back" data-page="fashiongo">← Back to FashionGo</span>
+    <div class="cs-hero">
+      <span class="chip" style="background:var(--fg-soft);border-color:transparent;color:var(--fg-ink)">Growth / Conversion · FashionGo</span>
+      <h2>Single Vendor Free Shipping</h2>
+      <div class="sub">Free shipping buyers can actually reach — funded 50/50, and turned into a sales engine with AI recommendations.</div>
+    </div>
+    <div class="cs-meta">
+      <div class="m"><b>Timeline</b><span>~4 months</span></div>
+      <div class="m"><b>My role</b><span>Buyer-side UX · threshold &amp; discovery design</span></div>
+      <div class="m"><b>Team</b><span>UX team · PM · engineering</span></div>
+      <div class="m"><b>Platform</b><span>FashionGo · Buyer</span></div>
+    </div>
+    <div class="tldr">
+      <div class="tl-label">TL;DR</div>
+      <ul>
+        <li>Free shipping funded <b>50/50 by the vendor and FashionGo</b>, shipped on <b>FG-provided carrier accounts</b> — FG&rsquo;s negotiated UPS/FedEx rates often beat what a vendor could get alone.</li>
+        <li>I made the benefit — and its <b>$300-per-vendor threshold</b> — impossible to miss, and added <b>AI-recommended items</b> to help buyers close the gap.</li>
+        <li>Vendors using free shipping saw <b>sales rise more than 5%</b>.</li>
+      </ul>
+    </div>
+
+    <div class="csec"><div class="n">01 · CONTEXT</div><h3>A three-way win</h3>
+      <p>The project gives buyers free shipping on an order — with the cost split <b>50% vendor, 50% FashionGo</b>. Shipping runs on <b>carrier accounts FG provides</b>: FG negotiated rates with UPS and FedEx that often beat what a vendor could get negotiating alone (the biggest vendors may have better rates of their own). Vendors ship cheaper, FG grows orders, buyers get the benefit — everyone wins.</p>
+      <img class="csimg" src="assets/casestudy/fs-bag.png" alt="Shopping Bag with per-vendor free shipping progress"><div class="csimg-cap">Shopping Bag — each vendor section carries its own free-shipping eligibility and progress</div>
+    </div>
+
+    <div class="csec"><div class="n">02 · KEY DECISIONS</div><h3>Make the benefit — and the threshold — unmissable</h3>
+      <p><b>Decision 1 — Visibility first.</b> I placed free shipping where buyers can&rsquo;t miss it, so as many orders as possible actually use the benefit.</p>
+      <p><b>Decision 2 — Surface the $300 rule.</b> Free shipping requires <b>$300+ per single vendor</b>. That condition is shown right where buyers build their order, with per-vendor progress — never discovered too late at checkout.</p>
+    </div>
+
+    <div class="csec"><div class="n">03 · MY IDEA</div><h3>When the cart falls short, recommend the gap away</h3>
+      <p>If a buyer&rsquo;s cart doesn&rsquo;t reach $300, we don&rsquo;t just show a warning — an <b>AI-powered search recommends items from that vendor</b> so the buyer can fill the gap, unlock free shipping, and the vendor sells more in the same order. Turning the threshold from a wall into a sales engine was <b>my idea</b>.</p>
+      <img class="csimg" src="assets/casestudy/fs-bag-annotated.png" alt="AI recommended items row in the shopping bag"><div class="csimg-cap">&ldquo;Shop more from this vendor&rdquo; — AI-recommended items appear inside the bag when the cart is below $300</div>
+    </div>
+
+    <div class="csec"><div class="n">04 · COLLABORATION</div><h3>Working with PM, engineering &amp; stakeholders</h3>
+      <p>The 50/50 split wasn&rsquo;t a guess. We pulled the data on what vendors actually spend on shipping, analyzed and compared it, and set the ratio on evidence. Vendors accepted it without pushback — happily.</p>
+    </div>
+
+    <div class="csec"><div class="n">05 · IMPACT</div><h3>What it changed</h3>
+      <div class="impact-slots">
+        <div class="isl" style="border-style:solid;border-color:var(--fg);color:var(--ink)"><b style="color:var(--fg)">+5%</b>sales growth for vendors using free shipping</div>
+        <div class="isl"><b>50/50</b>vendor / FG cost split — benefit without one side carrying it</div>
+        <div class="isl"><b>0</b>vendor complaints — a data-backed split that landed well</div>
+      </div>
+      <p>Vendors offering single-vendor free shipping saw their sales rise by <b>more than 5%</b> — the threshold-plus-recommendation loop converts shipping cost into order growth.</p>
+    </div>
+
+    <div class="cs-nav"><span class="cs-back" data-page="fashiongo" style="margin-bottom:0">← All case studies</span><span class="cs-next" data-page="case-settlement"><small>Next case study</small><b>Settlement 1.0 →</b></span></div>
+  </div></section>
+</div>
+
+
+
+<!-- ============ CASE STUDY: ITEMIZED RETURN ============ -->
+<div class="page" id="page-case-return">
+  <section><div class="wrap">
+    <span class="cs-back" data-page="fashiongo">← Back to FashionGo</span>
+    <div class="cs-hero">
+      <span class="chip" style="background:var(--fg-soft);border-color:transparent;color:var(--fg-ink)">Complex Flow · FashionGo</span>
+      <h2>Itemized Return</h2>
+      <div class="sub">From whole-order returns to item-level refunds — that still add up correctly.</div>
+    </div>
+    <div class="cs-meta">
+      <div class="m"><b>Timeline</b><span>~4 months</span></div>
+      <div class="m"><b>My role</b><span>Return &amp; refund UX — vendor + buyer side</span></div>
+      <div class="m"><b>Team</b><span>UX team · PM · engineering</span></div>
+      <div class="m"><b>Platform</b><span>FashionGo · VA + Buyer</span></div>
+    </div>
+    <div class="tldr">
+      <div class="tl-label">TL;DR</div>
+      <ul>
+        <li>Returns always meant returning the <b>entire order</b> — Release 1.0 makes returns work <b>per item, inside one order</b>.</li>
+        <li>Vendors enter the <b>restocking fee and refund amount directly</b>; and since one payment spans many charge components, every refund resolves component by component.</li>
+        <li>Showing buyers <b>exactly what gets refunded</b> was my proposal — and it was adopted.</li>
+      </ul>
+    </div>
+
+    <div class="csec"><div class="n">01 · PROBLEM</div><h3>All or nothing</h3>
+      <p>A return used to be all-or-nothing: the whole order came back, even when only one item was wrong. Itemized Return breaks that apart — buyers and vendors settle a return at the <b>item level</b>, inside a single order sheet.</p>
+    </div>
+
+    <div class="csec"><div class="n">02 · VENDOR SIDE</div><h3>Vendors control the numbers</h3>
+      <p>On the vendor&rsquo;s Return/Refund Details, every line item carries its own return quantity — and the vendor <b>directly enters the restocking fee and the refund amount</b>. The refund summary recomputes as they type, so what the vendor approves is exactly what the money does.</p>
+      <img class="csimg" src="assets/casestudy/ir-vendor.png" alt="Vendor Admin — Return/Refund Details with per-item quantities and refund summary"><div class="csimg-cap">Vendor Admin · Return/Refund Details — per-item return quantities, vendor-entered restocking fee, live refund summary</div>
+    </div>
+
+    <div class="csec"><div class="n">03 · MY IDEA</div><h3>Show buyers exactly what comes back</h3>
+      <p>One payment isn&rsquo;t one number — it spans item amounts, vendor promotions, FG coupons, shipping and handling fees. If a refund happens, it has to <b>resolve against each of those components</b>, and that resolution was the heart of this design. I proposed that the <b>buyer&rsquo;s order detail should show precisely what is being refunded</b>, line by line — item refund, promotion and coupon adjustments, shipping and handling refunds, restocking fee — and the proposal was adopted.</p>
+      <img class="csimg" src="assets/casestudy/ir-buyer.png" alt="Buyer order detail with itemized refund breakdown"><div class="csimg-cap">Buyer · Order Detail — the refund broken down line by line: item refund, promotion &amp; coupon adjustments, shipping / handling refunds, restocking fee</div>
+    </div>
+
+    <div class="csec"><div class="n">05 · IMPACT</div><h3>What it changed</h3>
+      <div class="impact-slots">
+        <div class="isl"><b>—</b>whole-order returns replaced by item-level returns</div>
+        <div class="isl"><b>↓</b>whole-order return rate fell after launch</div>
+      </div>
+      <p>The share of whole-order returns dropped. With refunds settled at the item level, large sums no longer swing back and forth for a single wrong item — vendors and buyers both came out ahead.</p>
+    </div>
+
+    <div class="cs-nav"><span class="cs-back" data-page="fashiongo" style="margin-bottom:0">← All case studies</span><span class="cs-next" data-page="case-essentials"><small>Next case study</small><b>FG Essentials Management Tool →</b></span></div>
+  </div></section>
+</div>
+
+
+
+<!-- ============ CASE STUDY: FG ESSENTIALS MANAGEMENT TOOL ============ -->
+<div class="page" id="page-case-essentials">
+  <section><div class="wrap">
+    <span class="cs-back" data-page="fashiongo">← Back to FashionGo</span>
+    <div class="cs-hero">
+      <span class="chip" style="background:var(--fg-soft);border-color:transparent;color:var(--fg-ink)">B2B / Admin Tool · FashionGo</span>
+      <h2>FG Essentials Management Tool</h2>
+      <div class="sub">The promo section that used to be hardcoded — turned into a tool people can actually run.</div>
+    </div>
+    <div class="cs-meta">
+      <div class="m"><b>Timeline</b><span>~4 months</span></div>
+      <div class="m"><b>My role</b><span>Advocacy + tool design across VA · WA · front</span></div>
+      <div class="m"><b>Team</b><span>UX team · PM · engineering</span></div>
+      <div class="m"><b>Platform</b><span>FashionGo · VA + WA + Storefront</span></div>
+    </div>
+    <div class="tldr">
+      <div class="tl-label">TL;DR</div>
+      <ul>
+        <li>FG Essentials began as a plain event/promotion display — <b>hardcoded by engineers every single time</b> it changed.</li>
+        <li>I argued it needed a real management tool — <b>&ldquo;someone has to be able to enter items; we can&rsquo;t hardcode this every time&rdquo;</b> — and the tool exists because that argument landed.</li>
+        <li>The result is a pipeline: vendors <b>register</b> items as FG Essentials → staff <b>pick</b> them in the internal system → picks <b>publish</b> to the storefront.</li>
+      </ul>
+    </div>
+
+    <div class="csec"><div class="n">01 · MY PUSH</div><h3>From hardcoding to a tool</h3>
+      <p>FG Essentials was originally just an event/promotion section the platform displayed — every update meant engineering hardcoding it again. I made the case that this could not stay a code change: <b>someone has to be able to enter and manage items</b>. That push is why the management tool was built at all.</p>
+    </div>
+
+    <div class="csec"><div class="n">02 · THE PIPELINE</div><h3>Register → pick → publish</h3>
+      <p><b>① Vendors register.</b> An item is submitted as an FG Essentials item from the vendor side, with everything the storefront will need.</p>
+      <img class="csimg" src="assets/casestudy/es-submit.png" alt="VA — Add item to FG Essentials" style="max-width:520px"><div class="csimg-cap">Vendor Admin · Add item — registering a product as an FG Essentials item</div>
+      <p><b>② Staff pick.</b> Registered items surface in the internal system, where the team curates what actually goes live.</p>
+      <img class="csimg" src="assets/casestudy/es-wa.png" alt="WA — FG Essentials Manager with Save &amp; Publish"><div class="csimg-cap">Internal system · FG Essentials Manager — curate registered items, then Save &amp; Publish</div>
+      <p><b>③ The storefront updates.</b> Picked products publish straight to the front — no engineer in the loop.</p>
+      <img class="csimg" src="assets/casestudy/es-plp.png" alt="FG Essentials storefront page"><div class="csimg-cap">Storefront · FG Essentials — what buyers see, now fed by the tool instead of code</div>
+    </div>
+
+    <div class="csec"><div class="n">04 · IMPACT</div><h3>What it changed</h3>
+      <div class="impact-slots">
+        <div class="isl"><b>0</b>engineering deploys needed to update FG Essentials</div>
+        <div class="isl"><b>↑</b>more events shipped — a direct contribution to revenue growth</div>
+      </div>
+      <p>Pages that once needed engineering hardcoding are now made in the management tool. The team runs more events, faster — and that cadence contributed directly to revenue growth.</p>
+    </div>
+
+    <div class="cs-nav"><span class="cs-back" data-page="fashiongo" style="margin-bottom:0">← All case studies</span><span class="cs-next" data-page="case-freeship"><small>Next case study</small><b>Single Vendor Free Shipping →</b></span></div>
+  </div></section>
+</div>
+
+
+
+<!-- ============ CASE STUDY: LABEL IT (RELABELING) ============ -->
+<div class="page" id="page-case-labelit">
+  <section><div class="wrap">
+    <span class="cs-back" data-page="fashiongo">← Back to FashionGo</span>
+    <div class="cs-hero">
+      <span class="chip" style="background:var(--fg-soft);border-color:transparent;color:var(--fg-ink)">End-to-End Product Design · FashionGo</span>
+      <h2>Label It — Relabeling Program</h2>
+      <div class="sub">Big buyers rebrand what they buy. I designed the system that makes it happen — across the factory, the buyer and the vendor.</div>
+    </div>
+    <div class="cs-meta">
+      <div class="m"><b>Timeline</b><span>~4 months</span></div>
+      <div class="m"><b>My role</b><span>End to end — factory · buyer · vendor surfaces</span></div>
+      <div class="m"><b>Team</b><span>UX team · PM · engineering</span></div>
+      <div class="m"><b>Platform</b><span>FashionGo · Buyer + Factory + VA</span></div>
+    </div>
+    <div class="tldr">
+      <div class="tl-label">TL;DR</div>
+      <ul>
+        <li>Big buyers purchase wholesale goods and want them <b>relabeled with their own brand tags</b> — goods go to a sewing factory, get retagged, then ship to the buyer.</li>
+        <li>The flow: <b>buyer pays → the relabeling factory is notified → the factory quotes the total price → relabeling runs → finished goods ship to the buyer</b>.</li>
+        <li>I owned <b>all three surfaces</b>: the system the factory works in, what the buyer sees at payment, and what the vendor sees in their admin — so everyone can follow the flow.</li>
+        <li>My <b>first project after adopting AI</b> — designed on <b>shadcn components</b>, so engineering could take the design straight into code.</li>
+      </ul>
+    </div>
+
+    <div class="csec"><div class="n">01 · CONTEXT</div><h3>What relabeling is</h3>
+      <p>A big buyer doesn&rsquo;t just want the goods — they want the goods <b>under their own label</b>. So instead of shipping vendor → buyer, the order routes through a sewing factory: tags are swapped to the buyer&rsquo;s brand, then everything ships on to the buyer&rsquo;s address. Turning that side-arrangement into a platform feature meant designing for <b>three different users at once</b>, each needing to see their part of one flow.</p>
+    </div>
+
+    <div class="csec"><div class="n">02 · THREE SURFACES, ONE FLOW</div><h3>Factory · Buyer · Vendor</h3>
+      <p><b>① The factory&rsquo;s system.</b> A working tool for the relabeling factory: orders arrive by state (New → Dropped Off → Shipped), the factory confirms the total price, and scan-driven actions (&ldquo;scan for drop off&rdquo;, &ldquo;scan for shipping label&rdquo;) keep the floor moving without paperwork.</p>
+      <img class="csimg" src="assets/casestudy/li-factory.png" alt="Label It factory system — order list with scan actions"><div class="csimg-cap">Factory system · Label It — orders by state, with scan-for-drop-off and scan-for-shipping-label actions</div>
+      <p><b>② What the buyer sees at payment.</b> Relabeling appears right in checkout — buyers opt in and see it as part of their order, not a side deal.</p>
+      <img class="csimg" src="assets/casestudy/li-checkout.png" alt="Buyer checkout with relabeling service"><div class="csimg-cap">Buyer · Checkout &gt; Shipping — the relabeling service surfaced where the buyer pays</div>
+      <p><b>③ What the vendor sees.</b> Vendors follow the same order in their admin — they know it&rsquo;s routing through relabeling and where it stands, so the flow is never a black box.</p>
+      <img class="csimg" src="assets/casestudy/li-status.png" alt="Vendor admin order detail with relabeling flow"><div class="csimg-cap">Vendor Admin · Order Details — the relabeling order&rsquo;s state and drop-off routing, visible to the vendor</div>
+    </div>
+
+    <div class="csec"><div class="n">03 · NEW WAY OF WORKING</div><h3>First project of the AI era — designed in shadcn</h3>
+      <p>Label It was the <b>first project I ran after adopting AI</b> into my workflow — and I changed how the design itself was built. Instead of drawing free-form screens, I designed on <b>shadcn</b>, the component library engineering actually ships with. Every screen above is composed of components developers already have, so the design could be <b>applied directly in code</b> — no translation layer, no &ldquo;dev version&rdquo; drift between what I drew and what shipped.</p>
+    </div>
+
+    <div class="csec"><div class="n">04 · COLLABORATION</div><h3>Working with PM, engineering &amp; stakeholders</h3>
+      <p>We started with <b>factory interviews</b> — learning exactly how relabeling runs on their floor today — and designed so the factory never has to abandon or fight its existing process. Shipping labels are <b>provided by FG</b>, so the factory takes no financial hit for joining the program.</p>
+    </div>
+
+    <div class="csec"><div class="n">05 · IMPACT</div><h3>What it changed</h3>
+      <div class="impact-slots">
+        <div class="isl"><b>3</b>user surfaces designed as one flow — factory · buyer · vendor</div>
+        <div class="isl"><b>1:1</b>design → code: shadcn components engineering ships directly</div>
+        <div class="isl"><b>↑</b>big-buyer signups grew after launch</div>
+      </div>
+      <p>Big-buyer signups increased and revenue grew — relabeling turned a side arrangement into a reason to join the platform.</p>
+    </div>
+
+    <div class="cs-nav"><span class="cs-back" data-page="fashiongo" style="margin-bottom:0">← All case studies</span><span class="cs-next" data-page="case-net-terms"><small>Next case study</small><b>Net Terms →</b></span></div>
+  </div></section>
+</div>
+
+
+
+<div class="page" id="page-sc-connect">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">Connect Admin</div>
+      <h3>Seller Console + FG SSO</h3>
+      <div class="tag">One cockpit for sellers — from catalog to settlement, behind a single sign-on.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>Give wholesale sellers a desktop cockpit to manage products, linesheets, orders and settlement — entered through FashionGo SSO.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Designed dashboard KPIs + 3-step onboarding; item &amp; linesheet management</li>
+        <li>Built Orders (Pro-gated) with a 4-case Add-Item sheet &amp; a 3-tab Settlement (PDF)</li>
+        <li>Designed the FG login → auth → consent → app-entry flow</li>
+      </ul></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Implemented the Figma screens as a full clickable admin, and researched login/consent patterns with AI before designing.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>End-to-end seller console</span></div>
+    </div>
+    <div>
+      <a class="preview desktop" href="projects/connect-admin.html#/connect">
+        <div class="frame"><img src="assets/connect-admin.png" alt="Connect Admin prototype"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+        <span class="open"><span class="lv">LIVE</span> Open Connect Admin ↗</span>
+      </a>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-buyerstore"><small>Next project</small><b>Mobile Shopping App →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-buyerstore">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">Buyer Store</div>
+      <h3>Mobile Shopping App</h3>
+      <div class="tag">Wholesale ordering that fits in a pocket — and shares in a link.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>A mobile-first (430px) wholesale shopping app buyers can use on the go, with linesheets sellers can share by link.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Designed linesheet browsing (infinite scroll, 4 hero styles)</li>
+        <li>Built the item sheet: image carousel, color/size steppers, 4-tier pricing</li>
+        <li>Designed OPEN/PREPACK quantity UX + "Add 1 to all options"; cart → checkout</li>
+      </ul></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Produced a single-file shareable HTML build so anyone could open the live prototype from a link — no setup.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>Shareable, buyer-ready prototype</span></div>
+    </div>
+    <div>
+      <a class="preview mobile" href="projects/buyer-store.html#/landing">
+        <div class="frame"><img src="assets/buyer-store.png" alt="Buyer Store prototype"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+      </a>
+      <div class="mobile-open"><span class="open"><span class="lv">LIVE</span> Open Buyer Store ↗</span></div>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-itemsetting"><small>Next project</small><b>Item Setting →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-linesheetbuyer">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">Buyer Store · Phase 2</div>
+      <h3>Linesheet — Buyer Side</h3>
+      <div class="tag">One buyer store — linesheets, orders and payments finally in one place.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>Merge two separate buyer apps (linesheet browsing + orders/payment) into a single store with a linesheet list, gated by phone verification.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Unified 5202 + 5203 into one IA — Linesheet · Shipments · Orders · My Account, cart top-right</li>
+        <li>Designed two linesheet types (item-list-only vs image + item list)</li>
+        <li>Per-linesheet statistics with a same-tag comparison option (PRD 6.4 / 7.2.4)</li>
+      </ul></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Applied 9+ Figma screens onto the merged app, verified tag-grouping policy against the PRD, and shipped a shareable single-file build with an editing guide.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>One unified buyer store</span></div>
+    </div>
+    <div>
+      <a class="preview mobile" href="projects/linesheet-buyer.html#/intro">
+        <div class="frame"><img src="assets/linesheet-buyer.jpg" alt="Buyer-side linesheet prototype"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+      </a>
+      <div class="mobile-open"><span class="open"><span class="lv">LIVE</span> Open the buyer-side linesheet ↗</span></div>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-connect"><small>Next project</small><b>Seller Console + FG SSO →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-itemsetting">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">Connect Admin · Vendor</div>
+      <h3>Item Setting</h3>
+      <div class="tag">Publishing a product in one screen — no wizard, no friction.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>Give wholesale sellers a single, scannable page to publish a product — images, variants, pricing and pack structure — instead of a multi-step wizard.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Consolidated the full item-creation flow onto one page</li>
+        <li>Defined 4-tier pricing (MSRP/WS/Sale/Special) &amp; OPEN vs PRE-PACK logic</li>
+        <li>Designed 50-image upload + bulk upload with clear failure states</li>
+      </ul></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Turned Figma specs into a working prototype and iterated on layout and edge cases live — validating the flow instead of redlining it.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>Adopted as the vendor standard</span></div>
+    </div>
+    <div>
+      <a class="preview desktop" href="projects/item-setting.html">
+        <div class="frame"><img src="assets/item-setting.png" alt="Item Setting prototype"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+        <span class="open"><span class="lv">LIVE</span> Open the item-setting prototype ↗</span>
+      </a>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-fgpay"><small>Next project</small><b>Payments &amp; Order Tracking →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-fgpay">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">FGpay · Buyer Payment</div>
+      <h3>Payments &amp; Order Tracking</h3>
+      <div class="tag">Make payment status legible — and open the door to global buyers.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>Let buyers understand payment state and track shipments, and extend the platform to accept non-US orders.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Designed the payment timeline (Auth → Capture / Void) &amp; carrier tracking</li>
+        <li>Created status filters and "Action Required" states for problem shipments</li>
+        <li>Extended addresses to any country: Country dropdown + 7 common fields; refined OTP</li>
+      </ul></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Prototyped the international-address logic on a live server, testing US vs non-US formats interactively before committing the design.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>International shipping enabled</span></div>
+    </div>
+    <div>
+      <a class="preview mobile" href="projects/fg-pay.html#/orders">
+        <div class="frame"><img src="assets/fg-pay.png" alt="FG Pay prototype"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+      </a>
+      <div class="mobile-open"><span class="open"><span class="lv">LIVE</span> Open the FG Pay prototype ↗</span></div>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-smsmarketing"><small>Next project</small><b>Registration → Campaigns →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-smsmarketing">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">SMS Marketing · Connect</div>
+      <h3>Registration → Campaigns</h3>
+      <div class="tag">Guiding sellers through a compliance-heavy sign-up with confidence.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>Guide sellers through SMS marketing sign-up, carrier review, and campaign sending — a flow full of compliance states.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Mapped the end-to-end journey across every state</li>
+        <li>Designed registration: country, number choice, business info, usage purpose</li>
+        <li>Made approval / rejection outcomes explicit, with clear reasons &amp; history</li>
+      </ul></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Built the multi-state flow (submitted → approved / rejected → campaign) as an interactive prototype so every branch was walkable.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>Full journey defined</span></div>
+    </div>
+    <div>
+      <a class="preview desktop" href="projects/sms-marketing.html">
+        <div class="frame"><img src="assets/sms-marketing.png" alt="SMS Marketing prototype"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+        <span class="open"><span class="lv">LIVE</span> Open the SMS Marketing prototype ↗</span>
+      </a>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-wa"><small>Next project</small><b>Operations Console →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-phase2">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap">
+    <div class="cs-hero">
+      <span class="chip" style="border-color:var(--sc);color:var(--sc-ink)">Flagship · Phase 2 · Shopcord</span>
+      <h2 style="font-size:clamp(2rem,4.6vw,3rem);margin:14px 0 10px">Vendor Scale-Up + SMS Chat</h2>
+      <div class="sub" style="color:var(--muted);font-size:17px;max-width:62ch">My largest project — growing the vendor side from a linesheet tool into a real operation, and giving vendors a live, two-way SMS conversation with their buyers.</div>
+    </div>
+    <div class="cs-meta">
+      <div class="m"><b>Timeline</b><span>4 weeks · 28 build sessions</span></div>
+      <div class="m"><b>My role</b><span>Vendor-side UX — end to end</span></div>
+      <div class="m"><b>Team</b><span>UX team · PM · engineering</span></div>
+      <div class="m"><b>Platform</b><span>Shopcord · Vendor</span></div>
+    </div>
+    <div class="tldr">
+      <div class="tl-label">TL;DR</div>
+      <ul>
+        <li>Scaled the vendor side across <b>linesheets, items, orders and statistics</b> — then added the flagship: <b>SMS Chat</b>, a two-way inbox between vendor and buyer.</li>
+        <li>Designed the full conversation lifecycle — drag-&amp;-drop image composing, email alerts capped at 4/day, and a <b>90-day archive policy</b> so closed threads resurface instead of disappearing.</li>
+        <li>Carried it to the finish line myself: <b>annotated for Figma handoff, ran QA, shipped to release</b> — then kept it healthy with SCM tickets and weekly reports.</li>
+      </ul>
+    </div>
+
+    <div class="csec"><div class="n" style="color:var(--sc)">01 · CONTEXT</div><h3>From tool to operation</h3>
+      <p>Phase 1 gave vendors a linesheet tool. Phase 2 had to make the vendor side a place where a wholesale business actually runs — more linesheets, real orders, live numbers, and a direct line to buyers. Four weeks, twenty-eight build sessions.</p>
+    </div>
+
+    <div class="csec"><div class="n" style="color:var(--sc)">02 · THE SCALE-UP</div><h3>Linesheets, orders, numbers</h3>
+      <p><b>Linesheets &amp; templates.</b> Template A/B/C with change-template built in, and a compact list layout so vendors with dozens of linesheets can still scan them in one view.</p>
+      <p><b>Items &amp; orders.</b> Bulk upload for the catalog, and order creation with a 640px item-detail drawer — the vendor never loses the order they&rsquo;re building.</p>
+      <p><b>Statistics.</b> Period-filtered metrics, separated clearly from all-time values — plus the number vendors care about most: <i>&ldquo;N buyers have $X waiting in their carts.&rdquo;</i></p>
+    </div>
+
+    <div class="csec"><div class="n" style="color:var(--sc)">03 · THE FLAGSHIP</div><h3>SMS Chat — a two-way inbox</h3>
+      <p>Campaigns only talk <i>at</i> buyers; SMS Chat lets vendors talk <i>with</i> them. A real 1:1 inbox: drag-and-drop images straight into the composer, unread states, customer context and campaign history alongside the thread, and new-message email alerts capped at <b>4 per day</b> so notifications inform instead of spam.</p>
+      <p><b>Archive, not amnesia.</b> After 90 days a conversation closes — but when a new thread opens, the old conversations surface as an archive list right beside it. Context survives the policy.</p>
+      <a class="preview desktop" href="projects/phase2.html">
+        <div class="frame"><img src="assets/phase2.jpg" alt="SMS Chat two-way inbox"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+        <span class="open sc"><span class="lv">LIVE</span> Open the Phase 2 vendor prototype ↗</span>
+      </a>
+    </div>
+
+    <div class="csec"><div class="n" style="color:var(--sc)">04 · HANDOFF &amp; SHIP</div><h3>Annotated, QA&rsquo;d, released</h3>
+      <p>Every screen was annotated in a numbered, functional format so the design could move into Figma and engineering without translation loss. I ran QA myself, took the work through release, and kept the loop running afterward — SCM maintenance tickets and weekly reports included.</p>
+    </div>
+
+    <div class="csec"><div class="n" style="color:var(--sc)">05 · IMPACT</div><h3>What it changed</h3>
+      <div class="impact-slots">
+        <div class="isl" style="border-style:solid;border-color:var(--sc);color:var(--ink)"><b style="color:var(--sc)">Shipped</b>QA&rsquo;d and released to production</div>
+        <div class="isl"><b>28</b>build sessions in 4 weeks — my largest project</div>
+        <div class="isl"><b>1:1</b>vendors talk with buyers, not just at them</div>
+      </div>
+      <p>The vendor side became an operation: catalog, orders, live numbers and a direct buyer conversation in one place — designed, annotated, QA&rsquo;d and shipped by one designer.</p>
+    </div>
+  </div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-billing"><small>Next project</small><b>Payment &amp; Billing — Before → After →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-lookbook">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">Phase 2.5</div>
+      <h3>Lookbook</h3>
+      <div class="tag">Collapsing a whole tab into one smooth editing flow.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>Simplify lookbook editing by folding a separate tab into the item-detail flow buyers already understand.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Removed the Lookbook tab; integrated it under Selected Items via a 640px drawer</li>
+        <li>Designed an 8-template 4×2 picker with aspect-ratio-correct layouts</li>
+        <li>Built the image → item linking flow and a buyer-facing preview</li>
+      </ul></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Spun up an isolated local server to iterate freely without touching the Phase 2 build, refining layout &amp; scroll behavior live.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>One streamlined editing flow</span></div>
+    </div>
+    <div>
+      <a class="preview desktop" href="projects/lookbook.html">
+        <div class="frame"><img src="assets/lookbook.png" alt="Lookbook prototype"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+        <span class="open"><span class="lv">LIVE</span> Open the Lookbook prototype ↗</span>
+      </a>
+      <div style="margin-top:8px"><a class="open" href="projects/lookbook-flipbook.html"><span class="lv">LIVE</span> Open the mobile flipbook builder ↗</a></div>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-itemphase3"><small>Next project</small><b>Item Editor — Phase 3 →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-smsonboarding">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">Phase 2.5</div>
+      <h3>SMS Onboarding</h3>
+      <div class="tag">A compliance-heavy sign-up, redesigned into a 5-step wizard — now built into the real admin app.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>Find the right tone and structure for the SMS onboarding flow — 13 steps of business, number and compliance input that vendors must get through.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Redesigned the flow into a 5-step breadcrumb wizard — Business Info → Use Case → Policies → Send Number → Review</li>
+        <li>Defined navigation rules: any completed step is re-openable, data persists, unfilled steps block what follows</li>
+        <li>Wrote carrier-approvable usage copy, privacy / T&amp;C disclaimers, and numbered functional annotations for dev handoff</li>
+      </ul></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Built three working design directions and evaluated them live; the chosen direction was then implemented inside the real Connect Admin app and annotated (edge cases included) for engineering handoff.</p></div>
+      <div class="block"><div class="blabel">Collaboration</div><p>Partnered with the PM on compliance — added the privacy &amp; SMS T&amp;C disclaimers they flagged, and demoed the variants live so they could evaluate with their own eyes rather than from a doc.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>In the admin app · annotated for handoff</span></div>
+    </div>
+    <div>
+      <a class="preview desktop" href="projects/connect-admin.html#/connect/sms-onboarding/mailchimp">
+        <div class="frame"><img src="assets/sms-onboarding.png" alt="SMS Onboarding prototype"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+        <span class="open"><span class="lv">LIVE</span> Open the SMS Onboarding wizard ↗</span>
+      </a>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-lookbook"><small>Next project</small><b>Lookbook →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-billing">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">Phase 2.5 · My Account</div>
+      <h3>Payment &amp; Billing — Before → After</h3>
+      <div class="tag">Designing Shopcord&rsquo;s first revenue-generating release.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>From October, vendors pay by card for subscription and SMS — until now, subscribing only recorded consent and SMS costs were deducted from sales payouts. My Account had to grow real billing.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Restructured My Account 5 tabs → 4: merged Subscribe + Billing History into one "Subscription &amp; Billing"; renamed Payments → Payout</li>
+        <li>Designed Payment Methods — one card pool that pays everything, so one card update fixes all billing</li>
+        <li>Designed prepaid SMS message packs with auto top-up, and real-time failure / recovery states (incl. card-expiry warnings)</li>
+        <li>Cut the 1st-release (Oct 1) Subscription &amp; Billing scope, plus invoice emails &amp; the PO document</li>
+      </ul></div>
+      <div class="block"><div class="blabel">Collaboration</div><p>Worked against the PM&rsquo;s PRD v0.5 — shipped a gap analysis (mockup vs PRD), a v2 UX/UI handoff doc, and a stakeholder README alongside the mockup.</p></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Built the full tabbed My Account mockup with switchable prototype states (free period, card expiring, payment retrying, canceled…), plus reference-flow research — in days, inside the Aug 10–21 design window.</p></div>
+      <div class="block"><div class="blabel">Impact</div><p>Target release Oct 1 — Shopcord&rsquo;s first paid release.</p></div>
+    </div>
+    <div>
+      <div class="ba-before ba-before">
+        <span class="ba-label">Before</span>
+        <ul>
+          <li>My Account had 5 tabs — billing scattered across Subscribe / Billing History / Payments</li>
+          <li>"Subscribe" recorded consent only — no real charge</li>
+          <li>SMS costs silently deducted from sales payouts</li>
+        </ul>
+      </div>
+      <div class="ba-arrow">↓</div>
+      <div class="ba-after">
+        <span class="ba-label">After · Phase 2.5</span>
+        <a class="preview desktop" href="projects/myaccount-billing.html">
+          <div class="frame"><img src="assets/myaccount-billing.jpg" alt="My Account Payment and Billing mockup"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+          <span class="open"><span class="lv">LIVE</span> Open My Account · Payment &amp; Billing ↗</span>
+        </a>
+        <div style="margin-top:8px"><a class="open" href="projects/subscription-billing.html"><span class="lv">LIVE</span> Subscription &amp; Billing — 1st release (Oct 1) ↗</a></div>
+        <div style="margin-top:4px"><a class="open" href="projects/billing-invoice-po.html"><span class="lv">LIVE</span> Invoice emails &amp; PO document ↗</a></div>
+      </div>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-smsonboarding"><small>Next project</small><b>SMS Onboarding →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-itemphase3">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">Phase 3 · Item</div>
+      <h3>Item Editor — Phase 3</h3>
+      <div class="tag">Rethinking the item editor for the next phase of the catalog.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>Evolve Shopcord&rsquo;s item editing for Phase 3 — one drawer that covers info, prices, images, options and selling method without losing vendors along the way.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Redesigned the Edit Item drawer — Item Info · Prices · Images · Options · Selling Method in one pass</li>
+        <li>Built a side-by-side Pre-Pack model comparison to align the team on the data model</li>
+        <li>Adapted the layout down to 1024px screens</li>
+      </ul></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Built the full editor mockup and the pack-model explainer as live pages, iterating through August.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>Phase 3 item editor defined</span></div>
+    </div>
+    <div>
+      <a class="preview desktop" href="projects/item-phase3.html">
+        <div class="frame"><img src="assets/item-phase3.jpg" alt="Item Phase 3 editor mockup"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+        <span class="open"><span class="lv">LIVE</span> Open the Phase 3 item editor ↗</span>
+      </a>
+      <div style="margin-top:8px"><a class="open" href="projects/item-phase3-packs.html"><span class="lv">LIVE</span> Open the pack-model explainer ↗</a></div>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-linesheetbuyer"><small>Next project</small><b>Linesheet — Buyer Side →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-sc-wa">
+  <section style="padding:34px 0 0"><div class="wrap"><span class="cs-back" data-page="shopcord">← Back to Shopcord</span></div></section>
+  <section class="case" data-accent="sc"><div class="wrap"><div class="grid">
+    <div>
+      <div class="ckicker">WA · internal ops</div>
+      <h3>Operations Console</h3>
+      <div class="tag">Untangling subscription and SMS data for the team behind the scenes.</div>
+      <div class="block"><div class="blabel">Purpose</div><p>Give staff a console to manage each vendor's subscription and SMS status — two concerns that were tangled together.</p></div>
+      <div class="block"><div class="blabel">What I did as UX</div><ul>
+        <li>Separated Shopcord subscription vs SMS (Twilio) information clearly</li>
+        <li>Designed subaccount status, verification history (expandable, paginated), block on/off</li>
+        <li>Redesigned Vendors → Overview: hover-to-copy, 72h activity, top-3 errors</li>
+      </ul></div>
+      <div class="block"><div class="blabel">How I used AI</div><p>Iterated dense, staff-facing data layouts quickly with AI — value-first density tuned for internal users.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>A cleaner, denser ops console</span></div>
+    </div>
+    <div>
+      <a class="preview desktop" href="projects/wa.html">
+        <div class="frame"><img src="assets/wa.png" alt="WA operations console prototype"><div class="ovl"><span>Open live prototype ↗</span></div></div>
+        <span class="open"><span class="lv">LIVE</span> Open the WA ops console ↗</span>
+      </a>
+    </div>
+  </div></div></section>
+  <section style="padding:8px 0 52px"><div class="wrap"><div class="cs-nav" style="border-top:none;padding-top:0"><span class="cs-back" data-page="shopcord" style="margin-bottom:0">← All Shopcord projects</span><span class="cs-next" data-page="sc-phase2"><small>Next project</small><b>Vendor Scale-Up + SMS Chat →</b></span></div></div></section>
+</div>
+
+<div class="page" id="page-etc">
+  <section><div class="wrap">
+    <span class="cs-back" data-page="home">← Back to Home</span>
+    <div class="cs-hero">
+      <span class="chip" style="background:var(--fg-soft);border-color:transparent;color:var(--fg-ink)">Etc</span>
+      <h2>A few more projects</h2>
+      <div class="sub">Two smaller projects that don't fit the FashionGo / Shopcord story, but round out the range — an internal ERP/CRM build and an early mortgage-lending redesign.</div>
+    </div>
+
+    <div class="csec"><div class="n">01 · ERP / CRM</div><h3>BadaPro</h3>
+      <div class="block"><div class="blabel">Concept</div><p>A web-based ERP + CRM built for a water purifier company, unifying customer records, inventory, and technician scheduling into one system that runs the whole service business.</p></div>
+      <div class="block"><div class="blabel">Concern</div><p>Inventory and customer data had to move in lockstep, and each of the five filter types ran on its own replacement cycle. The real problem: the moment a technician swapped a filter and captured the customer's signature, the next visit had to schedule itself automatically — correctly, for whichever filter it was.</p></div>
+      <div class="block"><div class="blabel">Solution</div><p>I built inventory around configurable filter cycles, so every filter type generates its own next-visit date the instant a job closes — no manual rescheduling, no missed cycles. Mobile signature capture let technicians close out jobs on-site, and a dedicated technician mode kept the whole flow fast and field-ready.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>One system, five filter cycles, service visits that schedule themselves</span></div>
+      <img class="csimg" src="assets/casestudy/etc-badapro.jpg" alt="BadaPro mobile scheduling and CRM screens">
+      <div class="csimg-cap">BadaPro — technician scheduling app and admin CRM/inventory dashboard</div>
+    </div>
+
+    <div class="csec"><div class="n">02 · Mortgage lending</div><h3>New Wave Lending</h3>
+      <div class="block"><div class="blabel">Concept</div><p>New Wave Lending's site had fallen behind competitors visually, its online loan submission flow badly needed a usability pass, and none of it was responsive.</p></div>
+      <div class="block"><div class="blabel">Solution</div><p>I redesigned the site end to end around a custom online loan submission engine — built so borrowers could get through it without a manual — and made the whole experience fully responsive across devices.</p></div>
+      <div class="outcome"><b>OUTCOME</b><span>A modern, responsive site with a submission flow anyone can complete unassisted</span></div>
+      <img class="csimg" src="assets/casestudy/etc-newwave.png" alt="New Wave Lending dashboard and pipeline screens">
+      <div class="csimg-cap">New Wave Lending — dashboard, pipeline detail and product/rate finder</div>
+    </div>
+  </div></section>
+</div>
+
+</main>
+
+<footer class="foot">Eunhyui Kim — UX Portfolio · 2026 &nbsp;·&nbsp; <a href="mailto:eunkim1218@gmail.com">eunkim1218@gmail.com</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/eunhye-kim-6506561a7" target="_blank" rel="noopener">LinkedIn</a></footer>
+
+<!-- live prototype modal -->
+<div class="modal" id="protoModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card">
+    <div class="modal-bar">
+      <span class="modal-title" id="protoTitle">Live prototype</span>
+      <div class="modal-actions">
+        <a class="modal-ext" id="protoExt" href="#" target="_blank" rel="noopener">Open in new tab ↗</a>
+        <button class="modal-close" data-close aria-label="Close">✕</button>
+      </div>
+    </div>
+    <iframe class="modal-frame" id="protoFrame" title="Live prototype" src="about:blank"></iframe>
+  </div>
+</div>
+
+<script>
+(function(){
+  var pages=[].slice.call(document.querySelectorAll('.page'));
+  var navas=[].slice.call(document.querySelectorAll('[data-page]'));
+  function showPage(name){
+    pages.forEach(function(p){p.classList.toggle('active', p.id==='page-'+name);});
+    navas.forEach(function(a){ if(a.closest('.nav')) a.classList.toggle('on', a.getAttribute('data-page')===name); });
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  navas.forEach(function(a){
+    a.addEventListener('click',function(e){if(e.target.closest && e.target.closest('a[href^=\"projects/\"]'))return;e.preventDefault();var n=a.getAttribute('data-page');showPage(n);history.replaceState(null,'','#'+n);});
+  });
+  var h=(location.hash||'').replace('#','');
+  if(h && document.getElementById('page-'+h)) showPage(h);
+
+  // prototype modal
+  var modal=document.getElementById('protoModal');
+  var frame=document.getElementById('protoFrame');
+  var title=document.getElementById('protoTitle');
+  var ext=document.getElementById('protoExt');
+  function openProto(src,label){frame.removeAttribute('srcdoc');frame.src=src;title.textContent=label||'Live prototype';ext.href=src;modal.classList.add('on');modal.setAttribute('aria-hidden','false');}
+  function closeProto(){modal.classList.remove('on');modal.setAttribute('aria-hidden','true');frame.removeAttribute('srcdoc');frame.src='about:blank';}
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href]');
+    if(a){
+      var href=a.getAttribute('href')||'';
+      if(href.indexOf('projects/')===0){
+        e.preventDefault();
+        var inner=a.querySelector('h4,h3');
+        if(!inner){var card=a.closest('.csec,.lpcard,.work-row,.case');if(card)inner=card.querySelector('h3,h4');}
+        var sec=a.closest('section');
+        var label=inner?inner.textContent.trim():(sec&&sec.querySelector('h3')?sec.querySelector('h3').textContent.trim():a.textContent.trim());
+        openProto(href,label);return;
+      }
+    }
+    if(e.target.closest('[data-close]')) closeProto();
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeProto(); });
+})();
+</script>
+
+
+<script>
+document.addEventListener('click',function(e){
+  var chip=e.target.closest('[data-jump]');
+  if(!chip) return;
+  var el=document.getElementById(chip.getAttribute('data-jump'));
+  if(!el) return;
+  var row=chip.closest('.chips');
+  if(row) row.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});
+  chip.classList.add('on');
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  setTimeout(function(){el.classList.remove('flash');},1700);
+});
+</script>
+<script>
+(function(){var t=document.getElementById('mailTile');if(!t)return;
+t.addEventListener('click',function(){
+  var cap=document.getElementById('mailCap');
+  (navigator.clipboard?navigator.clipboard.writeText('eunkim1218@gmail.com'):Promise.reject()).then(function(){
+    cap.textContent='Copied!';setTimeout(function(){cap.textContent='eunkim1218@gmail.com';},1400);
+  }).catch(function(){location.href='mailto:eunkim1218@gmail.com';});
+});})();
+</script>
+<script>
+(function(){
+  var sel='.work-row,.csec,.mcard,.ds-step,.hl,.dsgrid figure,.xp-item,.ed-stats,.tldr,.cs-meta .m';
+  var els=[].slice.call(document.querySelectorAll(sel));
+  els.forEach(function(el){el.classList.add('rv');});
+  if(!('IntersectionObserver' in window)){els.forEach(function(el){el.classList.add('on');});return;}
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){if(en.isIntersecting){en.target.classList.add('on');io.unobserve(en.target);}});
+  },{threshold:.06,rootMargin:'0px 0px -4% 0px'});
+  els.forEach(function(el){io.observe(el);});
+  // 페이지 전환 시 보이는 요소 즉시 리빌 (display:none이었다 나타난 경우)
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('[data-page]'))return;
+    setTimeout(function(){
+      els.forEach(function(el){
+        if(el.classList.contains('on'))return;
+        var r=el.getBoundingClientRect();
+        if(r.top<innerHeight&&r.bottom>0&&r.width>0)el.classList.add('on');
+      });
+    },60);
+  });
+})();
+</script>
+<script>
+// image lightbox — design-system boards and case-study Figma captures both open in the modal
+(function(){
+  function openImage(src,href,label){
+    var frame=document.getElementById('protoFrame');
+    frame.removeAttribute('src');
+    frame.srcdoc='<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">'
+      +'<style>html,body{margin:0;height:100%;background:#17151A}'
+      +'body{display:grid;place-items:center;overflow:auto}'
+      +'img{max-width:100%;max-height:100vh;object-fit:contain;display:block;cursor:zoom-in}'
+      +'img.full{max-width:none;max-height:none;width:auto;cursor:zoom-out}</style>'
+      +'<img src="'+src.replace(/"/g,'&quot;')+'" onclick="this.classList.toggle(\'full\')">';
+    document.getElementById('protoTitle').textContent=(label||'Screen').slice(0,120);
+    var ext=document.getElementById('protoExt'); if(ext){ ext.removeAttribute('data-proto'); ext.href=href; }
+    var m=document.getElementById('protoModal'); m.classList.add('on'); m.setAttribute('aria-hidden','false');
+  }
+  document.addEventListener('click',function(e){
+    var fig=e.target.closest('.dsgrid figure');
+    if(fig){
+      var i=fig.querySelector('img'); if(!i) return;
+      var cap=fig.querySelector('figcaption');
+      openImage(i.src,i.getAttribute('src'),cap?cap.childNodes[0].textContent.trim():'Design system');
+      return;
+    }
+    var ci=e.target.closest('img.csimg');
+    if(ci){
+      var next=ci.nextElementSibling;
+      var label=(next&&next.classList.contains('csimg-cap'))?next.textContent.trim():(ci.getAttribute('alt')||'Screen');
+      openImage(ci.src,ci.getAttribute('src'),label);
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>[VA] Swatch — Create a new item · Item Edit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     Design tokens (Figma [VA] variables)
+  ============================================================ */
+  :root {
+    --navy:#16325C; --blue:#3C74E7; --red:#CE4454; --green:#329F38;
+    --g3:#333333; --g6:#666666; --g9:#999999;
+    --gray-200:#E3E3E3; --border:#E9E9E9; --inactive:#D9D9D9;
+    --gray-1:#F8F8F8; --page-bg:#F5F2EF; --white:#FFFFFF; --pink-num:#FF00C7;
+    --blue-light:#F1F4F9;
+    --shadow:0 1px 3px rgba(0,0,0,.06); --shadow-md:0 6px 24px rgba(0,0,0,.14);
+    --r-sm:4px; --r-md:8px; --r-pill:1000px;
+    --font:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--font);background:#DADADA;color:var(--g3);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer}
+  img{display:block;max-width:none}
+  a{color:var(--blue);text-decoration:none}
+  input,select,textarea{font-family:inherit}
+
+  /* form controls */
+  .input,.select{height:32px;width:100%;padding:0 12px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--white);font-size:13px;color:var(--g3)}
+  .input::placeholder,textarea::placeholder{color:#BBB}
+  .input:disabled,.select:disabled{background:var(--gray-1);color:#BBB;cursor:not-allowed}
+  .select{appearance:none;padding-right:30px;cursor:pointer;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.3' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 10px center}
+  .select.placeholder{color:#BBB}
+  textarea.input{height:auto;padding:8px 12px;resize:vertical;line-height:1.5}
+  .lbl{font-size:13px;color:var(--g3);margin-bottom:6px;display:block}
+  .lbl .req{color:var(--red);margin-left:2px}
+  .helper-row{display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--g9)}
+  .search{height:32px;width:100%;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--white) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>") no-repeat 10px center;padding:0 12px 0 32px;font-size:13px;color:var(--g3)}
+  .search::placeholder{color:#BBB}
+  .cbx{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--g3);cursor:pointer;user-select:none}
+  .cbx input{display:none}
+  .cbx .box{width:16px;height:16px;border:1px solid var(--gray-200);border-radius:3px;background:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+  .cbx input:checked + .box{background:var(--g3);border-color:var(--g3)}
+  .cbx input:checked + .box::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+  .rdo{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--g3);cursor:pointer}
+  .rdo input{display:none}
+  .rdo .dot{width:14px;height:14px;border-radius:50%;border:1px solid var(--gray-200);display:inline-flex;align-items:center;justify-content:center}
+  .rdo input:checked + .dot{border-color:var(--g3)}
+  .rdo input:checked + .dot::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--g3)}
+  .rdo.off{color:#BBB}
+  .btn{border:0;border-radius:var(--r-sm);padding:0 18px;height:32px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .btn--primary{background:var(--blue);color:#fff}
+  .btn--o-blue{background:#fff;border:1px solid var(--blue);color:var(--blue);font-weight:400}
+  .btn--o-red{background:#fff;border:1px solid var(--red);color:var(--red);font-weight:400}
+  .btn--o-gray{background:#fff;border:1px solid var(--border);color:var(--g3);font-weight:400}
+  .btn:hover{filter:brightness(.97)}
+
+  .ic{display:inline-block;width:16px;height:16px;background-repeat:no-repeat;background-position:center;background-size:contain;flex-shrink:0}
+  .ic-chev{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round'><polyline points='6 9 12 15 18 9'/></svg>")}
+  .ic-clock{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'><circle cx='12' cy='12' r='9'/><polyline points='12 7 12 12 15 14'/></svg>")}
+  .ic-trash{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='1.8'><polyline points='3 6 5 6 21 6'/><path d='M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6'/><path d='M10 11v6M14 11v6'/><path d='M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2'/></svg>")}
+  .ic-img{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='1.8'><rect x='3' y='3' width='18' height='18' rx='2'/><circle cx='8.5' cy='8.5' r='1.5'/><path d='M21 15l-5-5L5 21'/></svg>")}
+  .ic-video{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='1.8'><rect x='2' y='5' width='15' height='14' rx='2'/><path d='M17 9l5-3v12l-5-3'/></svg>")}
+  .ic-upload{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='1.8'><path d='M12 16V4M7 9l5-5 5 5'/><path d='M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2'/></svg>")}
+  .ic-ai{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233C74E7' stroke-width='1.6'><path d='M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z'/></svg>")}
+
+  /* ============ page chrome ============ */
+  .app{width:100%;background:var(--page-bg);position:relative;padding-bottom:84px}
+  .topbar{height:48px;background:var(--navy);display:flex;align-items:center;color:#fff;font-size:13px;position:sticky;top:0;z-index:40}
+  .topbar .seg{display:flex;align-items:center;margin-left:8px}
+  .topbar .seg .tab{padding:7px 18px;border-radius:4px;font-size:13px}
+  .topbar .seg .tab.active{background:#fff;color:var(--navy);font-weight:500}
+  .topbar .seg .tab.ghost{color:#cdd6e6}
+  .topbar .spacer{flex:1}
+  .topbar .links{display:flex;align-items:center;gap:26px;margin-right:20px;color:#e7ecf5}
+  .topbar .links a{color:#e7ecf5}
+  .topbar .vsearch{display:flex;align-items:center;background:rgba(255,255,255,.16);border-radius:4px;height:30px;padding:0 10px;margin-right:16px;width:200px;gap:8px}
+  .topbar .vsearch input{flex:1;background:transparent;border:0;outline:none;color:#fff;font-size:12px}
+  .topbar .vsearch input::placeholder{color:#c2cde0}
+  .topbar .vsearch .mag{width:14px;height:14px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>") no-repeat center/contain}
+
+  .layout{display:flex;align-items:flex-start}
+  /* floating sidebar — sticks below the header and follows on scroll */
+  .sidebar{width:240px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);position:sticky;top:48px;align-self:flex-start;height:calc(100vh - 48px);overflow-y:auto;padding-bottom:84px}
+  .sidebar .logo{display:block;height:38px;width:auto;margin:31px 0 31px 36px}
+  .sidebar nav a{display:flex;align-items:center;justify-content:space-between;padding:11px 20px;font-size:14px;color:#333}
+  .sidebar nav a:hover{background:#f7f7f7}
+  .sidebar nav a .ic-chev{width:14px;height:14px;opacity:.5}
+  .sidebar nav a .badge{background:var(--blue);color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:500}
+  .promo{margin:12px;border:1px solid var(--border);border-radius:8px;padding:12px}
+  .promo h4{margin:8px 0 6px;font-size:14px;font-weight:700;color:#222}
+  .promo p{margin:0 0 10px;font-size:12px;color:var(--g6);line-height:1.45}
+  .promo .ph{width:100%;height:120px;border-radius:6px;object-fit:cover}
+  .promo .badges{display:flex;gap:6px;align-items:center}
+  .promo .store-col{display:flex;flex-direction:column;gap:5px;flex:1}
+  .promo .store-badge{height:30px;border-radius:5px;width:100%;object-fit:cover}
+  .promo .qr{width:52px;height:52px}
+  .promo .btn{width:100%;background:#1a1a1a;color:#fff}
+
+  /* responsive: content stays 1200, flexible side padding shrinks the gutters */
+  .body-area{flex:1;min-width:0;background:var(--page-bg);padding:40px clamp(24px,4vw,120px) 0}
+  .content{width:100%;max-width:1200px;margin:0 auto}
+
+  .page-head{display:flex;align-items:center;gap:14px}
+  .page-head h1{font-size:24px;font-weight:700;color:var(--navy);margin:0}
+  .page-head .spacer{flex:1}
+  .page-head .nav-pn{display:flex;gap:18px;font-size:13px}
+  .sub-line{margin-top:10px;font-size:12px;color:var(--g9);display:flex;gap:18px;flex-wrap:wrap}
+  .sub-line b{color:var(--g6);font-weight:400}
+
+  .card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:24px;margin-top:24px}
+  .card-head{display:flex;align-items:center;margin:0 0 18px}
+  .card-head h2{font-size:16px;font-weight:600;color:var(--g3);margin:0}
+  .card-head .spacer{flex:1}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .field{display:flex;flex-direction:column}
+  .ai-radios{display:flex;align-items:center;gap:22px}
+
+  .iv-tabs{display:flex;gap:8px}
+  .iv-tab{border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:13px;color:var(--g6);display:inline-flex;align-items:center;gap:7px;background:#fff}
+  .iv-tab.active{color:var(--g3)}
+  .iv-note{font-size:12px;color:var(--g6);line-height:1.55;margin:0 0 14px}
+  .iv-drop{background:var(--blue-light);border-radius:6px;height:40px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--g6);margin-bottom:16px}
+  .iv-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:10px}
+  .iv-cell{min-width:0}
+  /* collapsed: show only the first row (10); Show All reveals the rest (up to 50 + video) */
+  .iv-grid:not(.show-all) .iv-cell:nth-child(n+11){display:none}
+  .iv-thumb{width:100%;aspect-ratio:2/3;border:1px solid var(--border);border-radius:2px;overflow:hidden;position:relative;background:#f2f2f2}
+  .iv-thumb img{width:100%;height:100%;object-fit:cover}
+  .iv-cell.sel .iv-thumb{outline:2px solid var(--blue);outline-offset:-1px}
+  .iv-cell.sel .iv-thumb .star{position:absolute;left:6px;bottom:6px;width:18px;height:18px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px}
+  .iv-thumb .play{position:absolute;inset:0;margin:auto;width:34px;height:34px;background:rgba(0,0,0,.45);border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .iv-thumb .play::after{content:"";border-left:11px solid #fff;border-top:7px solid transparent;border-bottom:7px solid transparent;margin-left:3px}
+  .iv-cell .select-color{margin-top:8px;height:30px;font-size:12px}
+  .iv-showall{margin-top:12px;border:1px solid var(--border);border-radius:6px;height:36px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--g3);cursor:pointer;background:#fff}
+  .iv-showall:hover{background:var(--gray-1)}
+  .iv-showall.open .ic-chev{transform:rotate(180deg)}
+  /* flash the Images & Video card when arriving from the alert's Ok */
+  @keyframes flash-outline{0%,100%{box-shadow:none}25%,65%{box-shadow:0 0 0 3px rgba(60,116,231,.45)}}
+  .card.flash{animation:flash-outline 1.5s ease-in-out}
+
+  .desc-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .ai-pill{display:inline-flex;align-items:center;gap:5px;background:#EAF0FF;color:var(--blue);font-size:12px;padding:3px 10px;border-radius:12px}
+  .desc-remove{margin-left:auto;color:var(--red);font-size:13px;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+  .desc-remove::before{content:"✕";font-size:12px}
+
+  /* Pricing (node 2004:2072): [Original + Collection Promotion stacked] | Sale | MSRP */
+  .pricing-row{display:flex;gap:16px;align-items:flex-start}
+  .pcol{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px}
+  .promo-lbl{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .promo-lbl a{color:var(--blue);text-decoration:underline;text-underline-offset:2px;font-size:14px}
+  /* div styled as an input so two-colored content ($value + red "20% off") fits */
+  .price-box{height:32px;border:1px solid var(--gray-200);border-radius:var(--r-sm);background:#fff;display:flex;align-items:center;gap:8px;padding:0 8px;font-size:13px;color:var(--g3)}
+  .price-box.gray{background:var(--gray-1)}
+  .price-box .b{color:var(--blue)} .price-box .o{color:var(--red)}
+  .vol-pricing{display:flex;align-items:center;width:100%}
+  .vol-pricing span{text-decoration:underline dotted;text-underline-offset:3px;font-size:14px;color:var(--g3)}
+  .vol-pricing .ic-chev{margin-left:auto}
+
+  /* variants (node 2636:4696) */
+  .var-form{display:flex;gap:24px;align-items:flex-start;margin-bottom:26px}
+  .var-form .c-size{width:278px}.var-form .c-pack{width:278px}.var-form .c-color{flex:1}
+  .var-form .pack-min{display:flex;align-items:center;gap:10px;margin-top:8px}
+  .var-form .pack-min label{font-size:13px;white-space:nowrap}
+  .var-form .pack-min .input{width:120px}
+  .color-lbl{display:flex;align-items:center}
+  .color-lbl .vcl{margin-left:auto;border:1px solid var(--blue);color:var(--blue);background:#fff;font-size:11px;padding:2px 10px;border-radius:4px}
+  .inv-title{font-size:13px;color:var(--g3);margin:0 0 12px}
+  /* dotted-underline label with hover tooltip */
+  .hint{position:relative;text-decoration:underline dotted;text-underline-offset:3px;text-decoration-color:var(--g9);cursor:pointer}
+  .hint .tip-pop{position:absolute;top:calc(100% + 8px);left:0;width:300px;background:#fff;border:1px solid var(--gray-200);box-shadow:var(--shadow-md);border-radius:6px;padding:12px 14px;font-size:12px;font-weight:400;color:var(--g3);line-height:1.5;letter-spacing:0;text-decoration:none;white-space:normal;z-index:80;opacity:0;visibility:hidden;transition:opacity .12s;pointer-events:none}
+  .hint:hover .tip-pop{opacity:1;visibility:visible}
+  .hint .tip-pop::before{content:"";position:absolute;top:-6px;left:18px;width:11px;height:11px;background:#fff;border-left:1px solid var(--gray-200);border-top:1px solid var(--gray-200);transform:rotate(45deg)}
+  .inv-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden;padding:16px}
+  .inv{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+  .inv col.cSwatch{width:92px}.inv col.cSize{width:108px}.inv col.cSku{width:218px}
+  .inv col.cQty{width:74px}.inv col.cThr{width:62px}.inv col.cAvail{width:116px}
+  .inv col.cDate{width:126px}.inv col.cHist{width:54px}.inv col.cInact{width:92px}.inv col.cChev{width:38px}
+  .inv thead th{text-align:left;font-weight:400;color:var(--g6);font-size:12px;padding:0 4px 8px;vertical-align:top}
+  .inv thead th .u{text-decoration:underline dotted;text-underline-offset:3px}
+  .inv .master td{padding:6px 4px 14px;border-bottom:1px solid var(--border)}
+  .inv .master-chev{margin-left:auto}
+  .inv .crow td{border-top:1px solid var(--border);padding:10px 4px;vertical-align:middle}
+  .inv .crow .cname{display:flex;align-items:center;gap:8px}
+  .inv .crow .chip{width:12px;height:12px;border-radius:2px;flex-shrink:0}
+  .inv .crow .nm{font-size:13px;color:var(--g3);white-space:nowrap}
+  .inv .num{width:100%;height:30px}.inv .sel{width:100%;height:30px;font-size:12px}
+  .inv .date{width:100%;height:30px;border:1px solid var(--border);border-radius:4px;background:#fff;padding:0 6px 0 26px;font-size:11px;color:#BBB;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>");background-repeat:no-repeat;background-position:left 7px center}
+  .inv .hist{display:flex;align-items:center;justify-content:center}
+  .inv .iconbtn{background:none;border:0;padding:0;display:inline-flex;cursor:pointer}
+  .inv .chev-btn{background:none;border:0;padding:0;cursor:pointer}
+  .inv .srow td{padding:5px 4px;vertical-align:middle}
+  .inv .srow .szl{color:var(--g6);font-size:13px;padding-left:4px}
+  /* leading swatch control: + (no swatch) / round avatar+pencil (registered) */
+  .add-swatch{width:32px;height:32px;border-radius:50%;border:1px solid var(--gray-200);background:#fff;position:relative;cursor:pointer;flex-shrink:0;padding:0}
+  .add-swatch::before,.add-swatch::after{content:"";position:absolute;left:50%;top:50%;background:var(--g6)}
+  .add-swatch::before{width:11px;height:1.5px;transform:translate(-50%,-50%)}
+  .add-swatch::after{width:1.5px;height:11px;transform:translate(-50%,-50%)}
+  .add-swatch:hover{border-color:var(--blue)}
+  .add-swatch:hover::before,.add-swatch:hover::after{background:var(--blue)}
+  /* registered swatch = the CROPPED region (zoom+pan), not the whole image */
+  .swatch-avatar{width:32px;height:32px;position:relative;cursor:pointer;flex-shrink:0;padding:0;border:0;background:none}
+  .swatch-avatar .av-mask{position:absolute;inset:0;border-radius:50%;border:1px solid var(--gray-200);overflow:hidden;background:#eee}
+  .swatch-avatar::after{content:"";position:absolute;right:-3px;bottom:-3px;width:16px;height:16px;border-radius:50%;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23CE4454' stroke-width='2.4'><path d='M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z'/></svg>") no-repeat center/9px;border:1px solid var(--gray-200);z-index:1}
+  .swatch-avatar:hover .av-mask{box-shadow:0 0 0 2px var(--blue)}
+  /* cropped-image layer: replicates the editor crop (circle Ø110) scaled to the avatar */
+  .av-crop{position:absolute;background-size:cover;background-position:center;transform-origin:50% 50%}
+  /* product photo 77x116 in expanded rows */
+  .inv .photo-cell{padding:6px 4px 6px 0 !important;vertical-align:top}
+  .swatch-photo{width:77px;height:116px;border:1px solid var(--border);border-radius:3px;overflow:hidden;position:relative;cursor:pointer;background:#f2f2f2}
+  .swatch-photo img{width:100%;height:100%;object-fit:cover;object-position:center 12%}
+  .swatch-photo .cnt{position:absolute;right:5px;bottom:5px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:rgba(255,255,255,.92);color:var(--g3);font-size:10px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gray-200)}
+  .swatch-photo:hover{box-shadow:0 0 0 2px var(--blue)}
+  /* no images assigned to this color → empty "+" placeholder (click → alert) */
+  .swatch-photo.empty{background:#F5F7FC;border:1px dashed var(--gray-200);display:flex;align-items:center;justify-content:center}
+  .swatch-photo.empty::before,.swatch-photo.empty::after{content:"";position:absolute;background:#B9C2D6}
+  .swatch-photo.empty::before{width:16px;height:1.6px}.swatch-photo.empty::after{width:1.6px;height:16px}
+
+  /* additional details */
+  .ad-sub{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px;margin-top:16px}
+  .value-row{display:flex;gap:40px;flex-wrap:wrap;align-items:center}
+  .cust-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .cust-body{display:grid;grid-template-columns:1fr 320px auto;gap:16px;align-items:start}
+  .cust-body.disabled{opacity:.5}
+
+  .ship-return{border:1px solid var(--border);border-radius:6px;padding:14px 18px;display:flex;align-items:center;gap:14px;font-size:13px;margin-bottom:18px}
+  .ship-return .note{color:#BBB;font-size:12px}
+  .ship-meas-head{display:flex;align-items:center;margin-bottom:10px}
+  .ship-meas-head .spacer{flex:1}
+  .ship-meas{display:grid;grid-template-columns:340px 1fr;gap:14px}
+  .ship-box{background:var(--gray-1);border-radius:6px;padding:16px}
+  .ship-weight{display:flex;gap:8px;align-items:flex-end}
+  .ship-weight .input{flex:1}.ship-weight .unit{width:70px}
+  .ship-wh{display:grid;grid-template-columns:1fr 1fr 1fr 70px;gap:8px;align-items:end}
+
+  .empty-box{background:var(--blue-light);border-radius:6px;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--g6);font-size:13px}
+  .link-card h2{text-decoration:underline;text-underline-offset:3px}
+
+  .page-foot{padding:18px 0 8px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+  .page-foot .notes{font-size:11px;color:var(--g6);font-style:italic;line-height:1.6;margin-bottom:10px}
+  .page-foot .foot-left{display:flex;flex-direction:column;align-items:flex-start}
+  .copyright{border-top:1px solid var(--border);margin-top:10px;padding:18px 0 10px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--g6);flex-wrap:wrap}
+  .copyright a{color:var(--g6);text-decoration:underline}
+  .fg-wordmark{display:block;width:204px;height:20px;margin:18px auto 40px}
+
+  /* Fixed floating action bar (node 2004:4669) — follows on scroll */
+  .floatbar{position:fixed;left:0;bottom:0;width:100%;display:flex;background:#fff;box-shadow:0 -4px 12.5px rgba(44,46,49,.05);z-index:60;padding:14px 0}
+  .floatbar-side{width:240px;flex-shrink:0}
+  .floatbar-main{flex:1;min-width:0;padding:0 clamp(24px,4vw,120px)}
+  .floatbar-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .fb-title{font-size:14px;color:var(--g3);line-height:21px}
+  .fb-meta{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--g9);line-height:21px}
+  .fb-dot{width:3px;height:3px;border-radius:50%;background:var(--g9);flex-shrink:0}
+  .fb-actions{display:flex;gap:8px;flex-shrink:0}
+  .fb-actions .btn{height:36px;min-width:114px}
+  .fb-back{background:#fff;border:1px solid #999;color:var(--g3);font-weight:400}
+
+  .pin{background:var(--pink-num);color:#fff;font-weight:700;font-size:14px;padding:3px 8px;border-radius:30px;line-height:1;display:inline-flex;min-width:20px;align-items:center;justify-content:center}
+
+  /* dialogs */
+  dialog{padding:0;border:0;background:transparent}
+  dialog::backdrop{background:rgba(0,0,0,.45)}
+  dialog[open]{animation:pop .16s ease-out}
+  @keyframes pop{from{opacity:0;transform:translateY(-6px) scale(.99)}to{opacity:1;transform:none}}
+  .modal{background:#fff;border:1px solid var(--border);border-radius:8px;padding:24px;box-shadow:var(--shadow-md)}
+  .swatch-modal{width:900px}
+  .modal-head{display:flex;align-items:center;margin-bottom:14px}
+  .modal-head h3{font-size:18px;font-weight:400;color:var(--navy);margin:0;flex:1}
+  .x-btn{width:24px;height:24px;border:0;background:none;display:flex;align-items:center;justify-content:center}
+  .x-ic{width:13px;height:13px;position:relative}
+  .x-ic::before,.x-ic::after{content:"";position:absolute;left:0;top:50%;width:100%;height:1.4px;background:#707070}
+  .x-ic::before{transform:rotate(45deg)}.x-ic::after{transform:rotate(-45deg)}
+  .swatch-body{display:grid;grid-template-columns:290px 1fr;gap:24px;align-items:stretch;min-height:430px}
+  .crop{background:var(--gray-1);padding:20px;display:flex;flex-direction:column;gap:8px;position:relative}
+  .crop-img{width:250px;height:377px;border:1px solid var(--border);position:relative;overflow:hidden;background:#eee;cursor:grab;touch-action:none}
+  .crop-img:active{cursor:grabbing}
+  .crop-slider .pm{cursor:pointer;user-select:none}
+  .crop-img .zoomable{position:absolute;inset:0;background-size:cover;background-position:center;transform-origin:50% 50%;will-change:transform}
+  .crop-img .ovl{position:absolute;width:110px;height:110px;left:70px;top:133.5px;box-shadow:0 0 0 9999px rgba(0,0,0,.32);border-radius:50%;border:1px solid #fff;pointer-events:none}
+  .crop-img .ovl::before,.crop-img .ovl::after{content:"";position:absolute;background:#fff}
+  .crop-img .ovl::before{left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%)}
+  .crop-img .ovl::after{top:50%;left:0;right:0;height:1px;transform:translateY(-50%)}
+  .crop-img .ovl .h{position:absolute;width:7px;height:7px;border:1px solid #fff;background:rgba(255,255,255,.25)}
+  .crop-img .ovl .tl{left:-3px;top:-3px}.crop-img .ovl .tr{right:-3px;top:-3px}
+  .crop-img .ovl .bl{left:-3px;bottom:-3px}.crop-img .ovl .br{right:-3px;bottom:-3px}
+  .crop-slider{display:flex;align-items:center;gap:8px;margin-top:auto}
+  .crop-slider .pm{color:var(--g6);width:12px;text-align:center}
+  .crop-slider input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:14px;background:transparent}
+  .crop-slider input[type=range]::-webkit-slider-runnable-track{height:14px;background:var(--gray-1);border:1px solid var(--gray-200);border-radius:1000px}
+  .crop-slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:#fff;border:1px solid var(--gray-200);border-radius:50%;margin-top:-1px;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+  .swatch-side{display:flex;flex-direction:column;gap:12px;min-height:0}
+  .ss-head{display:flex;align-items:center;gap:8px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+  .ss-avatar{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);overflow:hidden;position:relative;background:#F5F7FC;flex-shrink:0}
+  .ss-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 18%}
+  .ss-avatar.empty img{display:none}
+  .ss-avatar.empty::before,.ss-avatar.empty::after{content:"";position:absolute;left:50%;top:50%;background:var(--blue)}
+  .ss-avatar.empty::before{width:10px;height:1.5px;transform:translate(-50%,-50%)}
+  .ss-avatar.empty::after{width:1.5px;height:10px;transform:translate(-50%,-50%)}
+  .ss-chip{width:10px;height:10px;border-radius:2px}
+  .ss-name{font-size:13px;color:var(--g3)}
+  .ss-label{font-size:14px;color:var(--g3)}
+  .gallery{background:var(--gray-1);padding:10px;flex:1;overflow-y:auto}
+  .gallery-grid{display:grid;grid-template-columns:repeat(6,80px);gap:6px}
+  .gphoto{width:80px;height:120px;border:1px solid var(--border);opacity:.6;overflow:hidden;cursor:pointer}
+  .gphoto img{width:100%;height:100%;object-fit:cover}
+  .gphoto.sel{opacity:1;outline:2px solid var(--navy);outline-offset:-1px}
+  .modal-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:12px}
+  .swatch-modal[data-mode="new"] .btn-del{display:none}
+  .alert{width:400px;border:1px solid #999;display:flex;flex-direction:column;gap:24px}
+  .alert h3{font-size:18px;font-weight:500;color:var(--g3);margin:0}
+  .alert p{font-size:14px;color:var(--g3);margin:0}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 18px;border-radius:6px;font-size:13px;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:.2s;z-index:9999}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+
+  /* cases appendix */
+  .cases{width:100%;max-width:1200px;margin:40px auto 0;padding:30px clamp(24px,4vw,120px) 0;border-top:2px dashed #c9c2bb}
+  .cases > h2{font-size:18px;color:var(--navy);margin:0 0 6px}
+  .cases > p{font-size:13px;color:var(--g6);margin:0 0 24px}
+  .case{margin-bottom:34px}
+  .case .case-lbl{font-size:12px;color:var(--g6);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+  .case .case-lbl b{color:var(--g3)}
+  .case-stage{background:#fff;border:1px solid var(--border);border-radius:8px;padding:28px;display:flex;justify-content:center}
+  .tip{position:relative;background:#fff;border:1px solid var(--gray-200);box-shadow:var(--shadow-md);border-radius:4px;padding:12px 14px;font-size:12px;color:var(--g3);width:280px;line-height:1.45}
+  .tip::before{content:"";position:absolute;top:-7px;left:18px;width:12px;height:12px;background:#fff;border-left:1px solid var(--gray-200);border-top:1px solid var(--gray-200);transform:rotate(45deg)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===================== TOP HEADER BAR ===================== -->
+  <header class="topbar">
+    <div class="seg">
+      <span class="tab active">Wholesale</span>
+      <span class="tab ghost">Dropshipping</span>
+    </div>
+    <div class="spacer"></div>
+    <div class="links">
+      <a href="#">Orders</a>
+      <a href="#">Chat</a>
+      <a href="#">Account</a>
+      <a href="#">Choose other vendor</a>
+    </div>
+    <div class="vsearch"><input placeholder="Vendor Search" /><span class="mag"></span></div>
+  </header>
+
+  <div class="layout">
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+      <img class="logo" src="assets/d18e8ee9d99550f2a24c2a8f5e343f10333b5359.png" alt="LE LIS"/>
+      <nav>
+        <a href="#">Home Editor <span class="ic ic-chev"></span></a>
+        <a href="#">Items <span class="ic ic-chev"></span></a>
+        <a href="#">Shopify Connect <span class="badge">New</span></a>
+        <a href="#">Orders <span class="ic ic-chev"></span></a>
+        <a href="#">Advertising <span class="ic ic-chev"></span></a>
+        <a href="#">Video Live Show <span class="ic ic-chev"></span></a>
+        <a href="#">Marketing Tools <span class="ic ic-chev"></span></a>
+        <a href="#">Customers <span class="ic ic-chev"></span></a>
+        <a href="#">Reviews <span class="ic ic-chev"></span></a>
+        <a href="#">Items <span class="ic ic-chev"></span></a>
+        <a href="#">Payment &amp; Settlement <span class="ic ic-chev"></span></a>
+        <a href="#">Message <span class="ic ic-chev"></span></a>
+        <a href="#">Billing <span class="ic ic-chev"></span></a>
+        <a href="#">Settings <span class="ic ic-chev"></span></a>
+        <a href="#">Chat <span class="ic ic-chev"></span></a>
+      </nav>
+      <div class="promo">
+        <img class="ph" src="assets/08b5160563cf266b4443c0a3e9fd7411d3dce62f.jpg" alt=""/>
+        <h4>Vendor Admin Mobile App Now Available!</h4>
+        <p>Manage your FASHIONGO orders, products, and ads, and chat with your buyers on the go anytime.</p>
+        <div class="badges">
+          <img class="qr" src="assets/8d735a08e19bbfce76c1e200812d7f16bc97033e.svg" onerror="this.style.background='#eee'" alt="QR"/>
+          <div class="store-col">
+            <img class="store-badge" src="assets/8b7efb5f3710765fe31ff14a8c1e9d92557d1b59.png" style="object-fit:contain;background:#000" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'store-badge',style:'background:#000;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center',textContent:'App Store'}))" alt="App Store"/>
+            <div class="store-badge" style="background:#000;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;gap:4px">▶ Google Play</div>
+          </div>
+        </div>
+      </div>
+      <div class="promo">
+        <img class="ph" src="assets/08b5160563cf266b4443c0a3e9fd7411d3dce62f.jpg" alt=""/>
+        <h4>Get Discovered with Search Ads!</h4>
+        <p>Drive traffic and boost sales!</p>
+        <button class="btn">Create Campaign</button>
+      </div>
+      <div class="promo">
+        <img class="ph" src="assets/cd8ef09e39970ea17ef721c2a880e20270b2ccb9.jpg" alt=""/>
+        <h4>The Best Apparel ERP!</h4>
+        <p>Special Offer for FASHIONGO Vendors.</p>
+        <button class="btn">Learn More</button>
+      </div>
+    </aside>
+
+    <!-- ===================== BODY ===================== -->
+    <main class="body-area">
+      <div class="content">
+
+        <!-- Page header -->
+        <div class="page-head">
+          <h1>Item Edit</h1>
+          <div class="spacer"></div>
+          <div class="nav-pn"><a href="#">‹ Previous</a><a href="#">Next ›</a></div>
+        </div>
+        <div class="sub-line">
+          <span>Created on <b>05/22/2025 08:23:02AM</b></span>
+          <span>Activated on <b>05/22/2025 08:23:02AM</b></span>
+          <span>Modified on <b>05/22/2025 08:23:02AM</b></span>
+          <span><b>Terry.park</b></span>
+        </div>
+
+        <!-- Basic Information -->
+        <section class="card">
+          <div class="card-head">
+            <h2>Basic Information</h2>
+            <div class="spacer"></div>
+            <div class="ai-radios">
+              <label class="rdo"><input type="radio" name="ai-status" checked><span class="dot"></span>Active</label>
+              <label class="rdo off"><input type="radio" name="ai-status"><span class="dot"></span>Inactive</label>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label class="lbl">Item Name <span class="req">*</span></label>
+              <input class="input" value="Minimalist Oversized Cotton Shirt with Clean Silhouette Design"/>
+              <div class="helper-row"><span>Don't use special characters</span><span>(20/50)</span></div>
+            </div>
+            <div class="field">
+              <label class="lbl">Style Number</label>
+              <input class="input" value="FS25-OVSHIRT-CN10023"/>
+              <div class="helper-row"><span>Don't use special characters</span><span>(0/20)</span></div>
+            </div>
+          </div>
+          <label class="cbx" style="margin-top:14px"><input type="checkbox"><span class="box"></span>Add Pre-production Items</label>
+        </section>
+
+        <!-- FG Category -->
+        <section class="card">
+          <div class="card-head"><h2>FG Category</h2></div>
+          <label class="lbl">Category <span class="req">*</span></label>
+          <div style="display:flex;gap:18px">
+            <select class="select" style="width:200px"><option>Women's Apparel</option></select>
+            <select class="select" style="width:200px"><option>Top</option></select>
+            <select class="select" style="width:200px"><option>Sweater</option></select>
+          </div>
+        </section>
+
+        <!-- Images & Video -->
+        <section class="card" id="images-video">
+          <div class="card-head">
+            <h2><span class="hint">Images &amp; Video<span class="tip-pop">We recommend adding color tags to each image to help users find matching color options more easily</span></span></h2><div class="spacer"></div>
+            <div class="iv-tabs">
+              <span class="iv-tab active"><span class="ic ic-img"></span>Image (50/50)</span>
+              <span class="iv-tab"><span class="ic ic-video"></span>Video (1/1)</span>
+            </div>
+          </div>
+          <p class="iv-note">Upload up to 50 images and hit the 'SAVE' button. Max. allowed image file size is 5MB per image. File name should not exceed 50 char. in length, otherwise it will be automatically truncated and/or assigned a unique name. Upload up to 1 mp4 file and hit the 'SAVE' button. Max. allowed video file size is 5MB and 532 x 800 pixel per video.</p>
+          <div class="iv-drop"><span class="ic ic-upload"></span>Drag and drop images anywhere in the grid, or click the upload box</div>
+          <div class="iv-grid" id="iv-grid"><!-- JS --></div>
+          <div class="iv-showall" id="iv-showall">Show All Images <span class="ic ic-chev"></span></div>
+        </section>
+
+        <!-- Listing Details -->
+        <section class="card">
+          <div class="card-head"><h2>Listing Details</h2></div>
+          <div class="desc-head">
+            <label class="lbl" style="margin:0">Description <span class="req">*</span></label>
+            <span class="ai-pill"><span class="ic ic-ai"></span>Suggested by AI ↻</span>
+            <span class="desc-remove">Remove</span>
+          </div>
+          <textarea class="input" rows="6">A timeless red t-shirt designed for versatility and everyday comfort. Crafted from soft, breathable cotton with a hint of stretch, it offers a relaxed yet refined fit that flatters all body types. The vibrant red hue adds a bold pop of color to any outfit, making it easy to style for casual outings or layered looks. Featuring a classic crew neckline and short sleeves, this tee maintains clean lines and a polished silhouette. Its durable fabric resists fading and holds its shape wash after wash, ensuring long-lasting wear.</textarea>
+          <div class="helper-row"><span>Do not include special characters</span><span>(1000/4000)</span></div>
+          <h2 style="font-size:14px;color:var(--g3);margin:22px 0 12px">Attributes</h2>
+          <div class="grid-4">
+            <select class="select"><option>Relaxed</option></select>
+            <select class="select"><option>Solid</option></select>
+            <select class="select"><option>Long</option></select>
+            <select class="select"><option>Casual</option></select>
+            <select class="select"><option>Linen</option></select>
+            <select class="select"><option>Nighttime</option></select>
+            <select class="select"><option>Summer</option></select>
+            <select class="select"><option>Christmas</option></select>
+          </div>
+        </section>
+
+        <!-- Pricing · node 2004:2072 -->
+        <section class="card">
+          <div class="card-head"><h2>Pricing</h2></div>
+          <div class="pricing-row">
+            <!-- left column: Original Price + Collection Promotion Price (stacked) -->
+            <div class="pcol">
+              <div class="field">
+                <label class="lbl">Original Price <span class="req">*</span></label>
+                <input class="input" value="$ 100.00"/>
+              </div>
+              <div class="field">
+                <div class="lbl promo-lbl"><span>Collection Promotion Price</span><a href="#">Edit</a></div>
+                <div class="price-box gray"><span class="b">$64.00</span><span class="o">20% off</span></div>
+              </div>
+            </div>
+            <!-- middle column: Sale Price -->
+            <div class="pcol">
+              <div class="field">
+                <label class="lbl">Sale Price</label>
+                <div class="price-box"><span>$80.00</span><span class="o">20% off</span></div>
+              </div>
+            </div>
+            <!-- right column: MSRP -->
+            <div class="pcol">
+              <div class="field">
+                <label class="lbl">MSRP</label>
+                <input class="input" value="$150.00"/>
+              </div>
+            </div>
+          </div>
+          <div style="height:1px;background:var(--border);width:100%;margin:8px 0"></div>
+          <div class="vol-pricing"><span>Volume Pricing</span><span class="ic ic-chev"></span></div>
+        </section>
+
+        <!-- Variants / Inventory Setting -->
+        <section class="card" id="variants">
+          <div class="card-head"><h2>Variants / Inventory Setting</h2></div>
+          <div class="var-form">
+            <div class="c-size field">
+              <label class="lbl">Size <span class="req">*</span></label>
+              <select class="select placeholder"><option>Select Size</option></select>
+            </div>
+            <div class="c-pack field">
+              <label class="lbl">Pack</label>
+              <select class="select"><option>1-2-2</option></select>
+              <div class="pack-min">
+                <label>Min. Qty</label><input class="input"/>
+                <label class="cbx"><input type="checkbox" checked><span class="box"></span>Even Color</label>
+              </div>
+            </div>
+            <div class="c-color field">
+              <div class="color-lbl"><label class="lbl" style="margin:0">Color <span class="req">*</span></label><button class="vcl">View Color List</button></div>
+              <input class="search" placeholder="Search A Color" style="margin-top:6px"/>
+            </div>
+          </div>
+
+          <div class="inv-title"><span class="hint">Inventory<span class="tip-pop">All colors must have swatches registered to display swatches on the storefront; otherwise, text labels will be used.</span></span></div>
+          <div class="inv-wrap">
+            <table class="inv">
+              <colgroup>
+                <col class="cSwatch"/><col class="cSize"/><col class="cSku"/><col class="cQty"/><col class="cThr"/>
+                <col class="cAvail"/><col class="cDate"/><col class="cHist"/><col class="cInact"/><col class="cChev"/>
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Color &amp; Swatch</th><th>Size</th><th>Sku</th><th>Qty</th><th><span class="u">Threshold</span></th>
+                  <th>Availability</th><th></th><th></th><th></th><th></th>
+                </tr>
+                <tr class="master">
+                  <td></td><td></td><td></td>
+                  <td><input class="input num" value="100,000"/></td>
+                  <td><input class="input num" placeholder="3"/></td>
+                  <td><select class="select sel"><option>Instock</option></select></td>
+                  <td><input class="date" placeholder="MM/DD/YYYY"/></td>
+                  <td></td><td></td>
+                  <td style="text-align:right"><button class="chev-btn master-chev"><span class="ic ic-chev" style="transform:rotate(180deg)"></span></button></td>
+                </tr>
+              </thead>
+              <tbody id="inv-body"><!-- JS --></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Additional Details -->
+        <section class="card">
+          <div class="card-head"><h2>Additional Details</h2></div>
+          <div class="grid-2">
+            <div class="field"><label class="lbl">Made In</label><select class="select placeholder"><option>Select Country</option></select></div>
+            <div class="field"><label class="lbl">Labeled</label><select class="select placeholder"><option>Select Labeled</option></select></div>
+          </div>
+          <div class="grid-2" style="margin-top:18px">
+            <div class="field"><label class="lbl">Material Composition</label>
+              <textarea class="input" rows="4">MADE FROM A PREMIUM BLEND OF NATURAL FIBERS AND SYNTHETICS, THIS MATERIAL ENSURES LASTING COMFORT AND STRUCTURE. THE BALANCED COMPOSITION ENHANCES SOFTNESS, FLEXIBILITY, AND DURABILITY, MAINTAINING ITS SHAPE AND COLOR EVEN AFTER MULTIPLE WASHES.</textarea>
+              <div class="helper-row"><span></span><span>(0/250)</span></div></div>
+            <div class="field"><label class="lbl">Fabric Contents</label>
+              <textarea class="input" rows="4">60% COTTON, 35% POLYESTER, AND 5% SPANDEX COMBINE FOR AN IDEAL MIX OF COMFORT, BREATHABILITY, AND STRETCH. THE COTTON PROVIDES SOFTNESS, POLYESTER ADDS RESILIENCE, AND SPANDEX OFFERS FLEXIBLE EASE FOR A FLATTERING, COMFORTABLE FIT THROUGHOUT THE DAY.</textarea>
+              <div class="helper-row"><span></span><span>(0/250)</span></div></div>
+          </div>
+          <div class="grid-2" style="margin-top:18px">
+            <div class="field"><label class="lbl">Ingredients</label>
+              <textarea class="input" rows="4">FORMULATED WITH GENTLE, SKIN-SAFE MATERIALS INCLUDING NATURAL PLANT EXTRACTS AND HYPOALLERGENIC DYES. FREE FROM HARSH CHEMICALS AND IRRITANTS, THIS PRODUCT ENSURES A SOFT, SAFE TOUCH SUITABLE FOR ALL SKIN TYPES WHILE MAINTAINING VIVID, LASTING COLOR.</textarea>
+              <div class="helper-row"><span></span><span>(0/250)</span></div></div>
+            <div class="field"><label class="lbl">How to Use</label>
+              <textarea class="input" rows="4">HOW TO USE: GENTLY UNFOLD AND PREPARE THE ITEM BEFORE WEARING. PAIR WITH COMPLEMENTARY PIECES FOR A STYLISH, COMFORTABLE LOOK. MACHINE WASH IN COLD WATER WITH SIMILAR COLORS USING A MILD DETERGENT. DO NOT BLEACH. TUMBLE DRY LOW OR LAY FLAT TO DRY. IRON ON LOW HEAT IF NEEDED. AVOID DIRECT SUNLIGHT TO</textarea>
+              <div class="helper-row"><span></span><span>(0/1600)</span></div></div>
+          </div>
+
+          <div class="ad-sub">
+            <label class="lbl" style="margin-bottom:14px">Value</label>
+            <div class="value-row">
+              <label class="cbx"><input type="checkbox"><span class="box"></span>Only at FASHIONGO</label>
+              <label class="cbx"><input type="checkbox"><span class="box"></span>Eco Friendly</label>
+              <label class="cbx"><input type="checkbox"><span class="box"></span>Handmade</label>
+              <label class="cbx"><input type="checkbox"><span class="box"></span>Organic</label>
+              <label class="cbx"><input type="checkbox"><span class="box"></span>Small Batch</label>
+              <label class="cbx"><input type="checkbox"><span class="box"></span>Not on Amazon</label>
+            </div>
+          </div>
+
+          <div class="ad-sub">
+            <div class="cust-head">
+              <label class="lbl" style="margin:0">Customization</label>
+              <label class="cbx"><input type="checkbox"><span class="box"></span>Active</label>
+            </div>
+            <div class="cust-body disabled">
+              <div class="field"><textarea class="input" rows="3" placeholder="Custom Instruction"></textarea><div class="helper-row"><span>Do not include special characters</span><span>(200/200)</span></div></div>
+              <input class="input" placeholder="Maximum Text Length"/>
+              <div style="display:flex;gap:16px;padding-top:6px">
+                <label class="rdo off"><input type="radio" name="cust"><span class="dot"></span>Mandatory</label>
+                <label class="rdo"><input type="radio" name="cust" checked><span class="dot"></span>Optional</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="ad-sub">
+            <label class="lbl" style="margin-bottom:14px">In-House Section</label>
+            <div class="grid-2">
+              <div class="field"><label class="lbl">Memo</label><textarea class="input" rows="2" placeholder="Internal Use Only"></textarea><div class="helper-row"><span>Do not include special characters</span><span>(0/100)</span></div></div>
+              <div class="field"><label class="lbl">Supplier</label>
+                <div style="display:flex;gap:10px"><select class="select placeholder" style="width:180px"><option>Select Supplier</option></select><input class="input" placeholder="Add Vendor Style#"/></div>
+                <div class="helper-row"><span>Do not include special characters</span><span>(0/50)</span></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Shipment Information -->
+        <section class="card">
+          <div class="card-head"><h2>Shipment Information</h2></div>
+          <div class="ship-return">
+            <span>Return</span>
+            <label class="cbx"><input type="checkbox"><span class="box"></span>Non-returnable</label>
+            <span class="note">(Buyers may request a return for wrong, missing, damaged, or defective items.)</span>
+          </div>
+          <div class="ship-meas-head">
+            <span class="lbl" style="margin:0">Item Package Measurements</span>
+            <div class="spacer"></div>
+            <div class="ai-radios">
+              <label class="rdo"><input type="radio" name="ppk" checked><span class="dot"></span>Per item</label>
+              <label class="rdo off"><input type="radio" name="ppk"><span class="dot"></span>Per pack</label>
+            </div>
+          </div>
+          <div class="ship-meas">
+            <div class="ship-box">
+              <label class="lbl">Weight</label>
+              <div class="ship-weight"><input class="input"/><select class="select unit"><option>lb</option></select></div>
+            </div>
+            <div class="ship-box">
+              <div class="ship-wh">
+                <div class="field"><label class="lbl">Width</label><input class="input"/></div>
+                <div class="field"><label class="lbl">Height</label><input class="input"/></div>
+                <div class="field"><label class="lbl">Length</label><input class="input"/></div>
+                <select class="select unit"><option>in</option></select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Cross-Selling Items -->
+        <section class="card">
+          <div class="card-head"><h2>Cross-Selling Items</h2></div>
+          <div class="empty-box"><span>No item selected yet</span><button class="btn--o-gray btn">Add Items</button></div>
+        </section>
+
+        <!-- Link Items -->
+        <section class="card link-card">
+          <div class="card-head"><h2>Link Items</h2></div>
+          <div class="empty-box"><span>No item selected yet</span><button class="btn--o-gray btn">Add Items</button></div>
+        </section>
+
+        <!-- footer actions -->
+        <div class="page-foot">
+          <div class="foot-left">
+            <div class="notes">There may be an Insertion Fee if item uploads exceed the free monthly allowance. Please check your contract to avoid the Insertion Fee.<br/>Cloning this item will also copy inventory quantities</div>
+            <button class="btn btn--o-blue">Clone</button>
+          </div>
+          <button class="btn btn--o-red">Delete Item</button>
+        </div>
+        <div class="copyright">
+          <span>© Copyright 2002-2025 by FASHIONGO.net. All rights reserved.</span>
+          <a href="#">Terms of Use</a><span>|</span><a href="#">Privacy Policy</a><span>|</span>
+          <a href="#">Vendor Policies</a><span>|</span><a href="#">Terms Update</a><span>|</span>
+          <a href="#">Payment and Settlement Terms and Conditions</a><span>|</span><a href="#">Ship with FG Terms and Conditions</a>
+        </div>
+        <img class="fg-wordmark" src="assets/8fe7179380146b690fbc2aba340c356f02986e90.png" alt="FASHIONGO"/>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===================== COMPONENT CASES (states) ===================== -->
+  <div class="cases">
+    <h2>Component Cases — Swatch interaction states</h2>
+    <p>위 페이지의 Variants 섹션에서 컬러 사진(스와치)을 클릭하면 아래 상태들이 동작합니다. 각 케이스의 정적 레퍼런스입니다.</p>
+
+    <!-- Case 1: tooltip on Inventory -->
+    <div class="case">
+      <div class="case-lbl">Case 1 · <b>Inventory 안내 툴팁</b> · node 24:8021</div>
+      <div class="case-stage">
+        <div class="tip">All colors must have swatches registered to display swatches on the storefront; otherwise, text labels will be used.</div>
+      </div>
+    </div>
+
+    <!-- Case 2: Swatch Edit — NEW -->
+    <div class="case">
+      <div class="case-lbl"><span class="pin" style="margin-right:6px">NEW</span> Case 2 · <b>Swatch Edit · 신규 등록</b> (Save만) · node 24:7789</div>
+      <div class="case-stage"><button class="btn btn--primary" onclick="openSwatch('almond','new')">Swatch Edit (New) 열기</button></div>
+    </div>
+
+    <!-- Case 3: Swatch Edit — EDIT -->
+    <div class="case">
+      <div class="case-lbl"><span class="pin" style="margin-right:6px">EDIT</span> Case 3 · <b>Swatch Edit · 수정</b> (Delete + Save) · node 24:10300</div>
+      <div class="case-stage"><button class="btn btn--primary" onclick="openSwatch('crayon','edit')">Swatch Edit (Edit) 열기</button></div>
+    </div>
+
+    <!-- Case 4: alert -->
+    <div class="case">
+      <div class="case-lbl">Case 4 · <b>Select a color first · 알러트</b> · node 2601:1657</div>
+      <div class="case-stage" style="flex-direction:column;gap:10px;text-align:center">
+        <p style="margin:0;font-size:13px;color:var(--g6)">이미지에 컬러를 먼저 지정해야 스와치를 만들 수 있습니다. 위 Variants 인벤토리의 <b>Blue Black</b> 행은 지정된 이미지가 없어, "+"를 누르면 이 알러트가 뜹니다.</p>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn--o-blue" onclick="document.querySelector('.add-swatch[data-color=&quot;blueblack&quot;]').click()">Blue Black "+" 클릭 시뮬레이트</button>
+          <button class="btn btn--primary" onclick="document.getElementById('dlg-alert').showModal()">알러트 직접 열기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fixed floating action bar · node 2004:4669 (follows on scroll) -->
+  <div class="floatbar">
+    <div class="floatbar-side"></div>
+    <div class="floatbar-main">
+      <div class="floatbar-inner">
+        <div class="fb-info">
+          <div class="fb-title">Minimalist Oversized Cotton Shirt with Clean Silhouette Design</div>
+          <div class="fb-meta"><span>FS25-OVSHIRT-CN10023</span><span class="fb-dot"></span><span>3 Colors</span></div>
+        </div>
+        <div class="fb-actions">
+          <button class="btn fb-back">Back to List</button>
+          <button class="btn btn--primary">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== DIALOGS ===================== -->
+<dialog id="dlg-swatch">
+  <div class="modal swatch-modal" id="swatch-modal" data-mode="new">
+    <div class="modal-head"><h3>Swatch Edit</h3><button class="x-btn" data-close="dlg-swatch"><span class="x-ic"></span></button></div>
+    <div class="swatch-body">
+      <div class="crop">
+        <div class="crop-img"><div class="zoomable" id="crop-zoom"></div><div class="ovl"><span class="h tl"></span><span class="h tr"></span><span class="h bl"></span><span class="h br"></span></div></div>
+        <div class="crop-slider"><span class="pm" id="zoom-minus">−</span><input type="range" id="zoom" min="100" max="600" value="100"/><span class="pm" id="zoom-plus">+</span></div>
+      </div>
+      <div class="swatch-side">
+        <div class="ss-head">
+          <span class="ss-avatar empty" id="ss-avatar"></span>
+          <span class="ss-chip" id="ss-chip"></span>
+          <span class="ss-name" id="ss-name">—</span>
+        </div>
+        <div class="ss-label">Selec the image</div>
+        <div class="gallery"><div class="gallery-grid" id="gallery"></div></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn--o-red btn-del" id="btn-del">Delete Swatch</button>
+      <button class="btn btn--primary" id="btn-save">Save Swatch</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-alert">
+  <div class="modal alert">
+    <div class="modal-head"><h3>Select a color first</h3><button class="x-btn" data-close="dlg-alert"><span class="x-ic"></span></button></div>
+    <p>To create a swatch, assign a color to your uploaded image.</p>
+    <div class="modal-foot"><button class="btn btn--primary" style="padding:0 28px" onclick="goToImages()">Ok</button></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast">Saved</div>
+
+<script>
+// ============================================================
+//  Asset map
+// ============================================================
+const A = {
+  black:'assets/117e4082077426f41148db00a22675a21ddd8742.png',
+  navy:'assets/8417551b7c1bf0d14800471fff8777516cd6a7fc.jpg',
+  red:'assets/fa456d9702589c8eace14b1389348d1f65eee2aa.jpg',
+  red2:'assets/e47c13693fac27fec8d11708125826615abfe0ef.jpg',
+  red3:'assets/5ac154b61e95766fc0767ce761d75fb387f75239.png',
+  red4:'assets/28c47124c7dce0caa951cb555c85e5b0e0e5aa04.png',
+  green:'assets/fdfd7fd47587785a51a35deb3b2e1b22345db541.jpg',
+  sky:'assets/b0101f5fa20bce092cabeb658adf257a2b07c097.jpg',
+  beige:'assets/cd8ef09e39970ea17ef721c2a880e20270b2ccb9.jpg',
+  brown:'assets/790c3173f5203599fd577d7fecc9f6613565d01d.jpg',
+  brown2:'assets/48764ca30338d134e1b248b6fda3fc7d97e28269.jpg',
+  pink:'assets/4e9c80e9591ae9e847b898f23dd8670c04dcf8a7.jpg',
+  gray:'assets/1e344028db4cc0bedc305550e31818d33c50ff94.jpg',
+  white:'assets/351be34a53605ab115802d05d029bf6ef79d1466.jpg'
+};
+
+// Inventory colors (Figma node 2636:4696). Crayon Red has a registered swatch
+// (round avatar+pencil); the rest show a "+" add control. "Blue Black" has NO
+// images assigned to it → clicking its "+" shows the "Select a color first" alert.
+const COLORS = [
+  { id:'black',     name:'Black',             chip:'#1c1c1c', photo:A.black,  count:3, hasSwatch:false },
+  { id:'almond',    name:'Almond Peach Blue', chip:'#785340', photo:A.brown2, count:3, hasSwatch:false },
+  { id:'crayon',    name:'Crayon Red',        chip:'#d6262a', photo:A.red,    count:3, hasSwatch:true, swatch:{src:A.red, zoom:175, panX:0, panY:-6} },
+  { id:'green',     name:'Dr. Green Paprica', chip:'#5a7d3c', photo:A.green,  count:3, hasSwatch:false },
+  { id:'blueblack', name:'Blue Black',        chip:'#1c2f6b', photo:A.navy,   count:0, hasSwatch:false }
+];
+// Images & Video: max 50 images + 1 video. [0]=default cover, [1]=video,
+// then up to 49 more images. Each image carries a color assigned via its
+// "Select Color" dropdown; the Swatch Edit gallery for a color shows exactly
+// the images assigned to it. Blue Black is intentionally left with NO images.
+const IMAGES = [
+  {src:A.gray,  color:null, isDefault:true},   // image 1/50 · default / cover
+  {src:A.white, color:null, isVideo:true}      // the 1 video
+];
+{
+  const cyc=['almond','crayon','green','black'];   // NOT blueblack (keeps its alert case)
+  const srcs={almond:[A.brown2,A.brown], crayon:[A.red,A.red2,A.red3,A.red4], green:[A.green], black:[A.black]};
+  for(let i=0;i<49;i++){ const col=cyc[i%cyc.length]; const a=srcs[col]; IMAGES.push({src:a[Math.floor(i/cyc.length)%a.length], color:col}); }
+}
+// editor gallery = images assigned to this color (videos never become swatches)
+function galleryFor(c){ return IMAGES.filter(im=>im.color===c.id && !im.isVideo).map(im=>im.src); }
+function colorById(id){ return COLORS.find(c=>c.id===id) || {id, name:id, chip:'#999', photo:A.brown2, hasSwatch:false}; }
+// Render the saved swatch crop (src + zoom + pan) into a circular thumbnail of
+// diameter D — replicates the editor's Ø110 circular crop, scaled by D/110.
+function cropImgHTML(sw, D){
+  const C=110, k=D/C, fw=250*k, fh=377*k, left=(D-fw)/2, top=(D-fh)/2;
+  const Z=(sw.zoom||100)/100, tx=(sw.panX||0)*k, ty=(sw.panY||0)*k;
+  return `<span class="av-crop" style="left:${left.toFixed(1)}px;top:${top.toFixed(1)}px;width:${fw.toFixed(1)}px;height:${fh.toFixed(1)}px;background-image:url('${sw.src}');transform:translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) scale(${Z})"></span>`;
+}
+
+// ============================================================
+//  Images & Video grid (10 cells)
+// ============================================================
+(function(){
+  const grid=document.getElementById('iv-grid');
+  const opts=sel=>['<option value="">Select Color</option>'].concat(
+    COLORS.map(c=>`<option value="${c.id}"${c.id===sel?' selected':''}>${c.name}</option>`)).join('');
+  IMAGES.forEach((im,i)=>{
+    const cell=document.createElement('div'); cell.className='iv-cell'+(im.isDefault?' sel':'');
+    // video has no "Select Color" dropdown (a video can't become a color swatch)
+    const dropdown = im.isVideo ? '' : `<select class="select select-color" data-idx="${i}">${opts(im.color)}</select>`;
+    cell.innerHTML=`<div class="iv-thumb"><img src="${im.src}" alt=""/>${im.isDefault?'<span class="star">★</span>':''}${im.isVideo?'<span class="play"></span>':''}</div>${dropdown}`;
+    grid.appendChild(cell);
+  });
+  // changing a dropdown re-assigns that image's color (feeds the swatch galleries)
+  grid.addEventListener('change',e=>{
+    const s=e.target.closest('.select-color');
+    if(s) IMAGES[+s.dataset.idx].color = s.value || null;
+  });
+  // Show All Images ⇄ Show Less
+  const showall=document.getElementById('iv-showall');
+  showall.addEventListener('click',()=>{
+    const open=grid.classList.toggle('show-all');
+    showall.classList.toggle('open',open);
+    showall.childNodes[0].nodeValue = open ? 'Show Less ' : 'Show All Images ';
+  });
+})();
+
+// alert "Ok" → jump to the Images & Video section so the user can assign colors
+function goToImages(){
+  document.getElementById('dlg-alert').close();
+  const sec=document.getElementById('images-video');
+  sec.scrollIntoView({behavior:'smooth', block:'start'});
+  sec.classList.remove('flash'); void sec.offsetWidth; sec.classList.add('flash');
+}
+
+// ============================================================
+//  Variants inventory table (8 colors, each expanded S/M/L)
+// ============================================================
+function rowSizeCells(disabled){
+  const d = disabled? ' disabled':'';
+  return `<td><input class="input num" value="100,000"${d}/></td>
+    <td><input class="input num" placeholder="3"${d}/></td>
+    <td><select class="select sel"${d}><option>Instock</option></select></td>
+    <td><input class="date" placeholder="MM/DD/YYYY"${d}/></td>`;
+}
+function buildInventory(){
+  const tb=document.getElementById('inv-body'); tb.innerHTML='';
+  COLORS.forEach(c=>{
+    // photo + count come from images assigned to this color in Images & Video
+    const imgs=galleryFor(c); const photo=imgs[0]||c.photo; const n=imgs.length||c.count;
+    // leading swatch control: registered → cropped avatar+pencil; else → "+" add button
+    const sw = c.swatch || {src:photo, zoom:100, panX:0, panY:0};
+    const control = c.hasSwatch
+      ? `<button class="swatch-avatar" data-color="${c.id}" title="스와치 수정"><span class="av-mask">${cropImgHTML(sw,32)}</span></button>`
+      : `<button class="add-swatch" data-color="${c.id}" title="스와치 추가"></button>`;
+    // color header row (Color & Swatch spans swatch+size+sku cols so the name fits)
+    const cr=document.createElement('tr'); cr.className='crow';
+    cr.innerHTML=`
+      <td colspan="3"><div class="cname">${control}<span class="chip" style="background:${c.chip}"></span><span class="nm">${c.name}</span></div></td>
+      <td><input class="input num" value="100,000"/></td>
+      <td><input class="input num" placeholder="3"/></td>
+      <td><select class="select sel"><option>Instock</option></select></td>
+      <td><input class="date" placeholder="MM/DD/YYYY"/></td>
+      <td><span class="hist"><span class="ic ic-clock"></span></span></td>
+      <td><label class="cbx"><input type="checkbox"><span class="box"></span>Inactive</label></td>
+      <td><button class="chev-btn"><span class="ic ic-chev" style="transform:rotate(180deg)"></span></button></td>`;
+    tb.appendChild(cr);
+
+    // 3 size rows; first holds the 77x116 product photo (rowspan 3)
+    ['S','M','L'].forEach((sz,si)=>{
+      const sr=document.createElement('tr'); sr.className='srow';
+      let html='';
+      if(si===0){
+        html+= imgs.length
+          ? `<td class="photo-cell" rowspan="3"><div class="swatch-photo" data-color="${c.id}" title="이미지"><img src="${photo}" alt=""/><span class="cnt">${n}</span></div></td>`
+          : `<td class="photo-cell" rowspan="3"><div class="swatch-photo empty" data-color="${c.id}" title="이미지에 컬러를 먼저 지정하세요"></div></td>`;
+      }
+      html+=`<td class="szl">${sz}</td>
+        <td><input class="input" value="TSHIRT-ABC-BL-B"/></td>
+        ${rowSizeCells(true)}
+        <td></td><td></td>
+        <td>${si===2?'<button class="iconbtn"><span class="ic ic-trash"></span></button>':''}</td>`;
+      sr.innerHTML=html;
+      tb.appendChild(sr);
+    });
+  });
+}
+buildInventory();
+
+// ============================================================
+//  Inventory collapse / expand (node 24:6922 = collapsed state)
+//  expanded: chevron up + S/M/L photo shown · collapsed: chevron down + hidden
+// ============================================================
+function setColorCollapsed(crow, collapsed){
+  crow.classList.toggle('collapsed', collapsed);
+  let row=crow.nextElementSibling;
+  while(row && row.classList.contains('srow')){ row.style.display = collapsed?'none':''; row=row.nextElementSibling; }
+  const ic=crow.querySelector('.chev-btn .ic-chev');
+  if(ic) ic.style.transform = collapsed ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+document.addEventListener('click', e=>{
+  // per-color chevron → collapse/expand that color
+  const cbtn=e.target.closest('#inv-body tr.crow .chev-btn');
+  if(cbtn){ const crow=cbtn.closest('tr.crow'); setColorCollapsed(crow, !crow.classList.contains('collapsed')); return; }
+  // master chevron → collapse/expand all colors at once
+  const mbtn=e.target.closest('.inv .master-chev');
+  if(mbtn){
+    const rows=[...document.querySelectorAll('#inv-body tr.crow')];
+    const anyOpen=rows.some(r=>!r.classList.contains('collapsed'));
+    rows.forEach(r=>setColorCollapsed(r, anyOpen));
+    mbtn.querySelector('.ic-chev').style.transform = anyOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+  }
+});
+
+// ============================================================
+//  Swatch editor (mode-aware: new | edit)
+// ============================================================
+let activeColor=null, activeSel={img:0, zoom:100, panX:0, panY:0};
+const dlg=document.getElementById('dlg-swatch');
+const modal=document.getElementById('swatch-modal');
+const elAvatar=document.getElementById('ss-avatar'), elChip=document.getElementById('ss-chip'),
+      elName=document.getElementById('ss-name'), elGallery=document.getElementById('gallery'),
+      elZoomImg=document.getElementById('crop-zoom'), elZoom=document.getElementById('zoom'),
+      toast=document.getElementById('toast');
+
+function openSwatch(colorId, mode){
+  const c = colorById(colorId);
+  activeColor=c;
+  modal.dataset.mode=mode;
+  elName.textContent=c.name; elChip.style.background=c.chip;
+  const gal=galleryFor(c);
+  if(!gal.length){ document.getElementById('dlg-alert').showModal(); return; }
+  // restore the saved crop when editing; fresh defaults when adding
+  if(mode==='edit' && c.swatch){
+    const gi=Math.max(0, gal.indexOf(c.swatch.src));
+    activeSel={img:gi, zoom:c.swatch.zoom||100, panX:c.swatch.panX||0, panY:c.swatch.panY||0};
+  } else {
+    activeSel={img:0, zoom:100, panX:0, panY:0};
+  }
+  // gallery (the selected image is the one the swatch is cropped from)
+  elGallery.innerHTML='';
+  gal.forEach((src,i)=>{
+    const g=document.createElement('div'); g.className='gphoto'+(i===activeSel.img?' sel':'');
+    g.innerHTML=`<img src="${src}" alt=""/>`;
+    g.onclick=()=>{ activeSel.img=i; [...elGallery.children].forEach((x,k)=>x.classList.toggle('sel',k===i)); paintCrop(); };
+    elGallery.appendChild(g);
+  });
+  // header avatar: empty "+" when adding; live cropped preview when editing
+  if(mode==='new'){ elAvatar.className='ss-avatar empty'; elAvatar.innerHTML=''; }
+  elZoom.value=activeSel.zoom; paintCrop();
+  dlg.showModal();
+}
+const ZMIN=100, ZMAX=600;   // zoom range: 100% – 600% (account-style crop)
+function setZoom(z){ activeSel.zoom=Math.max(ZMIN,Math.min(ZMAX,Math.round(z))); elZoom.value=activeSel.zoom; paintCrop(); }
+function paintCrop(){
+  const gal=galleryFor(activeColor);
+  elZoomImg.style.backgroundImage=`url("${gal[activeSel.img]}")`;
+  // pan + zoom the image behind the fixed circular crop (like the account image uploader)
+  elZoomImg.style.transform=`translate(${activeSel.panX}px,${activeSel.panY}px) scale(${activeSel.zoom/100})`;
+  // edit mode: header avatar mirrors the live crop
+  if(modal.dataset.mode==='edit'){
+    elAvatar.className='ss-avatar';
+    elAvatar.innerHTML=cropImgHTML({src:gal[activeSel.img],zoom:activeSel.zoom,panX:activeSel.panX,panY:activeSel.panY},32);
+  }
+}
+elZoom.addEventListener('input',e=>{ activeSel.zoom=+e.target.value; paintCrop(); });
+document.getElementById('zoom-minus').addEventListener('click',()=>setZoom(activeSel.zoom-25));
+document.getElementById('zoom-plus').addEventListener('click',()=>setZoom(activeSel.zoom+25));
+
+// drag the image to pan within the crop window
+(function(){
+  const stage=document.querySelector('#dlg-swatch .crop-img');
+  let dragging=false, sx=0, sy=0, px=0, py=0;
+  const down=e=>{ dragging=true; const p=e.touches?e.touches[0]:e; sx=p.clientX; sy=p.clientY; px=activeSel.panX; py=activeSel.panY; e.preventDefault(); };
+  const move=e=>{ if(!dragging) return; const p=e.touches?e.touches[0]:e; activeSel.panX=px+(p.clientX-sx); activeSel.panY=py+(p.clientY-sy); paintCrop(); };
+  const up=()=>{ dragging=false; };
+  stage.addEventListener('mousedown',down); window.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
+  stage.addEventListener('touchstart',down,{passive:false}); window.addEventListener('touchmove',move,{passive:false}); window.addEventListener('touchend',up);
+  // wheel to zoom
+  stage.addEventListener('wheel',e=>{ e.preventDefault(); setZoom(activeSel.zoom + (e.deltaY<0?20:-20)); },{passive:false});
+})();
+
+document.getElementById('btn-save').onclick=()=>{
+  if(activeColor){ const c=colorById(activeColor.id); const src=galleryFor(activeColor)[activeSel.img];
+    if(c && src){ c.hasSwatch=true; c.photo=src;
+      // store the crop (selected image + zoom + pan) — the swatch shows this region only
+      c.swatch={ src, zoom:activeSel.zoom, panX:activeSel.panX, panY:activeSel.panY };
+    } buildInventory(); }
+  dlg.close(); showToast('Saved swatch for '+activeColor.name);
+};
+document.getElementById('btn-del').onclick=()=>{
+  const c=colorById(activeColor.id); if(c){ c.hasSwatch=false; c.swatch=null; } buildInventory();
+  dlg.close(); showToast('Deleted swatch for '+activeColor.name);
+};
+
+function showToast(m){ toast.textContent=m; toast.classList.add('show'); clearTimeout(showToast._t); showToast._t=setTimeout(()=>toast.classList.remove('show'),1800); }
+
+// close buttons + backdrop
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).close());
+[dlg, document.getElementById('dlg-alert')].forEach(d=>d.addEventListener('click',e=>{ if(e.target===d) d.close(); }));
+
+// delegate: click the swatch control (+ / avatar) or the product photo
+document.addEventListener('click',e=>{
+  const ctl=e.target.closest('.add-swatch, .swatch-avatar, .swatch-photo');
+  if(ctl && ctl.dataset.color){
+    const c=colorById(ctl.dataset.color);
+    // no images assigned to this color → "Select a color first"
+    if(galleryFor(c).length===0){ document.getElementById('dlg-alert').showModal(); return; }
+    openSwatch(c.id, c.hasSwatch ? 'edit' : 'new');
+  }
+});
+</script>
+</body>
+</html>

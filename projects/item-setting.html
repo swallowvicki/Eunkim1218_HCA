@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Item — Connect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:opsz,wght@8..32,300;8..32,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#FAF9F6;color:#1A1A1A;min-height:100vh;}
+input,textarea,select,button{font-family:'Inter',sans-serif;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#D1CCC6;border-radius:3px;}
+
+.card{background:#FFF;border:1px solid #E8E4DF;border-radius:16px;overflow:hidden;margin-bottom:20px;}
+.card-hd{padding:16px 24px;border-bottom:1px solid #E8E4DF;display:flex;align-items:center;justify-content:space-between;}
+.card-hd h2{font-size:14px;font-weight:600;color:#1A1A1A;}
+.card-bd{padding:20px 24px;}
+
+.frow{display:flex;align-items:flex-start;gap:16px;padding:12px 0;border-bottom:1px solid #F5F2EF;}
+.frow:last-child{border-bottom:none;}
+.flabel{width:140px;flex-shrink:0;font-size:13px;color:#666;padding-top:8px;line-height:1.3;}
+.finput{flex:1;min-width:0;}
+
+.inp{width:100%;padding:9px 12px;border:1px solid #E8E4DF;border-radius:9px;font-size:13px;color:#1A1A1A;background:#FAFAF9;outline:none;transition:border-color .15s;}
+.inp:focus{border-color:#1A1A1A;}
+.inp::placeholder{color:#BBB;}
+textarea.inp{resize:vertical;line-height:1.5;}
+
+.btn-p{padding:9px 20px;border:none;border-radius:9999px;background:#1A1A1A;color:#FFF;font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-p:hover{opacity:.85;}
+.btn-s{padding:9px 18px;border:1px solid #E8E4DF;border-radius:9999px;background:#FFF;color:#666;font-size:13px;cursor:pointer;transition:background .15s;}
+.btn-s:hover{background:#F5F3F0;}
+
+.vtable{width:100%;border-collapse:collapse;font-size:13px;}
+.vtable th{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.05em;text-align:left;padding:9px 14px;background:#FAFAF8;border-bottom:1px solid #E8E4DF;white-space:nowrap;}
+.vtable td{padding:9px 14px;border-bottom:1px solid #F5F2EF;vertical-align:middle;}
+.vtable tr:last-child td{border-bottom:none;}
+.vtable tr:hover td{background:#FAFAF9;}
+
+.opt-block{background:#FAFAF9;border:1px solid #E8E4DF;border-radius:12px;padding:16px;margin-bottom:10px;}
+.step-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:9999px;font-size:11px;font-weight:600;border:1.5px solid;cursor:default;}
+.pill-active{background:#1A1A1A;color:#FFF;border-color:#1A1A1A;}
+.pill-done{background:#F0FDF4;color:#16A34A;border-color:#BBF7D0;}
+.pill-idle{background:#FFF;color:#BBB;border-color:#E8E4DF;}
+</style>
+</head>
+<body>
+<div style="display:flex;min-height:100vh;">
+
+<!-- ===== SIDEBAR ===== -->
+<aside style="position:sticky;top:0;height:100vh;width:260px;background:#FFF;border-right:1px solid #E8E4DF;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;">
+  <div style="padding:20px;border-bottom:1px solid #E8E4DF;">
+    <div style="background:#1A1A1A;border-radius:12px;padding:10px 14px;display:inline-flex;align-items:center;gap:8px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FAF9F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+      <span style="font-family:'Source Serif 4',Georgia,serif;font-size:16px;color:#FFF;font-weight:400;">Connect</span>
+    </div>
+  </div>
+  <nav style="padding:16px 12px;flex:1;">
+    <div style="font-size:11px;color:#999;font-weight:500;text-transform:uppercase;letter-spacing:.08em;padding:0 12px;margin-bottom:8px;">Main</div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:2px;" onmouseover="this.style.background='#F5F3F0'" onmouseout="this.style.background='transparent'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span style="font-size:14px;color:#666;">Dashboard</span></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:2px;" onmouseover="this.style.background='#F5F3F0'" onmouseout="this.style.background='transparent'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span style="font-size:14px;color:#666;">Linesheet</span></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:#F5F3F0;cursor:pointer;margin-bottom:2px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg><span style="font-size:14px;color:#1A1A1A;font-weight:500;">Item</span></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:2px;" onmouseover="this.style.background='#F5F3F0'" onmouseout="this.style.background='transparent'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg><span style="font-size:14px;color:#666;">Orders</span></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:2px;" onmouseover="this.style.background='#F5F3F0'" onmouseout="this.style.background='transparent'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span style="font-size:14px;color:#666;">Customers</span></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:2px;" onmouseover="this.style.background='#F5F3F0'" onmouseout="this.style.background='transparent'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span style="font-size:14px;color:#666;">Marketing</span></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:2px;" onmouseover="this.style.background='#F5F3F0'" onmouseout="this.style.background='transparent'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span style="font-size:14px;color:#666;">Settlement</span></div>
+    <div style="height:1px;background:#E8E4DF;margin:12px 0;"></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:2px;" onmouseover="this.style.background='#F5F3F0'" onmouseout="this.style.background='transparent'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span style="font-size:14px;color:#666;">Account Settings</span></div>
+  </nav>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div style="flex:1;display:flex;flex-direction:column;min-width:0;overflow-y:auto;height:100vh;">
+
+  <!-- Sticky top header -->
+  <header style="position:sticky;top:0;z-index:100;background:rgba(250,249,246,.95);backdrop-filter:blur(8px);border-bottom:1px solid #E8E4DF;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button onclick="history.back()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid #E8E4DF;border-radius:9px;background:#FFF;font-size:13px;color:#666;cursor:pointer;" onmouseover="this.style.background='#F5F3F0'" onmouseout="this.style.background='#FFF'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Items
+      </button>
+      <span style="color:#D1CCC6;">/</span>
+      <span style="font-size:14px;font-weight:500;color:#1A1A1A;">New Item</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="btn-s" onclick="showToast('Draft saved!')">Save Draft</button>
+      <button class="btn-p" onclick="validateAndPublish()">Publish Item</button>
+    </div>
+  </header>
+
+  <!-- Two-column content -->
+  <div style="flex:1;padding:32px 40px;display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start;max-width:1280px;width:100%;">
+
+    <!-- ===== LEFT COLUMN ===== -->
+    <div>
+
+      <!-- CARD: Images -->
+      <div class="card">
+        <div class="card-hd">
+          <h2>Product Images</h2>
+          <span style="font-size:12px;color:#999;">Up to 10 · JPG, PNG, WebP</span>
+        </div>
+        <div class="card-bd">
+          <div id="img-grid" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+            <div id="img-add" style="width:100px;height:100px;border:2px dashed #D1CCC6;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;background:#FAFAF9;flex-shrink:0;transition:border-color .15s,background .15s;"
+              onclick="document.getElementById('img-input').click()"
+              ondragover="event.preventDefault();this.style.borderColor='#1A1A1A';this.style.background='#F0EDE9'"
+              ondragleave="this.style.borderColor='#D1CCC6';this.style.background='#FAFAF9'"
+              ondrop="event.preventDefault();this.style.borderColor='#D1CCC6';this.style.background='#FAFAF9';addImages(event.dataTransfer.files)"
+              onmouseover="this.style.borderColor='#1A1A1A';this.style.background='#F5F3F0'"
+              onmouseout="this.style.borderColor='#D1CCC6';this.style.background='#FAFAF9'">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#BBB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span style="font-size:10px;color:#BBB;text-align:center;line-height:1.5;">Click or<br>Drop</span>
+            </div>
+            <input id="img-input" type="file" accept="image/*" multiple style="display:none;" onchange="addImages(this.files)">
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:#CCC;">Drag to reorder · First image will be the cover</div>
+        </div>
+      </div>
+
+      <!-- CARD: Item Info -->
+      <div class="card">
+        <div class="card-hd"><h2>Item Information</h2></div>
+        <div class="card-bd" style="padding:0 24px;">
+          <div class="frow">
+            <div class="flabel">Item Name <span style="color:#EF4444;">*</span></div>
+            <div class="finput">
+              <input id="f-name" type="text" class="inp" placeholder="Enter item name" oninput="clearErr()">
+              <div id="name-err" style="display:none;margin-top:5px;font-size:12px;color:#EF4444;align-items:center;gap:4px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Item Name or Style # is required.
+              </div>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="flabel">Style # <span style="color:#EF4444;">*</span></div>
+            <div class="finput"><input id="f-style" type="text" class="inp" placeholder="e.g. FS25-SHIRT-001" oninput="clearErr()"></div>
+          </div>
+          <div class="frow">
+            <div class="flabel">Category</div>
+            <div class="finput">
+              <div style="display:flex;gap:8px;">
+                <select id="f-cat1" class="inp" style="flex:1;" onchange="catChange()">
+                  <option value="">1st Category</option>
+                  <option>Women's Apparel</option><option>Men's Apparel</option><option>Accessories</option>
+                  <option>Footwear</option><option>Bags &amp; Luggage</option><option>Knitwear</option>
+                  <option>Outerwear</option><option>Bottoms</option><option>Dresses</option><option>Tops</option>
+                </select>
+                <select id="f-cat2" class="inp" style="flex:1;"><option value="">2nd Category</option></select>
+              </div>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="flabel">Description</div>
+            <div class="finput"><textarea id="f-desc" class="inp" rows="3" placeholder="Brief product description for buyers..."></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD: Variants -->
+      <div class="card">
+        <div class="card-hd">
+          <h2>Variants</h2>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span id="pill1" class="step-pill pill-active">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="pill1-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              Step 1 · Options
+            </span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <span id="pill2" class="step-pill pill-idle">Step 2 · Price &amp; Ship</span>
+          </div>
+        </div>
+        <div class="card-bd">
+
+          <!-- Step 1 body -->
+          <div id="s1-body">
+            <div style="font-size:12px;color:#888;margin-bottom:16px;line-height:1.6;">Define option types (e.g. Color, Size). Up to 2 options. Values will generate the variant combinations.</div>
+            <div id="opt-blocks"></div>
+            <div id="add-opt2-row" style="margin-top:6px;">
+              <button onclick="showOpt2()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px dashed #D1CCC6;border-radius:10px;background:transparent;font-size:12px;color:#888;cursor:pointer;" onmouseover="this.style.borderColor='#1A1A1A';this.style.color='#1A1A1A'" onmouseout="this.style.borderColor='#D1CCC6';this.style.color='#888'">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Option 2
+              </button>
+            </div>
+            <div style="margin-top:20px;padding-top:16px;border-top:1px solid #F0EDE9;display:flex;justify-content:flex-end;">
+              <button class="btn-p" onclick="goStep2()">
+                Next: Set Price &amp; Ship Date
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2 body -->
+          <div id="s2-body" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+              <div style="font-size:12px;color:#888;line-height:1.6;">Set wholesale price, MSRP and ship date per variant.</div>
+              <button onclick="goStep1()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid #E8E4DF;border-radius:8px;background:#FFF;font-size:12px;color:#666;cursor:pointer;" onmouseover="this.style.background='#F5F3F0'" onmouseout="this.style.background='#FFF'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Edit Options
+              </button>
+            </div>
+            <!-- Pack toggle -->
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:12px 16px;background:#FAFAF9;border-radius:12px;border:1px solid #E8E4DF;">
+              <span style="font-size:12px;color:#666;font-weight:500;">Pack Type</span>
+              <button id="popen-btn" onclick="setPackType('open')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #1A1A1A;background:#1A1A1A;color:#FFF;font-size:12px;font-weight:500;cursor:pointer;">Open Pack</button>
+              <button id="ppre-btn" onclick="setPackType('pre')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #E8E4DF;background:#FFF;color:#888;font-size:12px;cursor:pointer;">Pre-Set Pack</button>
+              <span id="pack-desc" style="font-size:11px;color:#999;">Buyers order each variant individually</span>
+            </div>
+            <!-- Apply-all bar -->
+            <div style="margin-bottom:12px;padding:12px 14px;background:#F5F3F0;border-radius:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <span style="font-size:12px;color:#666;font-weight:500;white-space:nowrap;">Apply to all:</span>
+              <div style="display:flex;align-items:center;gap:5px;">
+                <span style="font-size:12px;color:#888;">WS $</span>
+                <input id="all-ws" type="number" step="0.01" placeholder="0.00" style="width:72px;padding:5px 8px;border:1px solid #E8E4DF;border-radius:7px;font-size:12px;background:#FFF;outline:none;" onfocus="this.style.borderColor='#1A1A1A'" onblur="this.style.borderColor='#E8E4DF'">
+              </div>
+              <div style="display:flex;align-items:center;gap:5px;">
+                <span style="font-size:12px;color:#888;">MSRP $</span>
+                <input id="all-msrp" type="number" step="0.01" placeholder="0.00" style="width:72px;padding:5px 8px;border:1px solid #E8E4DF;border-radius:7px;font-size:12px;background:#FFF;outline:none;" onfocus="this.style.borderColor='#1A1A1A'" onblur="this.style.borderColor='#E8E4DF'">
+              </div>
+              <div style="display:flex;align-items:center;gap:5px;">
+                <span style="font-size:12px;color:#888;">Ship</span>
+                <input id="all-ship" type="date" style="padding:5px 8px;border:1px solid #E8E4DF;border-radius:7px;font-size:12px;background:#FFF;outline:none;color:#666;" onfocus="this.style.borderColor='#1A1A1A'" onblur="this.style.borderColor='#E8E4DF'">
+              </div>
+              <button onclick="applyAll()" style="padding:5px 14px;border:none;border-radius:7px;background:#1A1A1A;color:#FFF;font-size:12px;font-weight:500;cursor:pointer;" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">Apply</button>
+            </div>
+            <!-- Variant table -->
+            <div style="border:1px solid #E8E4DF;border-radius:12px;overflow:hidden;">
+              <table class="vtable" id="vtbl"></table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CARD: Tags & Composition -->
+      <div class="card">
+        <div class="card-hd"><h2>Tags &amp; Composition</h2></div>
+        <div class="card-bd" style="padding:0 24px;">
+          <div class="frow">
+            <div class="flabel">Tags</div>
+            <div class="finput">
+              <div id="tag-wrap" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:7px 10px;border:1px solid #E8E4DF;border-radius:9px;background:#FAFAF9;min-height:40px;cursor:text;transition:border-color .15s;" onclick="document.getElementById('tag-in').focus()" onfocusin="this.style.borderColor='#1A1A1A'" onfocusout="this.style.borderColor='#E8E4DF'">
+                <input id="tag-in" type="text" placeholder="Type + Enter to add tag..." style="border:none;background:transparent;outline:none;font-size:12px;color:#1A1A1A;min-width:130px;flex:1;" onkeydown="tagKey(event)">
+              </div>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="flabel">Material / Fabric</div>
+            <div class="finput"><textarea id="f-mat" class="inp" rows="3" placeholder="e.g. 60% Cotton, 40% Polyester..."></textarea></div>
+          </div>
+          <div class="frow">
+            <div class="flabel">Internal Note</div>
+            <div class="finput"><textarea id="f-note" class="inp" rows="3" placeholder="Visible only to you and your team..." style="background:#FFFDF5;"></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom actions -->
+      <div style="display:flex;justify-content:flex-end;gap:10px;padding-bottom:48px;">
+        <button class="btn-s" onclick="history.back()">Cancel</button>
+        <button class="btn-s" onclick="showToast('Draft saved!')">Save Draft</button>
+        <button class="btn-p" onclick="validateAndPublish()">Publish Item</button>
+      </div>
+
+    </div><!-- /left col -->
+
+    <!-- ===== RIGHT COLUMN ===== -->
+    <div style="position:sticky;top:76px;display:flex;flex-direction:column;gap:16px;">
+
+      <!-- Status -->
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-hd"><h2>Status</h2></div>
+        <div class="card-bd">
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button id="st-active" onclick="setStatus('active')" style="flex:1;padding:8px;border-radius:20px;border:1.5px solid #1A1A1A;background:#1A1A1A;color:#FFF;font-size:13px;font-weight:500;cursor:pointer;">Active</button>
+            <button id="st-inactive" onclick="setStatus('inactive')" style="flex:1;padding:8px;border-radius:20px;border:1.5px solid #E8E4DF;background:#FFF;color:#94A3B8;font-size:13px;cursor:pointer;">Inactive</button>
+          </div>
+          <div id="st-desc" style="font-size:12px;color:#888;line-height:1.5;">Visible to buyers in your linesheets.</div>
+        </div>
+      </div>
+
+      <!-- Pricing (hidden when step 2 active) -->
+      <div class="card" id="r-price-card" style="margin-bottom:0;">
+        <div class="card-hd"><h2>Pricing</h2></div>
+        <div class="card-bd" style="padding:0 24px;">
+          <div class="frow">
+            <div class="flabel" style="width:70px;">WS Price</div>
+            <div class="finput">
+              <div style="display:flex;align-items:center;border:1px solid #E8E4DF;border-radius:9px;background:#FAFAF9;overflow:hidden;" onfocusin="this.style.borderColor='#1A1A1A'" onfocusout="this.style.borderColor='#E8E4DF'">
+                <span style="padding:8px 10px;font-size:13px;color:#999;border-right:1px solid #E8E4DF;flex-shrink:0;">$</span>
+                <input id="r-ws" type="number" step="0.01" placeholder="0.00" style="flex:1;padding:8px 10px;border:none;background:transparent;font-size:13px;outline:none;min-width:0;">
+              </div>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="flabel" style="width:70px;">MSRP</div>
+            <div class="finput">
+              <div style="display:flex;align-items:center;border:1px solid #E8E4DF;border-radius:9px;background:#FAFAF9;overflow:hidden;" onfocusin="this.style.borderColor='#1A1A1A'" onfocusout="this.style.borderColor='#E8E4DF'">
+                <span style="padding:8px 10px;font-size:13px;color:#999;border-right:1px solid #E8E4DF;flex-shrink:0;">$</span>
+                <input id="r-msrp" type="number" step="0.01" placeholder="0.00" style="flex:1;padding:8px 10px;border:none;background:transparent;font-size:13px;outline:none;min-width:0;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Est. Ship Date -->
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-hd"><h2>Est. Ship Date</h2></div>
+        <div class="card-bd" style="padding:0 24px;">
+          <div class="frow">
+            <div class="flabel" style="width:70px;">Type</div>
+            <div class="finput">
+              <div style="display:flex;gap:6px;">
+                <button id="ship-in" onclick="setShipType('instock')" style="flex:1;padding:6px 8px;border-radius:20px;border:1.5px solid #1A1A1A;background:#1A1A1A;color:#FFF;font-size:12px;font-weight:500;cursor:pointer;">In Stock</button>
+                <button id="ship-pre" onclick="setShipType('preorder')" style="flex:1;padding:6px 8px;border-radius:20px;border:1.5px solid #E8E4DF;background:#FFF;color:#888;font-size:12px;cursor:pointer;">Pre-order</button>
+              </div>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="flabel" style="width:70px;">Date</div>
+            <div class="finput"><input type="date" id="r-ship" class="inp" style="color:#666;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add to Linesheet -->
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-hd"><h2>Add to Linesheet</h2></div>
+        <div class="card-bd">
+          <div style="font-size:12px;color:#888;margin-bottom:12px;line-height:1.5;">Assign to an existing linesheet after publishing.</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label style="display:flex;align-items:center;gap:9px;padding:9px 12px;border:1px solid #E8E4DF;border-radius:9px;cursor:pointer;background:#FAFAF9;transition:border-color .15s;" onmouseover="this.style.borderColor='#1A1A1A'" onmouseout="this.style.borderColor='#E8E4DF'"><input type="checkbox" style="width:14px;height:14px;accent-color:#1A1A1A;flex-shrink:0;"><span style="font-size:13px;">FS25 Spring / Summer 2025</span></label>
+            <label style="display:flex;align-items:center;gap:9px;padding:9px 12px;border:1px solid #E8E4DF;border-radius:9px;cursor:pointer;background:#FAFAF9;transition:border-color .15s;" onmouseover="this.style.borderColor='#1A1A1A'" onmouseout="this.style.borderColor='#E8E4DF'"><input type="checkbox" style="width:14px;height:14px;accent-color:#1A1A1A;flex-shrink:0;"><span style="font-size:13px;">FW25 Fall / Winter 2025</span></label>
+            <label style="display:flex;align-items:center;gap:9px;padding:9px 12px;border:1px solid #E8E4DF;border-radius:9px;cursor:pointer;background:#FAFAF9;transition:border-color .15s;" onmouseover="this.style.borderColor='#1A1A1A'" onmouseout="this.style.borderColor='#E8E4DF'"><input type="checkbox" style="width:14px;height:14px;accent-color:#1A1A1A;flex-shrink:0;"><span style="font-size:13px;">Accessories 2025</span></label>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /right col -->
+  </div><!-- /grid -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- Toast -->
+<div id="toast" style="position:fixed;bottom:24px;right:24px;background:#1A1A1A;color:#FFF;border-radius:12px;padding:12px 18px;font-size:13px;display:flex;align-items:center;gap:10px;z-index:9999;transform:translateY(120px);opacity:0;transition:transform .3s,opacity .3s;box-shadow:0 8px 24px rgba(0,0,0,.22);">
+  <svg id="toast-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">Saved!</span>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────
+var ST = {
+  status: 'active',
+  shipType: 'instock',
+  packType: 'open',
+  opts: [
+    { name:'', values:[] },
+    { name:'', values:[], visible:false }
+  ],
+  step: 1
+};
+var tags = [];
+
+// ── CATEGORY CASCADE ───────────────────────────────────
+var CAT = {
+  "Women's Apparel":["Tops","Blouses","Shirts","Dresses","Skirts","Trousers","Shorts","Jumpsuits"],
+  "Men's Apparel":  ["T-Shirts","Shirts","Trousers","Shorts","Suits","Hoodies"],
+  "Accessories":    ["Scarves","Hats","Belts","Jewelry","Sunglasses","Wallets"],
+  "Footwear":       ["Sneakers","Heels","Flats","Boots","Sandals","Loafers"],
+  "Bags & Luggage": ["Tote Bags","Crossbody Bags","Backpacks","Clutches","Luggage"],
+  "Knitwear":       ["Sweaters","Cardigans","Turtlenecks","Vests"],
+  "Outerwear":      ["Coats","Jackets","Blazers","Parkas","Trench Coats"],
+  "Bottoms":        ["Trousers","Jeans","Skirts","Shorts","Leggings"],
+  "Dresses":        ["Mini","Midi","Maxi","Wrap Dresses","Shirt Dresses"],
+  "Tops":           ["T-Shirts","Blouses","Crop Tops","Tank Tops","Knit Tops"]
+};
+function catChange() {
+  var s1 = document.getElementById('f-cat1'), s2 = document.getElementById('f-cat2');
+  var subs = CAT[s1.value] || [];
+  s2.innerHTML = '<option value="">2nd Category</option>' + subs.map(function(s){ return '<option>'+s+'</option>'; }).join('');
+}
+
+// ── STATUS ─────────────────────────────────────────────
+function setStatus(v) {
+  ST.status = v;
+  var a = document.getElementById('st-active'), b = document.getElementById('st-inactive');
+  if (v === 'active') {
+    a.style.cssText = 'flex:1;padding:8px;border-radius:20px;border:1.5px solid #1A1A1A;background:#1A1A1A;color:#FFF;font-size:13px;font-weight:500;cursor:pointer;';
+    b.style.cssText = 'flex:1;padding:8px;border-radius:20px;border:1.5px solid #E8E4DF;background:#FFF;color:#94A3B8;font-size:13px;cursor:pointer;';
+    document.getElementById('st-desc').textContent = 'Visible to buyers in your linesheets.';
+  } else {
+    b.style.cssText = 'flex:1;padding:8px;border-radius:20px;border:1.5px solid #1A1A1A;background:#1A1A1A;color:#FFF;font-size:13px;font-weight:500;cursor:pointer;';
+    a.style.cssText = 'flex:1;padding:8px;border-radius:20px;border:1.5px solid #E8E4DF;background:#FFF;color:#94A3B8;font-size:13px;cursor:pointer;';
+    document.getElementById('st-desc').textContent = 'Hidden from buyers until activated.';
+  }
+}
+
+// ── SHIP TYPE ──────────────────────────────────────────
+function setShipType(v) {
+  ST.shipType = v;
+  var a = document.getElementById('ship-in'), b = document.getElementById('ship-pre');
+  if (v === 'instock') {
+    a.style.cssText = 'flex:1;padding:6px 8px;border-radius:20px;border:1.5px solid #1A1A1A;background:#1A1A1A;color:#FFF;font-size:12px;font-weight:500;cursor:pointer;';
+    b.style.cssText = 'flex:1;padding:6px 8px;border-radius:20px;border:1.5px solid #E8E4DF;background:#FFF;color:#888;font-size:12px;cursor:pointer;';
+  } else {
+    b.style.cssText = 'flex:1;padding:6px 8px;border-radius:20px;border:1.5px solid #1A1A1A;background:#1A1A1A;color:#FFF;font-size:12px;font-weight:500;cursor:pointer;';
+    a.style.cssText = 'flex:1;padding:6px 8px;border-radius:20px;border:1.5px solid #E8E4DF;background:#FFF;color:#888;font-size:12px;cursor:pointer;';
+  }
+}
+
+// ── PACK TYPE ──────────────────────────────────────────
+function setPackType(v) {
+  ST.packType = v;
+  var a = document.getElementById('popen-btn'), b = document.getElementById('ppre-btn');
+  if (v === 'open') {
+    a.style.cssText = 'padding:5px 14px;border-radius:20px;border:1.5px solid #1A1A1A;background:#1A1A1A;color:#FFF;font-size:12px;font-weight:500;cursor:pointer;';
+    b.style.cssText = 'padding:5px 14px;border-radius:20px;border:1.5px solid #E8E4DF;background:#FFF;color:#888;font-size:12px;cursor:pointer;';
+    document.getElementById('pack-desc').textContent = 'Buyers order each variant individually';
+  } else {
+    b.style.cssText = 'padding:5px 14px;border-radius:20px;border:1.5px solid #1A1A1A;background:#1A1A1A;color:#FFF;font-size:12px;font-weight:500;cursor:pointer;';
+    a.style.cssText = 'padding:5px 14px;border-radius:20px;border:1.5px solid #E8E4DF;background:#FFF;color:#888;font-size:12px;cursor:pointer;';
+    document.getElementById('pack-desc').textContent = 'Set fixed qty ratios per size option';
+  }
+  renderVTable();
+}
+
+// ── IMAGES ─────────────────────────────────────────────
+var IMG_COLORS = ['#E8E4DF','#D4C5B5','#C8DFC8','#C8C8DF','#DFC8C8','#DFCFC8','#C8DFDF'];
+var imgCount = 0;
+function addImages(files) {
+  var grid = document.getElementById('img-grid');
+  var addBtn = document.getElementById('img-add');
+  Array.from(files).slice(0, 10 - imgCount).forEach(function(f, i) {
+    var div = document.createElement('div');
+    div.style.cssText = 'position:relative;width:100px;height:100px;border-radius:12px;flex-shrink:0;background:'+IMG_COLORS[(imgCount+i)%IMG_COLORS.length]+';display:flex;align-items:center;justify-content:center;font-size:32px;';
+    div.innerHTML = '🖼️<button onclick="this.parentNode.remove();imgCount--;" style="position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;background:#555;border:none;color:#FFF;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>';
+    grid.insertBefore(div, addBtn);
+    imgCount++;
+  });
+}
+
+// ── TAGS ───────────────────────────────────────────────
+function tagKey(e) {
+  var inp = document.getElementById('tag-in');
+  if ((e.key === 'Enter' || e.key === ',') && inp.value.trim()) {
+    e.preventDefault();
+    var v = inp.value.trim().replace(/,/g,'');
+    if (v && !tags.includes(v)) { tags.push(v); renderTags(); }
+    inp.value = '';
+  } else if (e.key === 'Backspace' && !inp.value && tags.length) {
+    tags.pop(); renderTags();
+  }
+}
+function renderTags() {
+  var wrap = document.getElementById('tag-wrap');
+  var inp = document.getElementById('tag-in');
+  // Remove old chips
+  Array.from(wrap.querySelectorAll('.t-chip')).forEach(function(c){ c.remove(); });
+  tags.forEach(function(t, i) {
+    var chip = document.createElement('span');
+    chip.className = 't-chip';
+    chip.style.cssText = 'display:inline-flex;align-items:center;gap:4px;background:#F0EDE9;border:1px solid #E8E4DF;border-radius:20px;padding:3px 10px;font-size:12px;color:#1A1A1A;';
+    chip.innerHTML = t + '<button onclick="tags.splice('+i+',1);renderTags();" style="background:none;border:none;cursor:pointer;color:#BBB;font-size:15px;line-height:1;padding:0;" onmouseover="this.style.color=\'#1A1A1A\'" onmouseout="this.style.color=\'#BBB\'">×</button>';
+    wrap.insertBefore(chip, inp);
+  });
+}
+
+// ── OPTION BLOCKS ──────────────────────────────────────
+function renderOptBlocks() {
+  var c = document.getElementById('opt-blocks');
+  c.innerHTML = renderOptBlock(0) + (ST.opts[1].visible ? renderOptBlock(1) : '');
+  document.getElementById('add-opt2-row').style.display = ST.opts[1].visible ? 'none' : '';
+}
+function renderOptBlock(idx) {
+  var opt = ST.opts[idx];
+  var chips = opt.values.map(function(v, vi) {
+    return '<span style="display:inline-flex;align-items:center;gap:3px;background:#F0EDE9;border:1px solid #E8E4DF;border-radius:6px;padding:3px 8px;font-size:12px;color:#1A1A1A;">'
+      + v
+      + '<button onclick="rmOptVal('+idx+','+vi+')" style="background:none;border:none;cursor:pointer;color:#CCC;font-size:14px;line-height:1;padding:0 0 0 2px;" onmouseover="this.style.color=\'#1A1A1A\'" onmouseout="this.style.color=\'#CCC\'">×</button></span>';
+  }).join('');
+  var rmBtn = idx === 1
+    ? '<button onclick="hideOpt2()" style="padding:3px 10px;border:1px solid #E8E4DF;border-radius:7px;background:transparent;font-size:11px;color:#999;cursor:pointer;" onmouseover="this.style.background=\'#F5F3F0\'" onmouseout="this.style.background=\'transparent\'">Remove</button>'
+    : '';
+  return '<div class="opt-block">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    + '<span style="font-size:10px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.08em;">Option '+(idx+1)+'</span>'+rmBtn+'</div>'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+    + '<span style="font-size:12px;color:#888;width:52px;flex-shrink:0;">Name</span>'
+    + '<input type="text" value="'+opt.name+'" placeholder="e.g. Color, Size..." maxlength="30" '
+    + 'style="flex:1;padding:7px 10px;border:1px solid #E8E4DF;border-radius:8px;font-size:13px;color:#1A1A1A;background:#FFF;outline:none;" '
+    + 'onfocus="this.style.borderColor=\'#1A1A1A\'" onblur="this.style.borderColor=\'#E8E4DF\'" oninput="ST.opts['+idx+'].name=this.value">'
+    + '</div>'
+    + '<div style="display:flex;align-items:flex-start;gap:10px;">'
+    + '<span style="font-size:12px;color:#888;width:52px;flex-shrink:0;padding-top:6px;">Values</span>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;flex:1;">'
+    + chips
+    + '<input type="text" placeholder="Type + Enter..." '
+    + 'onkeydown="if(event.key===\'Enter\'||event.key===\',\'){event.preventDefault();addOptVal('+idx+',this);}" '
+    + 'onblur="if(this.value.trim())addOptVal('+idx+',this);" '
+    + 'style="padding:4px 9px;border:1px dashed #CCC;border-radius:7px;font-size:12px;outline:none;color:#555;min-width:120px;" '
+    + 'onfocus="this.style.borderStyle=\'solid\';this.style.borderColor=\'#888\'" '
+    + 'onblur="this.style.borderStyle=\'dashed\';this.style.borderColor=\'#CCC\';">'
+    + '</div></div></div>';
+}
+function addOptVal(idx, inp) {
+  var v = inp.value.trim().replace(/,/g,'');
+  if (v && !ST.opts[idx].values.includes(v)) ST.opts[idx].values.push(v);
+  inp.value = '';
+  renderOptBlocks();
+}
+function rmOptVal(idx, vi) { ST.opts[idx].values.splice(vi,1); renderOptBlocks(); }
+function showOpt2() { ST.opts[1].visible = true; renderOptBlocks(); }
+function hideOpt2() { ST.opts[1] = {name:'',values:[],visible:false}; renderOptBlocks(); }
+
+// ── STEP NAV ───────────────────────────────────────────
+function goStep2() {
+  if (!ST.opts[0].values.length) {
+    var inputs = document.querySelectorAll('.opt-block input[placeholder*="Type"]');
+    if (inputs[0]) { inputs[0].focus(); inputs[0].style.borderColor='#EF4444'; inputs[0].style.borderStyle='solid'; setTimeout(function(){ inputs[0].style.borderColor='#CCC'; inputs[0].style.borderStyle='dashed'; },2000); }
+    return;
+  }
+  ST.step = 2;
+  document.getElementById('s1-body').style.display = 'none';
+  document.getElementById('s2-body').style.display = '';
+  document.getElementById('pill1').className = 'step-pill pill-done';
+  document.getElementById('pill1').innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Step 1 · Options';
+  document.getElementById('pill2').className = 'step-pill pill-active';
+  document.getElementById('r-price-card').style.display = 'none';
+  renderVTable();
+}
+function goStep1() {
+  ST.step = 1;
+  document.getElementById('s1-body').style.display = '';
+  document.getElementById('s2-body').style.display = 'none';
+  document.getElementById('pill1').className = 'step-pill pill-active';
+  document.getElementById('pill1').innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="pill1-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Step 1 · Options';
+  document.getElementById('pill2').className = 'step-pill pill-idle';
+  document.getElementById('r-price-card').style.display = '';
+  renderOptBlocks();
+}
+
+// ── VARIANT TABLE ──────────────────────────────────────
+function getVariants() {
+  var v1 = ST.opts[0].values, v2 = ST.opts[1].visible ? ST.opts[1].values : [];
+  if (!v1.length) return [];
+  if (!v2.length) return v1.map(function(v){ return [v]; });
+  var out = [];
+  v1.forEach(function(a){ v2.forEach(function(b){ out.push([a,b]); }); });
+  return out;
+}
+function priceCell() {
+  return '<div style="display:flex;align-items:center;border:1px solid #E8E4DF;border-radius:7px;background:#FAFAF9;overflow:hidden;width:100px;" onfocusin="this.style.borderColor=\'#1A1A1A\'" onfocusout="this.style.borderColor=\'#E8E4DF\'">'
+    + '<span style="padding:6px 8px;font-size:12px;color:#BBB;border-right:1px solid #E8E4DF;flex-shrink:0;">$</span>'
+    + '<input type="number" step="0.01" placeholder="0.00" style="width:60px;padding:6px 8px;border:none;background:transparent;font-size:13px;outline:none;"></div>';
+}
+function renderVTable() {
+  var variants = getVariants();
+  var n1 = ST.opts[0].name || 'Option 1';
+  var n2 = ST.opts[1].visible ? (ST.opts[1].name || 'Option 2') : null;
+  var isPre = ST.packType === 'pre';
+  var thead = '<thead><tr>'
+    + '<th>'+n1+'</th>'
+    + (n2 ? '<th>'+n2+'</th>' : '')
+    + (isPre ? '<th style="text-align:center;">Pack Qty</th>' : '')
+    + '<th>WS Price</th><th>MSRP</th><th>Est. Ship Date</th>'
+    + '</tr></thead>';
+  var tbody = '<tbody>';
+  variants.forEach(function(v) {
+    tbody += '<tr>'
+      + '<td style="font-weight:500;color:#1A1A1A;">'+v[0]+'</td>'
+      + (n2 ? '<td style="color:#666;">'+v[1]+'</td>' : '')
+      + (isPre ? '<td style="text-align:center;"><input type="number" min="0" placeholder="0" style="width:52px;padding:6px 8px;border:1px solid #E8E4DF;border-radius:7px;font-size:13px;text-align:center;outline:none;background:#FAFAF9;" onfocus="this.style.borderColor=\'#1A1A1A\'" onblur="this.style.borderColor=\'#E8E4DF\'"></td>' : '')
+      + '<td>'+priceCell()+'</td>'
+      + '<td>'+priceCell()+'</td>'
+      + '<td><input type="date" style="padding:6px 8px;border:1px solid #E8E4DF;border-radius:7px;font-size:12px;background:#FAFAF9;outline:none;color:#666;" onfocus="this.style.borderColor=\'#1A1A1A\'" onblur="this.style.borderColor=\'#E8E4DF\'"></td>'
+      + '</tr>';
+  });
+  tbody += '</tbody>';
+  document.getElementById('vtbl').innerHTML = thead + tbody;
+}
+
+// ── APPLY ALL ──────────────────────────────────────────
+function applyAll() {
+  var ws = document.getElementById('all-ws').value;
+  var msrp = document.getElementById('all-msrp').value;
+  var ship = document.getElementById('all-ship').value;
+  var isPre = ST.packType === 'pre';
+  document.querySelectorAll('#vtbl tbody tr').forEach(function(row) {
+    var inputs = row.querySelectorAll('input');
+    var off = isPre ? 1 : 0;
+    if (ws && inputs[off]) inputs[off].value = ws;
+    if (msrp && inputs[off+1]) inputs[off+1].value = msrp;
+    if (ship && inputs[off+2]) inputs[off+2].value = ship;
+  });
+}
+
+// ── VALIDATE & PUBLISH ─────────────────────────────────
+function validateAndPublish() {
+  var n = document.getElementById('f-name'), s = document.getElementById('f-style');
+  if (!n.value.trim() && !s.value.trim()) {
+    [n, s].forEach(function(el) {
+      el.style.borderColor = '#EF4444'; el.style.background = '#FFF5F5';
+      var cnt = 0, t = setInterval(function() {
+        el.style.transform = cnt%2===0 ? 'translateX(4px)' : 'translateX(-4px)';
+        if (++cnt > 5) { clearInterval(t); el.style.transform = ''; }
+      }, 60);
+    });
+    document.getElementById('name-err').style.display = 'flex';
+    n.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  showToast('Item published successfully!');
+}
+function clearErr() {
+  var n = document.getElementById('f-name'), s = document.getElementById('f-style');
+  n.style.borderColor='#E8E4DF'; n.style.background='#FAFAF9';
+  s.style.borderColor='#E8E4DF'; s.style.background='#FAFAF9';
+  document.getElementById('name-err').style.display = 'none';
+}
+
+// ── TOAST ──────────────────────────────────────────────
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg || 'Saved!';
+  t.style.transform = 'translateY(0)'; t.style.opacity = '1';
+  setTimeout(function(){ t.style.transform = 'translateY(120px)'; t.style.opacity = '0'; }, 3000);
+}
+
+// ── INIT ───────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() { renderOptBlocks(); });
+</script>
+</body>
+</html>

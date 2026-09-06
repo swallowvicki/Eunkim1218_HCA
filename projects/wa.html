@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>&merci - Shopcord</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    font-size: 12px;
+    color: #333;
+    background: #fff;
+    padding: 20px 30px;
+    max-width: 902px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  .brand-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .brand-sub { font-size: 11px; color: #666; letter-spacing: 4px; margin-top: 2px; }
+  .meta { display: grid; grid-template-columns: 110px 1fr; gap: 4px 12px; font-size: 12px; color: #555; }
+  .meta-label { color: #666; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    margin-top: 18px;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 10px;
+    background: #f5f5f5;
+    border: 1px solid #d9d9d9;
+    border-bottom: none;
+    border-right: none;
+    cursor: pointer;
+    color: #555;
+    font-size: 12px;
+  }
+  .tab:last-child { border-right: 1px solid #d9d9d9; }
+  .tab.active {
+    background: #fff;
+    color: #1a73e8;
+    font-weight: 600;
+    border-bottom: 1px solid #fff;
+    margin-bottom: -1px;
+  }
+
+  /* Section title (top of body) */
+  .section-title {
+    color: #1a73e8;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 18px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #1a73e8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .status-pill {
+    font-size: 11px;
+    color: #555;
+    font-weight: 400;
+  }
+  .status-pill .ok { color: #2e9c4a; font-weight: 600; }
+  .status-pill .bad { color: #d93025; font-weight: 600; }
+  .status-pill .pending-text { color: #e67e22; font-weight: 600; }
+
+  /* Block */
+  .block { padding: 28px 0; border-bottom: 1px dashed #ddd; }
+  .block:last-child { border-bottom: none; }
+  .block h3 {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #222;
+  }
+  /* Blue section heading (used on Status Management / Block access / Subscription Management) */
+  .block h3.section-blue {
+    color: #1a73e8;
+    font-size: 14px;
+    font-weight: 700;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #1a73e8;
+    margin-bottom: 18px;
+  }
+  /* Black sub heading (used on Status Change History) */
+  .history-title.sub-black {
+    color: #222;
+    font-size: 12px;
+    font-weight: 600;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .block-note {
+    color: #d93025;
+    font-size: 11px;
+    margin-left: 10px;
+    font-weight: 400;
+  }
+
+  /* Two-column form grid */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 40px;
+  }
+  .field {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: center;
+    gap: 10px;
+  }
+  .field label { color: #444; font-size: 12px; }
+  .field input[type="text"],
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #d9d9d9;
+    background: #f7f7f7;
+    border-radius: 2px;
+    font-size: 12px;
+    color: #333;
+  }
+  .field input[readonly] { background: #f0f0f0; color: #555; }
+  .field .value-text { color: #333; font-size: 12px; }
+
+  /* Buttons */
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 18px 0 8px;
+  }
+  .btn {
+    padding: 8px 22px;
+    background: #1a73e8;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .btn:hover { background: #1666cc; }
+  .btn.secondary { background: #6c757d; }
+  .btn.secondary:hover { background: #5a6268; }
+  .btn.danger { background: #d93025; }
+  .btn.danger:hover { background: #b3271c; }
+  .btn.disabled { background: #c5c8cc; cursor: not-allowed; }
+  .btn.disabled:hover { background: #c5c8cc; }
+  .tab-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin: 14px 0 6px;
+  }
+  .btn.ghost {
+    background: #fff;
+    color: #1a73e8;
+    border: 1px solid #1a73e8;
+  }
+
+  /* Status badges */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge.active   { background: #e6f4ea; color: #1e8e3e; }
+  .badge.lead     { background: #fff4e5; color: #e67e22; }
+  .badge.inactive { background: #fde8e8; color: #d93025; }
+  .badge.subscribed   { background: #e6f4ea; color: #1e8e3e; }
+  .badge.unsubscribed { background: #f1f3f4; color: #5f6368; }
+  .badge.canceled     { background: #fde8e8; color: #d93025; }
+  .badge.success    { background: #e6f4ea; color: #1e8e3e; }
+  .badge.failed     { background: #fde8e8; color: #d93025; }
+  .badge.pending    { background: #fff4e5; color: #e67e22; }
+  .badge.processing { background: #e3f2fd; color: #1565c0; }
+  .badge.upcoming   { background: #f1f3f4; color: #5f6368; }
+  .badge.pastdue    { background: #fff4e5; color: #e67e22; }
+
+  /* ===== PRD Annotations (numbered with hover tooltip) ===== */
+  .anno {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #1a73e8;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    margin-left: 6px;
+    vertical-align: middle;
+    cursor: help;
+    position: relative;
+    line-height: 1;
+    user-select: none;
+  }
+  .anno.policy { background: #c5221f; }
+  .anno:hover { transform: scale(1.15); }
+  .anno-tip {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.15s;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 400;
+    width: 280px;
+    z-index: 1500;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    text-align: left;
+    line-height: 1.5;
+    pointer-events: none;
+  }
+  .anno-tip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+  }
+  .anno:hover .anno-tip {
+    visibility: visible;
+    opacity: 1;
+  }
+  .anno-tip-title {
+    display: block;
+    font-weight: 700;
+    color: #fbbf24;
+    font-size: 10.5px;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+  .anno.policy .anno-tip-title { color: #fb7185; }
+  .anno-tip-body { font-weight: 400; }
+
+  /* ===== Floating Demo Panel (status switcher) ===== */
+  .demo-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 240px;
+    background: #1f2937;
+    color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    z-index: 900;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .demo-panel-head {
+    background: #111827;
+    padding: 8px 12px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    font-size: 11px;
+    color: #fbbf24;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .demo-panel-head .toggle-btn {
+    background: none; border: none; color: #fbbf24;
+    cursor: pointer; font-size: 14px; line-height: 1;
+  }
+  .demo-panel-body { padding: 10px 12px; }
+  .demo-panel.collapsed .demo-panel-body { display: none; }
+  .demo-group { margin-bottom: 10px; }
+  .demo-group:last-child { margin-bottom: 0; }
+  .demo-group-label {
+    display: block;
+    color: #9ca3af;
+    font-size: 10.5px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .demo-btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .demo-btn {
+    flex: 0 0 auto;
+    background: #374151;
+    color: #fff;
+    border: 1px solid #4b5563;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    cursor: pointer;
+    line-height: 1.2;
+  }
+  .demo-btn:hover { background: #4b5563; }
+  .demo-btn.active { background: #1a73e8; border-color: #1a73e8; }
+
+  /* Toggle switch */
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .switch {
+    position: relative;
+    width: 40px;
+    height: 20px;
+    background: #ccc;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px; height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    transition: left .2s;
+  }
+  .switch.on { background: #d93025; }
+  .switch.on::after { left: 22px; }
+
+  /* History table */
+  .history-title {
+    color: #1a73e8;
+    font-size: 14px;
+    font-weight: 700;
+    margin-top: 36px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #1a73e8;
+  }
+  table.history {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 12px;
+  }
+  table.history th, table.history td { word-wrap: break-word; }
+  table.history th, table.history td {
+    padding: 9px 12px;
+    text-align: center;
+    border-bottom: 1px solid #ececec;
+  }
+  table.history th {
+    background: #fafafa;
+    color: #444;
+    font-weight: 600;
+  }
+  table.history tr:hover td { background: #fafbfc; }
+  /* Truncated cell with hover tooltip */
+  table.history td.reason-cell {
+    position: relative;
+    cursor: pointer;
+    text-align: left;
+  }
+  table.history th.reason-th { text-align: left; }
+  table.history td.reason-cell .reason-text {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+  }
+  table.history td.reason-cell:hover .reason-full {
+    visibility: visible;
+    opacity: 1;
+  }
+  .reason-full {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f1f3f4;
+    color: #222;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #d0d0d0;
+    font-size: 11px;
+    font-weight: 400;
+    white-space: normal;
+    width: 280px;
+    z-index: 1500;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    text-align: left;
+    line-height: 1.5;
+    transition: opacity 0.15s;
+    pointer-events: none;
+  }
+  .reason-full::after {
+    /* SVG arrow — crisp 1px stroke matching the tooltip box border */
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    width: 14px;
+    height: 8px;
+    margin-left: -7px;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'><path d='M0.5 7L7 0.5L13.5 7' fill='%23f1f3f4' stroke='%23d0d0d0' stroke-width='1' stroke-linejoin='miter'/><rect x='1' y='7' width='12' height='1' fill='%23f1f3f4'/></svg>") no-repeat;
+  }
+
+  /* Pagination */
+  .pager {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: #777;
+    background: #f8f8f8;
+    margin-top: 0;
+  }
+  .pager-left, .pager-right { display: flex; align-items: center; }
+  .pager-right { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
+  .pager-center {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+  }
+  .pager-center .first, .pager-center .last {
+    color: #bbb;
+    padding: 0 4px;
+  }
+  .pager-center .nav-btn {
+    width: 26px; height: 26px;
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+    background: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 12px;
+    padding: 0;
+  }
+  .pager-center .nav-btn:hover:not(:disabled) {
+    background: #f5f5f5;
+    border-color: #c0c0c0;
+    color: #555;
+  }
+  .pager-center .page-input {
+    width: 38px; height: 26px;
+    border: 1px solid #1a73e8;
+    border-radius: 2px;
+    text-align: center;
+    font-size: 12px;
+    color: #1a73e8;
+    background: #fff;
+    padding: 0;
+  }
+  .pager-center .of-text { color: #555; padding: 0 4px; }
+  .pager select.page-size,
+  .pager select.pager-action {
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+    padding: 0 24px 0 8px;
+    height: 26px;
+    font-size: 12px;
+    background: #fff;
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23666' d='M0 0l5 6 5-6z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    cursor: pointer;
+  }
+  .pager select.pager-action { min-width: 60px; }
+
+  /* Reason input under toggle */
+  .reason-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .reason-row textarea {
+    min-height: 60px;
+    resize: vertical;
+  }
+  .block-group { margin-bottom: 18px; }
+  .block-group + .block-group { padding-top: 14px; border-top: 1px dashed #e5e5e5; }
+
+  /* Inline note */
+  .inline-note {
+    font-size: 11px;
+    color: #888;
+    margin-top: 6px;
+    margin-left: 150px;
+  }
+
+  /* Confirmation warning */
+  .warn-text {
+    color: #d93025;
+    font-size: 11px;
+    margin-left: 10px;
+  }
+
+  /* ====== Cancel Subscription Confirmation Modal ====== */
+  .cmodal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .cmodal-overlay.show { display: flex; }
+  .cmodal {
+    background: #fff;
+    width: 520px;
+    max-width: 95vw;
+    border-radius: 6px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.22);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .cmodal-head {
+    padding: 14px 20px;
+    border-bottom: 1px solid #ececec;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cmodal-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #d93025;
+    letter-spacing: -0.1px;
+  }
+  .cmodal-x {
+    background: none; border: none; cursor: pointer;
+    color: #999; font-size: 20px; line-height: 1;
+    padding: 0; width: 24px; height: 24px;
+  }
+  .cmodal-x:hover { color: #222; }
+  .cmodal-body {
+    padding: 18px 20px 16px;
+    font-size: 12.5px;
+    color: #333;
+  }
+  .cmodal-body .strong { color: #d93025; font-weight: 600; }
+  .cm-field { margin-bottom: 12px; }
+  .cm-label {
+    display: block;
+    font-size: 12px;
+    color: #444;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .cm-label .req { color: #d93025; margin-left: 2px; }
+  .cmodal-body select.case-select {
+    width: 100%;
+    padding: 0 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 3px;
+    font-size: 12.5px;
+    background: #fff;
+    height: 34px;
+    color: #333;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cmodal-body select.case-select:focus { outline: none; border-color: #1a73e8; }
+  /* ====== Custom case dropdown (replaces native select) ====== */
+  .custom-select { position: relative; width: 100%; }
+  .cs-trigger {
+    width: 100%;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 3px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 12.5px;
+    color: #333;
+    font-family: inherit;
+    text-align: left;
+  }
+  .cs-trigger:hover { border-color: #b5b5b5; }
+  .cs-trigger.open { border-color: #1a73e8; }
+  .cs-trigger-text { flex: 1; }
+  .cs-trigger-text.placeholder { color: #999; font-style: italic; }
+  .cs-arrow {
+    font-size: 9px;
+    color: #888;
+    margin-left: 8px;
+    transition: transform 0.15s;
+  }
+  .cs-trigger.open .cs-arrow { transform: rotate(180deg); }
+  .cs-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 3px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    z-index: 100;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 4px 0;
+  }
+  .cs-panel[hidden] { display: none; }
+  .cs-group-title {
+    padding: 8px 14px 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #1a73e8;
+    background: #f3f6fb;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-top: 1px solid #e7edf6;
+  }
+  .cs-group-title:first-child { border-top: none; }
+  .cs-option {
+    padding: 9px 14px 9px 24px;
+    font-size: 12.5px;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+  }
+  .cs-option:hover { background: #eef3fc; color: #1a73e8; }
+  .cs-option.selected { background: #e7f0fd; color: #1a73e8; font-weight: 600; }
+  .cmodal-body textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 9px 11px;
+    border: 1px solid #d9d9d9;
+    border-radius: 3px;
+    font-size: 12.5px;
+    font-family: inherit;
+    resize: vertical;
+    color: #333;
+    line-height: 1.5;
+  }
+  .cmodal-body textarea:focus { outline: none; border-color: #1a73e8; }
+
+  .case-panel {
+    padding: 10px 12px;
+    margin: 0 0 12px;
+    background: #fef6f4;
+    border: 1px solid #fcd9d3;
+    border-left: 3px solid #d93025;
+    font-size: 12px;
+    line-height: 1.55;
+    border-radius: 3px;
+    color: #444;
+  }
+  .case-panel.default {
+    background: #f7f8fa;
+    border-color: #e4e7eb;
+    border-left-color: #5f6368;
+  }
+  .case-panel .case-title {
+    font-weight: 700;
+    color: #c5221f;
+    margin-bottom: 4px;
+    font-size: 12.5px;
+  }
+  .case-panel.default .case-title { color: #444; }
+  .case-panel ul { margin: 4px 0 0 16px; line-height: 1.6; }
+  .case-panel .case-sms {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #d0d0d0;
+    font-size: 11px;
+    color: #555;
+  }
+
+  .cm-effects {
+    margin: 0 0 14px;
+    color: #444;
+    line-height: 1.5;
+  }
+  .cm-effects .effects-intro {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+  .cm-effects ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .cm-effects ul li { color: #555; }
+
+  .cmodal-body .confirm-check {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #333;
+  }
+  .cmodal-body .confirm-check input[type="checkbox"] {
+    width: 14px; height: 14px;
+    accent-color: #d93025;
+    cursor: pointer;
+    margin: 0;
+  }
+  .cmodal-body .confirm-check label { cursor: pointer; }
+
+  .cmodal-foot {
+    padding: 12px 20px;
+    border-top: 1px solid #ececec;
+    background: #fafbfc;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .cmodal-foot .btn { padding: 7px 16px; font-size: 12px; }
+
+  /* ===== SMS Section ===== */
+  .section-title.section-sms {
+    margin-top: 32px;
+  }
+  /* Group separator between Shopcord and SMS — thin horizontal rule */
+  .group-divider {
+    border: none;
+    border-top: 1px solid #e5e5e5;
+    margin: 56px 0 0;
+    height: 0;
+  }
+
+  /* Small annotation pills used in SMS section ("new", "moved from ...") */
+  .tag-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.2px;
+  }
+  .tag-pill.new { background: #e6f4ea; color: #1e8e3e; }
+  .tag-pill.moved { background: #e7f0fd; color: #1a73e8; }
+
+  /* SMS Status descriptive panel */
+  .info-panel {
+    background: #fdf6e3;
+    border: 1px solid #f0e3b8;
+    border-radius: 3px;
+    padding: 10px 12px;
+    font-size: 11.5px;
+    line-height: 1.7;
+    color: #555;
+    margin: 8px 0 14px 150px;
+  }
+  .info-panel b { color: #222; font-weight: 700; }
+
+  /* Indented sub-field for Error code / Error description */
+  .field.sub-field label {
+    color: #666;
+    padding-left: 12px;
+  }
+
+  /* Badge styles for new SMS Status (5 values) and Verification Status (4 values) */
+  .badge.sms-active        { background: #e6f4ea; color: #1e8e3e; }
+  .badge.sms-onboarding    { background: #f1f3f4; color: #5f6368; }
+  .badge.sms-pending       { background: #fff4e5; color: #e67e22; }
+  .badge.sms-suspended     { background: #fde8e8; color: #d93025; }
+  .badge.sms-deactivated   { background: #1f2937; color: #fff; }
+  .badge.verify-approved          { background: #e6f4ea; color: #1e8e3e; }
+  .badge.verify-pending-review    { background: #f1f3f4; color: #5f6368; }
+  .badge.verify-in-review         { background: #fff4e5; color: #e67e22; }
+  .badge.verify-rejected-resubmit { background: #fde8e8; color: #d93025; }
+  .badge.verify-rejected-final    { background: #1f2937; color: #fff; }
+</style>
+</head>
+<body>
+
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <div class="brand-title">&amp;merci</div>
+    <div class="brand-sub">URBANWEAR</div>
+  </div>
+  <div class="meta">
+    <span class="meta-label">Opened</span><span>08/11/2025</span>
+    <span class="meta-label">ID</span><span>Andmerci</span>
+    <span class="meta-label">Last Modified On</span><span>04/27/2026 01:15 PM (ldap_developer)</span>
+    <span class="meta-label">FG AE</span><span>test8888</span>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab">Basic Info</div>
+  <div class="tab">Setting</div>
+  <div class="tab">Rewards</div>
+  <div class="tab">FG Pay</div>
+  <div class="tab">Contract</div>
+  <div class="tab">Admin Info</div>
+  <div class="tab">Rating</div>
+  <div class="tab">Grouping</div>
+  <div class="tab">Settlement</div>
+  <div class="tab active">Shopcord</div>
+</div>
+
+<!-- Tab actions -->
+<div class="tab-actions">
+  <button class="btn disabled" id="shopcordSaveBtn">Save</button>
+</div>
+
+<!-- Section title -->
+<div class="section-title">
+  <span>Shopcord<span class="anno">1<span class="anno-tip"><span class="anno-tip-title">WA 2.4.0.1 / 2.4.0.2 — Shopcord Tab</span><span class="anno-tip-body">Add a "Shopcord" tab after existing tabs (Basic Info / Setting / Rewards / FG Pay / Contract / Admin Info / Rating / Grouping / Settlement). Tab is only displayed when vendor type = Shopcord OR FG account is linked to a Shopcord account.</span></span></span></span>
+  <span class="status-pill">
+    Status: <span class="ok" id="topStatus">Active</span> &nbsp;|&nbsp;
+    Subscription: <span class="ok" id="topSubscription">Subscribed</span>
+  </span>
+</div>
+
+<!-- ====== Account Info ====== -->
+<div class="block">
+  <h3>Account Info</h3>
+  <div class="form-grid">
+    <div class="field">
+      <label>Sign-up Method<span class="anno">2<span class="anno-tip"><span class="anno-tip-title">WA 2.4.1.3 — Sign-up method</span><span class="anno-tip-body">Display how the vendor registered: (1) Direct Sign-up (2) FashionGo Login.</span></span></span></label>
+      <input type="text" value="FashionGo Login" readonly>
+    </div>
+    <div class="field">
+      <label>Sign-up Date<span class="anno">3<span class="anno-tip"><span class="anno-tip-title">WA 2.4.1.4 — Link date</span><span class="anno-tip-body">Date the Shopcord account was first created or linked.</span></span></span></label>
+      <input type="text" value="08/11/2025, 10:24 AM" readonly>
+    </div>
+    <div class="field">
+      <label>Shopcord Vendor ID<span class="anno">4<span class="anno-tip"><span class="anno-tip-title">WA 2.4.1.2 — Shopcord Vendor ID</span><span class="anno-tip-body">Display the internal Shopcord Vendor ID (system-generated, e.g. SC-100023871).</span></span></span></label>
+      <input type="text" value="SC-100023871" readonly>
+    </div>
+    <div class="field">
+      <label>Shopcord Credentials<span class="anno">5<span class="anno-tip"><span class="anno-tip-title">WA 2.4.1.6 — Shopcord Credentials</span><span class="anno-tip-body">Vendor's Shopcord login email address.</span></span></span></label>
+      <input type="text" value="andmerci@example.com" readonly>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <a href="#" style="color:#1a73e8; text-decoration:none;" onclick="event.preventDefault(); alert('Password reset email sent.');">Send Email to Change Password</a>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Status Management ====== -->
+<div class="block">
+  <h3 class="section-blue">Status Management<span class="anno">7<span class="anno-tip"><span class="anno-tip-title">WA 2.4.2.1 — View Shopcord vendor status</span><span class="anno-tip-body">Display current Shopcord status (PM 정정 4 values):<br>(1) <b>Active</b> — 구독완료, Full access<br>(2) <b>Lead</b> — 미구독, 특정 기능만 가능 (라인시트 발행, 고객 관리, 아이템 관리, 오더 수신)<br>(3) <b>Inactive</b> — 문제 있는 벤더 임시 차단 (payout은 가능)<br>(4) <b>Closed</b> — 계정 영구 종료 (모든 기능 불가능, 로그인 불가능)<br><br>PRD v2.4의 3 values (Active / Lead / Inactive) 폐기. "Closed" 신규 추가.</span></span></span></h3>
+  <div class="form-grid">
+    <div class="field">
+      <label>Status<span class="anno">8<span class="anno-tip"><span class="anno-tip-title">WA 2.4.2.2 — Manually change Shopcord status</span><span class="anno-tip-body">Allow WA admin to change vendor status to Active / Lead / Inactive / Closed via dropdown.</span></span></span></label>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select style="flex:1;">
+          <option>Active</option>
+          <option>Lead</option>
+          <option>Inactive</option>
+          <option>Closed</option>
+        </select>
+        <button class="btn" style="white-space:nowrap;">Update Status</button>
+      </div>
+    </div>
+    <div class="field"></div>
+  </div>
+
+  <!-- Status change history -->
+  <div class="history-title sub-black">Status Change History<span class="anno">9<span class="anno-tip"><span class="anno-tip-title">WA 2.4.2.5 — Status change history</span><span class="anno-tip-body">Table showing status change history: (1) date (2) change detail (3) acted by. Follows the same pattern as the "FG Open/Close History" table in the existing Setting tab.</span></span></span></div>
+  <table class="history">
+    <thead>
+      <tr>
+        <th style="width:30%;">Date</th>
+        <th style="width:40%;">Change Detail</th>
+        <th style="width:30%;">Acted By</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>04/27/2026, 01:15 PM</td>
+        <td>Active</td>
+        <td>ldap_developer</td>
+      </tr>
+      <tr>
+        <td>03/14/2026, 09:42 AM</td>
+        <td>Inactive</td>
+        <td>jinah.lee</td>
+      </tr>
+      <tr>
+        <td>11/02/2025, 03:21 PM</td>
+        <td>Active</td>
+        <td>jennie.ryu</td>
+      </tr>
+      <tr>
+        <td>10/15/2025, 11:08 AM</td>
+        <td>Lead</td>
+        <td>System</td>
+      </tr>
+      <tr>
+        <td>08/11/2025, 10:24 AM</td>
+        <td>Lead</td>
+        <td>System</td>
+      </tr>
+      <tr>
+        <td>07/22/2025, 02:30 PM</td>
+        <td>Active</td>
+        <td>jinah.lee</td>
+      </tr>
+      <tr>
+        <td>07/15/2025, 11:14 AM</td>
+        <td>Lead</td>
+        <td>System</td>
+      </tr>
+      <tr>
+        <td>06/30/2025, 09:08 AM</td>
+        <td>Lead</td>
+        <td>System</td>
+      </tr>
+      <tr>
+        <td>06/05/2025, 04:55 PM</td>
+        <td>Active</td>
+        <td>jennie.ryu</td>
+      </tr>
+      <tr>
+        <td>05/12/2025, 08:42 AM</td>
+        <td>Lead</td>
+        <td>System</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pager">
+    <div class="pager-center">
+      <span class="first">First</span>
+      <button class="nav-btn" disabled>&lt;</button>
+      <span>Page</span>
+      <input class="page-input" value="1">
+      <span class="of-text">of 1</span>
+      <button class="nav-btn" disabled>&gt;</button>
+      <span class="last">Last</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Payout Access Block ====== -->
+<div class="block">
+  <h3 class="section-blue">Payout Access Block<span class="anno">10<span class="anno-tip"><span class="anno-tip-title">WA 2.4.2.4 — Block Access toggle</span><span class="anno-tip-body">Toggle to immediately block or unblock the vendor's access to Shopcord. A reason input field is provided alongside the toggle.<br><br>v2.4 + PM 정정: Split into <b>Payout Access Block</b> (blocks payout, sets status to Inactive) and <b>SMS Access Block</b> (blocks SMS access only, does not affect overall account status).</span></span></span></h3>
+
+  <div class="field">
+    <label>Payout Block</label>
+    <div class="toggle">
+      <div class="switch" id="payoutBlockToggle" onclick="this.classList.toggle('on')"></div>
+      <span style="font-size:11px; color:#888;">Block vendor's payout</span>
+    </div>
+  </div>
+  <div class="reason-row">
+    <label style="font-size:12px; color:#444; padding-top:6px;">Block Reason <span style="color:#d93025;">*</span></label>
+    <textarea placeholder="Required when applying a Payout Block..."></textarea>
+  </div>
+
+  <div class="inline-note">
+    Setting status to <b>Inactive</b> will automatically deactivate all active linesheets and prevent the vendor from activating new ones.<span class="anno">11<span class="anno-tip"><span class="anno-tip-title">WA 2.4.2.3 — Behavior when set to Inactive</span><span class="anno-tip-body">When a vendor is set to Inactive: (1) all Active linesheets are automatically deactivated, (2) the vendor cannot activate new linesheets. A confirmation warning message is displayed before the change is applied.</span></span></span>
+  </div>
+
+  <!-- Payout Block History -->
+  <div class="history-title sub-black">Payout Block History<span class="anno">12<span class="anno-tip"><span class="anno-tip-title">WA 2.4.2.6 — Block Access history</span><span class="anno-tip-body">Table tracking block/unblock actions: Date, Action (Blocked / Unblocked), Acted By, Reason (entered by admin at time of action).</span></span></span></div>
+  <table class="history">
+    <thead>
+      <tr>
+        <th style="width:25%;">Date</th>
+        <th style="width:15%;">Action</th>
+        <th style="width:22%;">Acted By</th>
+        <th class="reason-th" style="width:38%;">Reason</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>05/18/2026, 03:21 PM</td>
+        <td><span class="status-text active">Unblocked</span></td>
+        <td>grace.k</td>
+        <td class="reason-cell"><span class="reason-text">Dispute resolved after vendor submitted updated bank info and finance team verified the corrected routing details</span><span class="reason-full">Dispute resolved after vendor submitted updated bank info and finance team verified the corrected routing details.</span></td>
+      </tr>
+      <tr>
+        <td>05/10/2026, 09:14 AM</td>
+        <td><span class="status-text inactive">Blocked</span></td>
+        <td>jinah.lee</td>
+        <td class="reason-cell"><span class="reason-text">Payout dispute — vendor contested two consecutive payouts citing incorrect order amounts</span><span class="reason-full">Payout dispute — vendor contested two consecutive payouts citing incorrect order amounts. Escalated to finance team for reconciliation before unblocking.</span></td>
+      </tr>
+      <tr>
+        <td>03/02/2026, 10:42 AM</td>
+        <td><span class="status-text active">Unblocked</span></td>
+        <td>jennie.ryu</td>
+        <td class="reason-cell"><span class="reason-text">Vendor compliance restored</span><span class="reason-full">Vendor compliance restored after completing required documentation updates and re-verification of business credentials.</span></td>
+      </tr>
+      <tr>
+        <td>02/14/2026, 04:15 PM</td>
+        <td><span class="status-text inactive">Blocked</span></td>
+        <td>jennie.ryu</td>
+        <td class="reason-cell"><span class="reason-text">Repeated payment failures across multiple billing cycles — flagged for manual review by finance</span><span class="reason-full">Repeated payment failures across multiple billing cycles — flagged for manual review by finance team. Vendor unresponsive to email reminders.</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pager">
+    <div class="pager-center">
+      <span class="first">First</span>
+      <button class="nav-btn" disabled>&lt;</button>
+      <span>Page</span>
+      <input class="page-input" value="1">
+      <span class="of-text">of 1</span>
+      <button class="nav-btn" disabled>&gt;</button>
+      <span class="last">Last</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Subscription Management ====== -->
+<div class="block" style="margin-top:18px;">
+  <h3 class="section-blue">Subscription Management</h3>
+  <div class="form-grid">
+    <div class="field">
+      <label>Subscription Status<span class="anno">13<span class="anno-tip"><span class="anno-tip-title">WA 2.4.3.1 — View subscription status</span><span class="anno-tip-body">Display current subscription status (PM 정정 v2 — 5 values 재정의): (1) Not subscribed (2) Subscribed (3) Grace Period (4) Cancelling (5) Cancelled. PRD v2.4의 2 values (Subscribed/Not Subscribed) 폐기.<br><br><b>Grace Period</b>: 신규 가입 후 7일간 grace 기간. 벤더는 캔슬 불가, WA admin은 강제 종료 가능.<br><b>Cancelling</b>: 취소 진행 중, access end date 도래 전.<br><b>Cancelled</b>: 취소 완료, access 종료.<br><br>버튼 표시 룰: Subscribed / Grace Period → <b>Cancel Subscription</b> 노출. Not subscribed / Cancelled → <b>Subscribe</b> 노출. Cancelling → 둘 다 숨김 (임시, PM 확정 필요).</span></span></span></label>
+      <div class="value-text"><span class="badge subscribed" id="subStatusBadge">Subscribed</span></div>
+    </div>
+    <div class="field">
+      <label>Subscription Date<span class="anno">14<span class="anno-tip"><span class="anno-tip-title">WA 2.4.3.2 — Subscription date</span><span class="anno-tip-body">Date the vendor first subscribed. (PRD 명칭: Consent Date → PM 정정: Subscription Date)</span></span></span></label>
+      <div class="value-text">11/02/2025</div>
+    </div>
+    <div class="field">
+      <label>Billing Cycle (start - end)<span class="anno">15<span class="anno-tip"><span class="anno-tip-title">WA 2.4.3.3 — Current billing cycle</span><span class="anno-tip-body">Display the current billing cycle as a "start - end" text. (PM 정정: 텍스트 표기)</span></span></span></label>
+      <div class="value-text">11/02/2025 - 12/01/2025</div>
+    </div>
+    <div class="field">
+      <label>Next billing date</label>
+      <div class="value-text">12/02/2025</div>
+    </div>
+    <div class="field">
+      <label>Last transaction date</label>
+      <div class="value-text">11/03/2025</div>
+    </div>
+    <div class="field">
+      <label>Grace period end date</label>
+      <div class="value-text" id="gracePeriodEndDate">—</div>
+    </div>
+    <div class="field">
+      <label>Access end date</label>
+      <div class="value-text" id="accessEndDate">—</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn" style="background:#1e8e3e; border-color:#1e8e3e; display:none;" id="resubscribeBtn" title="Shown when Subscription Status = Not subscribed / Cancelled.">Subscribe</button>
+    <button class="btn danger" id="cancelSubscriptionBtn" onclick="openCancelModal()">Cancel Subscription<span class="anno">17<span class="anno-tip"><span class="anno-tip-title">WA 2.4.3.6 — Manual subscription cancellation</span><span class="anno-tip-body">Allow WA admin to manually cancel a vendor's subscription. A reason input field and confirmation step are required.<br><br>PM 정정: 7 cases in 2 categories — <b>Canceled by vendor</b> (3 cases) / <b>Canceled by FG</b> (4 cases). PRD v2.4의 9 cases / 4 categories 구조 폐기. 각 케이스 선택 시 모달 안에 PM 정의 설명문 표시.<br><br>버튼 표시 룰: Subscription Status = Subscribed / Grace Period 일 때만 노출. (Grace Period 중에도 WA admin은 강제 종료 가능.)</span></span></span></button>
+  </div>
+  <div style="text-align:right;">
+    <span class="warn-text">Manually canceling requires a reason and confirmation step.</span>
+  </div>
+  <div style="text-align:right; font-size:11px; color:#888; margin-top:4px;">
+    <b>Cancel Subscription</b>: Subscribed / Grace Period 일 때 노출.<br>
+    <b>Subscribe</b>: Not subscribed / Cancelled 일 때 노출. (Cancelling 중에는 둘 다 숨김 — PM 확정 필요.)
+  </div>
+</div>
+
+<!-- Subscription history -->
+<div class="history-title">Subscription history<span class="anno">18<span class="anno-tip"><span class="anno-tip-title">WA 2.4.3.5 — Subscription history</span><span class="anno-tip-body">Table showing subscription status change history. Columns: Date / Status / Detail.<br><br>Status values (PM 정의): <b>Subscribed</b> / <b>Canceled by vendor</b> / <b>Canceled by FG</b> / <b>Subscription Fail</b>. Status는 뱃지가 아닌 텍스트로 표기.</span></span></span></div>
+<table class="history">
+  <thead>
+    <tr>
+      <th style="width:28%;">Date</th>
+      <th style="width:25%;">Status</th>
+      <th style="width:47%;">Detail</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>07/01/2025, 02:00 AM</td>
+      <td>Canceled by FG</td>
+      <td>Fraud alert</td>
+    </tr>
+    <tr>
+      <td>06/07/2025, 02:00 AM</td>
+      <td>Subscribed</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>04/12/2025, 02:00 AM</td>
+      <td>Canceled by vendor</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>04/11/2025, 02:00 AM</td>
+      <td>Subscribed</td>
+      <td>Renewal</td>
+    </tr>
+    <tr>
+      <td>03/11/2025, 02:00 AM</td>
+      <td>Subscription Fail</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>02/11/2025, 02:00 AM</td>
+      <td>Subscribed</td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+<div class="pager">
+  <div class="pager-center">
+    <span class="first">First</span>
+    <button class="nav-btn" disabled>&lt;</button>
+    <span>Page</span>
+    <input class="page-input" value="1">
+    <span class="of-text">of 2</span>
+    <button class="nav-btn">&gt;</button>
+    <span class="last">Last</span>
+  </div>
+</div>
+
+<!-- Sub-Accounts -->
+<div class="history-title">Sub-Accounts<span class="anno">20<span class="anno-tip"><span class="anno-tip-title">WA 2.4.4.1 — Sub-Accounts (PLCY 9.1.4)</span><span class="anno-tip-body">Master Account managed as a standard FG vendor entry in WA Vendor List. Sub-Accounts are NOT separate entries; visible and manageable within Master's Vendor Detail &gt; Shopcord tab. Columns: Email / Name / Permission Settings / Account Status (Active/Inactive) / Last Login / Last IP.</span></span></span></div>
+<table class="history">
+  <thead>
+    <tr>
+      <th style="width:22%;">Email</th>
+      <th style="width:13%;">Name</th>
+      <th style="width:22%;">Permission Settings</th>
+      <th style="width:11%;">Account Status</th>
+      <th style="width:18%;">Last Login</th>
+      <th style="width:14%;">Last IP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>jane.kim@andmerci.com</td>
+      <td>Jane Kim</td>
+      <td>Linesheet, Order, Marketing</td>
+      <td><span class="badge active">Active</span></td>
+      <td>05/13/2026, 09:42 AM</td>
+      <td>203.0.113.45</td>
+    </tr>
+    <tr>
+      <td>mike.park@andmerci.com</td>
+      <td>Mike Park</td>
+      <td>Order</td>
+      <td><span class="badge active">Active</span></td>
+      <td>05/12/2026, 04:18 PM</td>
+      <td>198.51.100.22</td>
+    </tr>
+    <tr>
+      <td>sarah.choi@andmerci.com</td>
+      <td>Sarah Choi</td>
+      <td>Linesheet, Marketing</td>
+      <td><span class="badge canceled">Inactive</span></td>
+      <td>04/20/2026, 11:30 AM</td>
+      <td>192.0.2.18</td>
+    </tr>
+    <tr>
+      <td>david.lee@andmerci.com</td>
+      <td>David Lee</td>
+      <td>Order, Settlement</td>
+      <td><span class="badge active">Active</span></td>
+      <td>05/16/2026, 02:14 PM</td>
+      <td>203.0.113.77</td>
+    </tr>
+    <tr>
+      <td>emma.han@andmerci.com</td>
+      <td>Emma Han</td>
+      <td>Linesheet, Order, Marketing, Settlement</td>
+      <td><span class="badge canceled">Inactive</span></td>
+      <td>03/05/2026, 09:46 AM</td>
+      <td>192.0.2.45</td>
+    </tr>
+    <tr>
+      <td>chris.park@andmerci.com</td>
+      <td>Chris Park</td>
+      <td>Linesheet, Order</td>
+      <td><span class="badge active">Active</span></td>
+      <td>05/14/2026, 10:02 AM</td>
+      <td>203.0.113.91</td>
+    </tr>
+    <tr>
+      <td>lily.kim@andmerci.com</td>
+      <td>Lily Kim</td>
+      <td>Order, Marketing</td>
+      <td><span class="badge active">Active</span></td>
+      <td>05/13/2026, 03:42 PM</td>
+      <td>198.51.100.55</td>
+    </tr>
+    <tr>
+      <td>ben.song@andmerci.com</td>
+      <td>Ben Song</td>
+      <td>Linesheet, Order, Marketing, Settlement</td>
+      <td><span class="badge active">Active</span></td>
+      <td>05/15/2026, 09:21 AM</td>
+      <td>203.0.113.103</td>
+    </tr>
+    <tr>
+      <td>rachel.jung@andmerci.com</td>
+      <td>Rachel Jung</td>
+      <td>Settlement</td>
+      <td><span class="badge canceled">Inactive</span></td>
+      <td>02/18/2026, 01:11 PM</td>
+      <td>192.0.2.71</td>
+    </tr>
+    <tr>
+      <td>nathan.choi@andmerci.com</td>
+      <td>Nathan Choi</td>
+      <td>Linesheet, Order, Marketing</td>
+      <td><span class="badge active">Active</span></td>
+      <td>05/12/2026, 05:55 PM</td>
+      <td>203.0.113.42</td>
+    </tr>
+  </tbody>
+</table>
+<div class="pager">
+  <div class="pager-center">
+    <span class="first">First</span>
+    <button class="nav-btn" disabled>&lt;</button>
+    <span>Page</span>
+    <input class="page-input" value="1">
+    <span class="of-text">of 1</span>
+    <button class="nav-btn" disabled>&gt;</button>
+    <span class="last">Last</span>
+  </div>
+</div>
+
+<!-- Sub-Account Login History -->
+<div class="history-title">Account Login History<span class="anno">21<span class="anno-tip"><span class="anno-tip-title">WA 2.4.4.2 — Account Log history</span><span class="anno-tip-body">Displays login activity for the <b>master account and all sub-accounts combined</b>. Columns: Email / Name / Login Date &amp; Time / IP Address.</span></span></span></div>
+<table class="history">
+  <thead>
+    <tr>
+      <th style="width:30%;">Email</th>
+      <th style="width:20%;">Name</th>
+      <th style="width:30%;">Login Date & Time</th>
+      <th style="width:20%;">IP Address</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>jane.kim@andmerci.com</td>
+      <td>Jane Kim</td>
+      <td>05/13/2026, 09:42 AM</td>
+      <td>203.0.113.45</td>
+    </tr>
+    <tr>
+      <td>mike.park@andmerci.com</td>
+      <td>Mike Park</td>
+      <td>05/12/2026, 04:18 PM</td>
+      <td>198.51.100.22</td>
+    </tr>
+    <tr>
+      <td>jane.kim@andmerci.com</td>
+      <td>Jane Kim</td>
+      <td>05/12/2026, 11:05 AM</td>
+      <td>203.0.113.45</td>
+    </tr>
+    <tr>
+      <td>jane.kim@andmerci.com</td>
+      <td>Jane Kim</td>
+      <td>05/11/2026, 02:34 PM</td>
+      <td>203.0.113.45</td>
+    </tr>
+    <tr>
+      <td>mike.park@andmerci.com</td>
+      <td>Mike Park</td>
+      <td>05/10/2026, 10:21 AM</td>
+      <td>198.51.100.22</td>
+    </tr>
+    <tr>
+      <td>chris.park@andmerci.com</td>
+      <td>Chris Park</td>
+      <td>05/14/2026, 10:02 AM</td>
+      <td>203.0.113.91</td>
+    </tr>
+    <tr>
+      <td>lily.kim@andmerci.com</td>
+      <td>Lily Kim</td>
+      <td>05/13/2026, 03:42 PM</td>
+      <td>198.51.100.55</td>
+    </tr>
+    <tr>
+      <td>ben.song@andmerci.com</td>
+      <td>Ben Song</td>
+      <td>05/15/2026, 09:21 AM</td>
+      <td>203.0.113.103</td>
+    </tr>
+    <tr>
+      <td>nathan.choi@andmerci.com</td>
+      <td>Nathan Choi</td>
+      <td>05/12/2026, 05:55 PM</td>
+      <td>203.0.113.42</td>
+    </tr>
+    <tr>
+      <td>jane.kim@andmerci.com</td>
+      <td>Jane Kim</td>
+      <td>05/09/2026, 04:33 PM</td>
+      <td>203.0.113.45</td>
+    </tr>
+  </tbody>
+</table>
+<div class="pager">
+  <div class="pager-center">
+    <span class="first">First</span>
+    <button class="nav-btn" disabled>&lt;</button>
+    <span>Page</span>
+    <input class="page-input" value="1">
+    <span class="of-text">of 3</span>
+    <button class="nav-btn">&gt;</button>
+    <span class="last">Last</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- =================== SMS SECTION =========================== -->
+<!-- ============================================================ -->
+<div class="group-divider" aria-hidden="true"></div>
+<div class="section-title section-sms">
+  <span>SMS<span class="anno">23<span class="anno-tip"><span class="anno-tip-title">SMS Section — split from Shopcord</span><span class="anno-tip-body">SMS 관련 정보 및 관리 항목을 Shopcord Subscription에서 분리하여 별도 그룹으로 구성. SMS Account Info / SMS Block Access / SMS Billing Transfer Failure History 포함.</span></span></span></span>
+  <span class="status-pill">
+    Verification: <span class="ok" id="topVerify">approved</span> &nbsp;|&nbsp;
+    SMS Status: <span class="ok" id="topSmsStatus">active</span>
+  </span>
+</div>
+
+<!-- ====== SMS Account Info ====== -->
+<div class="block">
+  <h3 class="section-blue">SMS Account Info</h3>
+  <div class="form-grid">
+    <div class="field">
+      <label>SMS Phone number<span class="anno">6<span class="anno-tip"><span class="anno-tip-title">WA 2.4.1.5 — SMS Phone number</span><span class="anno-tip-body">Assigned SMS phone (sender) number for this vendor. PM 정정: Account Info에서 SMS Account Info로 이동.</span></span></span></label>
+      <input type="text" value="+1 (855) 555-0142" readonly>
+    </div>
+    <div class="field">
+      <label>SMS Status<span class="anno">24<span class="anno-tip"><span class="anno-tip-title">SMS Status — Twilio subaccount status (5 values)</span><span class="anno-tip-body">SMS subaccount lifecycle 상태 (Twilio subaccount status, 5 values):<br>(1) <b>onboarding</b> — 온보딩 미완료/필요<br>(2) <b>pending_verification</b> — TFN submit 후 ~ active 전 (pending or rejected)<br>(3) <b>active</b> — TFV approved, 정상 완료<br>(4) <b>suspended</b> — 일시정지 (e.g. shopcord 비구독, sms 사용료 미납)<br>(5) <b>deactivated</b> — 계정잠금 (e.g. 적발 등으로 강제사용정지)</span></span></span></label>
+      <div class="value-text"><span class="badge sms-active" id="smsStatusBadge">active</span></div>
+    </div>
+  </div>
+
+  <!-- SMS Status History -->
+  <div class="history-title sub-black">SMS Status History<span class="anno">27<span class="anno-tip"><span class="anno-tip-title">SMS Status History — new</span><span class="anno-tip-body">SMS Status 변경 이력. Columns: Date / Status / Acted By. Acted By는 admin 사용자 또는 System (사유 표시: e.g. "System (fee unpaid)").</span></span></span></div>
+  <table class="history">
+    <thead>
+      <tr>
+        <th style="width:35%;">Date</th>
+        <th style="width:35%;">Status</th>
+        <th style="width:30%;">Acted By</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>05/02/2026, 10:14 AM</td>
+        <td>active</td>
+        <td>jinah.lee</td>
+      </tr>
+      <tr>
+        <td>04/15/2026, 03:20 PM</td>
+        <td>active</td>
+        <td>System</td>
+      </tr>
+      <tr>
+        <td>03/30/2026, 02:00 AM</td>
+        <td>suspended</td>
+        <td>System (fee unpaid)</td>
+      </tr>
+      <tr>
+        <td>03/05/2026, 11:30 AM</td>
+        <td>active</td>
+        <td>System</td>
+      </tr>
+      <tr>
+        <td>02/14/2026, 09:42 AM</td>
+        <td>suspended</td>
+        <td>jennie.ryu</td>
+      </tr>
+      <tr>
+        <td>12/22/2025, 09:30 AM</td>
+        <td>active</td>
+        <td>System</td>
+      </tr>
+      <tr>
+        <td>12/20/2025, 04:11 PM</td>
+        <td>pending_verification</td>
+        <td>System</td>
+      </tr>
+      <tr>
+        <td>12/19/2025, 02:45 PM</td>
+        <td>onboarding</td>
+        <td>System</td>
+      </tr>
+      <tr>
+        <td>11/10/2025, 10:00 AM</td>
+        <td>deactivated</td>
+        <td>grace.k</td>
+      </tr>
+      <tr>
+        <td>10/02/2025, 08:30 AM</td>
+        <td>onboarding</td>
+        <td>System</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pager">
+    <div class="pager-center">
+      <span class="first">First</span>
+      <button class="nav-btn" disabled>&lt;</button>
+      <span>Page</span>
+      <input class="page-input" value="1">
+      <span class="of-text">of 2</span>
+      <button class="nav-btn">&gt;</button>
+      <span class="last">Last</span>
+    </div>
+  </div>
+
+  <!-- Verification Status History -->
+  <div class="history-title sub-black" style="margin-top:32px;">Verification Status History<span class="anno">28<span class="anno-tip"><span class="anno-tip-title">Verification Status History — TFV (Twilio, 5 values)</span><span class="anno-tip-body">TFV Verification 상태 변경 이력. Columns: Date / Status / Error / Description. Twilio webhook으로 받은 TFV 상태 변경 기록. 현재 status는 상단 status pill에서 확인.<br><br>TFV 5 values (Twilio):<br>(1) <b>pending_review</b> — 제출됨 (검토 대기 중)<br>(2) <b>in_review</b> — 검토 중<br>(3) <b>approved</b> — 승인됨 (Verified)<br>(4) <b>rejected_resubmit</b> — 거절, Resubmit eligible (edit_allowed = true)<br>(5) <b>rejected_final</b> — 거절, Resubmit ineligible (edit_allowed = false)</span></span></span></div>
+  <table class="history">
+    <thead>
+      <tr>
+        <th style="width:22%;">Date</th>
+        <th style="width:28%;">Status</th>
+        <th style="width:15%;">Error</th>
+        <th style="width:35%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>04/22/2026</td>
+        <td>approved</td>
+        <td>n/a</td>
+        <td>n/a</td>
+      </tr>
+      <tr>
+        <td>03/15/2026</td>
+        <td>in_review</td>
+        <td>n/a</td>
+        <td>TFN under Twilio review</td>
+      </tr>
+      <tr>
+        <td>02/28/2026</td>
+        <td>pending_review</td>
+        <td>n/a</td>
+        <td>TFN resubmitted</td>
+      </tr>
+      <tr>
+        <td>02/10/2026</td>
+        <td>rejected_resubmit</td>
+        <td>30002</td>
+        <td>Use case description insufficient</td>
+      </tr>
+      <tr>
+        <td>01/22/2026</td>
+        <td>in_review</td>
+        <td>n/a</td>
+        <td>TFN submitted, Twilio reviewing</td>
+      </tr>
+      <tr>
+        <td>01/05/2026</td>
+        <td>rejected_final</td>
+        <td>30001</td>
+        <td>Invalid use case (final)</td>
+      </tr>
+      <tr>
+        <td>12/20/2025</td>
+        <td>pending_review</td>
+        <td>n/a</td>
+        <td>TFN submitted</td>
+      </tr>
+      <tr>
+        <td>11/15/2025</td>
+        <td>rejected_resubmit</td>
+        <td>30005</td>
+        <td>Insufficient opt-in proof</td>
+      </tr>
+      <tr>
+        <td>10/30/2025</td>
+        <td>in_review</td>
+        <td>n/a</td>
+        <td>Initial submission under review</td>
+      </tr>
+      <tr>
+        <td>10/15/2025</td>
+        <td>pending_review</td>
+        <td>n/a</td>
+        <td>TFN initial submission</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pager">
+    <div class="pager-center">
+      <span class="first">First</span>
+      <button class="nav-btn" disabled>&lt;</button>
+      <span>Page</span>
+      <input class="page-input" value="1">
+      <span class="of-text">of 2</span>
+      <button class="nav-btn">&gt;</button>
+      <span class="last">Last</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SMS Block Access ====== -->
+<div class="block">
+  <h3 class="section-blue">SMS Block Access</h3>
+
+  <div class="field">
+    <label>SMS Block</label>
+    <div class="toggle">
+      <div class="switch" id="smsBlockToggle" onclick="this.classList.toggle('on')"></div>
+      <span style="font-size:11px; color:#888;">Block SMS access only</span>
+    </div>
+  </div>
+  <div class="reason-row">
+    <label style="font-size:12px; color:#444; padding-top:6px;">Block Reason <span style="color:#d93025;">*</span></label>
+    <textarea placeholder="Required when applying an SMS Block..."></textarea>
+  </div>
+
+  <!-- SMS Block Access History -->
+  <div class="history-title sub-black">SMS Block Access History</div>
+  <table class="history">
+    <thead>
+      <tr>
+        <th style="width:25%;">Date</th>
+        <th style="width:15%;">Action</th>
+        <th style="width:22%;">Acted By</th>
+        <th class="reason-th" style="width:38%;">Reason</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>04/22/2026, 11:08 AM</td>
+        <td><span class="status-text active">Unblocked</span></td>
+        <td>ldap_developer</td>
+        <td class="reason-cell"><span class="reason-text">Verified sender number</span><span class="reason-full">Verified sender number through carrier compliance. Vendor passed phone verification and provided opt-in source documentation.</span></td>
+      </tr>
+      <tr>
+        <td>04/15/2026, 02:30 PM</td>
+        <td><span class="status-text inactive">Blocked</span></td>
+        <td>grace.k</td>
+        <td class="reason-cell"><span class="reason-text">SMS abuse report — multiple buyers reported spam messages sent outside business hours without opt-in consent</span><span class="reason-full">SMS abuse report — multiple buyers reported spam messages sent outside business hours without opt-in consent. Carrier compliance check failed.</span></td>
+      </tr>
+      <tr>
+        <td>01/05/2026, 11:53 AM</td>
+        <td><span class="status-text inactive">Blocked</span></td>
+        <td>jinah.lee</td>
+        <td class="reason-cell"><span class="reason-text">Unverified sender number</span><span class="reason-full">Unverified sender number — vendor used a personal phone number that failed carrier verification within the 14-day grace window.</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pager">
+    <div class="pager-center">
+      <span class="first">First</span>
+      <button class="nav-btn" disabled>&lt;</button>
+      <span>Page</span>
+      <input class="page-input" value="1">
+      <span class="of-text">of 1</span>
+      <button class="nav-btn" disabled>&gt;</button>
+      <span class="last">Last</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SMS Billing Transfer Failure History (moved from Subscription) ====== -->
+<div class="block">
+  <h3 class="section-blue">SMS Billing Transfer Failure History<span class="anno">19<span class="anno-tip"><span class="anno-tip-title">WA 2.4.3.7 — SMS billing transfer failure history</span><span class="anno-tip-body">Tracks failed SMS overage charge transfer attempts. Columns: Date / Status (Pending / Failed) / Detail. PM 정정: Subscription Management에서 SMS 섹션으로 이동.</span></span></span></h3>
+  <table class="history">
+    <thead>
+      <tr>
+        <th style="width:28%;">Date</th>
+        <th style="width:25%;">Status</th>
+        <th style="width:47%;">Detail</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>05/17/2026, 02:00 AM</td>
+        <td>Failed</td>
+        <td>Insufficient funds in connected bank account</td>
+      </tr>
+      <tr>
+        <td>04/17/2026, 02:00 AM</td>
+        <td>Failed</td>
+        <td>Transfer Failed</td>
+      </tr>
+      <tr>
+        <td>03/17/2026, 02:00 AM</td>
+        <td>Pending</td>
+        <td>Bank verification in progress</td>
+      </tr>
+      <tr>
+        <td>02/17/2026, 02:00 AM</td>
+        <td>Failed</td>
+        <td>SMS overage amount exceeds available balance</td>
+      </tr>
+      <tr>
+        <td>01/17/2026, 02:00 AM</td>
+        <td>Failed</td>
+        <td>Card declined</td>
+      </tr>
+      <tr>
+        <td>12/17/2025, 02:00 AM</td>
+        <td>Failed</td>
+        <td>Connected account temporarily restricted</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pager">
+    <div class="pager-center">
+      <span class="first">First</span>
+      <button class="nav-btn" disabled>&lt;</button>
+      <span>Page</span>
+      <input class="page-input" value="1">
+      <span class="of-text">of 2</span>
+      <button class="nav-btn">&gt;</button>
+      <span class="last">Last</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Cancel Subscription Confirmation Modal ===== -->
+<div class="cmodal-overlay" id="cancelModal">
+  <div class="cmodal">
+    <div class="cmodal-head">
+      <span class="cmodal-title">⚠ Cancel Subscription<span class="anno">22<span class="anno-tip"><span class="anno-tip-title">WA 2.4.3.6 — Manual subscription cancellation</span><span class="anno-tip-body">PM 정정: 7 cancellation reasons in 2 categories — <b>Canceled by vendor</b> (3 cases: system error / account deletion / account closure) / <b>Canceled by FG</b> (4 cases: incorrect billing / account closure / fraud alert / account deletion). Reason selection + confirmation required. 각 케이스 선택 시 PM 정의 설명문이 모달 내 panel에 표시됨.</span></span></span></span>
+      <button class="cmodal-x" onclick="closeCancelModal()">×</button>
+    </div>
+    <div class="cmodal-body">
+      <div class="cm-field">
+        <label class="cm-label">Select Cancellation Case</label>
+        <div class="custom-select" id="caseSelect">
+          <button type="button" class="cs-trigger" id="csTrigger" onclick="toggleCaseSelect(event)">
+            <span class="cs-trigger-text placeholder" id="csTriggerText">— Select case —</span>
+            <span class="cs-arrow">▼</span>
+          </button>
+          <div class="cs-panel" id="csPanel" hidden>
+            <div class="cs-group-title">Canceled by vendor</div>
+            <div class="cs-option" data-value="vendor_req_system_error" onclick="selectCase(this)">Vendor request - system error</div>
+            <div class="cs-option" data-value="vendor_req_account_deletion" onclick="selectCase(this)">Vendor request - account deletion</div>
+            <div class="cs-option" data-value="vendor_req_account_closure" onclick="selectCase(this)">Vendor request - account closure</div>
+            <div class="cs-group-title">Canceled by FG</div>
+            <div class="cs-option" data-value="fg_incorrect_billing" onclick="selectCase(this)">FG - incorrect billing amount</div>
+            <div class="cs-option" data-value="fg_account_closure" onclick="selectCase(this)">FG - account closure</div>
+            <div class="cs-option" data-value="fg_vendor_fraud_alert" onclick="selectCase(this)">FG - vendor fraud alert</div>
+            <div class="cs-option" data-value="fg_account_deletion" onclick="selectCase(this)">FG - account deletion</div>
+          </div>
+          <input type="hidden" id="caseStatus" value="">
+        </div>
+      </div>
+
+      <div class="case-panel" id="casePanel"></div>
+
+      <div class="cm-effects">
+        <div class="effects-intro">This action will:</div>
+        <ul>
+          <li>Stop all future subscription fee transfers</li>
+          <li>Set subscription status to <b>Canceled</b></li>
+          <li>Daily retry attempts stop <b>immediately</b> upon cancellation</li>
+          <li>Cannot be undone without re-subscribing the vendor</li>
+        </ul>
+      </div>
+
+      <div class="cm-field" style="margin-bottom:0;">
+        <label class="cm-label">Cancellation Reason <span class="req">*</span></label>
+        <textarea id="cancelReason" placeholder="Enter the reason for canceling this subscription..."></textarea>
+      </div>
+
+      <div class="confirm-check">
+        <input type="checkbox" id="cancelConfirmCheck">
+        <label for="cancelConfirmCheck">I understand this action cannot be undone.</label>
+      </div>
+    </div>
+    <div class="cmodal-foot">
+      <button class="btn ghost" onclick="closeCancelModal()">Cancel</button>
+      <button class="btn danger" id="cancelConfirmBtn" onclick="confirmCancelSubscription()">Confirm Cancellation</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* PM 정의 — 7 cases / 2 categories. 각 케이스 선택 시 모달에 표시되는 설명문. */
+  var CASE_CONTENT = {
+    // === Canceled by vendor ===
+    vendor_req_system_error: {
+      cls: '',
+      title: 'Vendor request - system error',
+      body: 'Vendor previously submitted a cancellation request that was not processed due to a system error. Proceeding with cancellation as originally requested.'
+    },
+    vendor_req_account_deletion: {
+      cls: '',
+      title: 'Vendor request - account deletion',
+      body: 'Vendor has requested to delete their Shopcord account. Subscription will be cancelled and full account access will be blocked immediately.'
+    },
+    vendor_req_account_closure: {
+      cls: '',
+      title: 'Vendor request - account closure',
+      body: 'Vendor has requested to close their account. Subscription will be cancelled and full account access will be blocked immediately.'
+    },
+    // === Canceled by FG ===
+    fg_incorrect_billing: {
+      cls: '',
+      title: 'FG - incorrect billing amount',
+      body: 'Subscription fee was charged at an incorrect amount. Cancelling to reprocess with the correct amount. A refund for the incorrect charge should be issued manually.'
+    },
+    fg_account_closure: {
+      cls: '',
+      title: 'FG - account closure',
+      body: "Vendor's FashionGo account is being closed. Subscription will be cancelled and all active linesheets will be deactivated immediately."
+    },
+    fg_vendor_fraud_alert: {
+      cls: '',
+      title: 'FG - vendor fraud alert',
+      body: "Vendor's account has been flagged for fraudulent activity. Subscription will be cancelled and full account access will be blocked immediately."
+    },
+    fg_account_deletion: {
+      cls: '',
+      title: 'FG - account deletion',
+      body: "Vendor's account is being deleted by FashionGo. Subscription will be cancelled and all active linesheets will be deactivated immediately."
+    }
+  };
+
+  function renderCase() {
+    var v = document.getElementById('caseStatus').value;
+    var panel = document.getElementById('casePanel');
+    if (!v || !CASE_CONTENT[v]) {
+      panel.style.display = 'none';
+      panel.innerHTML = '';
+      return;
+    }
+    var c = CASE_CONTENT[v];
+    panel.style.display = '';
+    panel.className = 'case-panel ' + c.cls;
+    var html = '<div class="case-title">' + c.title + '</div><div>' + c.body + '</div>';
+    if (c.sms) {
+      html += '<div class="case-sms"><b>SMS:</b> ' + c.sms + '</div>';
+    }
+    panel.innerHTML = html;
+  }
+
+  /* Custom case dropdown */
+  function toggleCaseSelect(e) {
+    if (e) e.stopPropagation();
+    var trigger = document.getElementById('csTrigger');
+    var panel = document.getElementById('csPanel');
+    if (panel.hasAttribute('hidden')) {
+      panel.removeAttribute('hidden');
+      trigger.classList.add('open');
+    } else {
+      panel.setAttribute('hidden', '');
+      trigger.classList.remove('open');
+    }
+  }
+  function selectCase(opt) {
+    var value = opt.dataset.value;
+    var text = opt.textContent;
+    document.getElementById('caseStatus').value = value;
+    var tt = document.getElementById('csTriggerText');
+    tt.textContent = text;
+    tt.classList.remove('placeholder');
+    document.querySelectorAll('#csPanel .cs-option').forEach(function (el) {
+      el.classList.remove('selected');
+    });
+    opt.classList.add('selected');
+    document.getElementById('csPanel').setAttribute('hidden', '');
+    document.getElementById('csTrigger').classList.remove('open');
+    renderCase();
+  }
+  function resetCaseSelect() {
+    document.getElementById('caseStatus').value = '';
+    var tt = document.getElementById('csTriggerText');
+    tt.textContent = '— Select case —';
+    tt.classList.add('placeholder');
+    document.querySelectorAll('#csPanel .cs-option').forEach(function (el) {
+      el.classList.remove('selected');
+    });
+    document.getElementById('csPanel').setAttribute('hidden', '');
+    document.getElementById('csTrigger').classList.remove('open');
+  }
+  /* Click outside to close panel */
+  document.addEventListener('click', function (e) {
+    var sel = document.getElementById('caseSelect');
+    if (sel && !sel.contains(e.target)) {
+      var panel = document.getElementById('csPanel');
+      var trigger = document.getElementById('csTrigger');
+      if (panel) panel.setAttribute('hidden', '');
+      if (trigger) trigger.classList.remove('open');
+    }
+  });
+
+  function openCancelModal() {
+    resetCaseSelect();
+    document.getElementById('cancelReason').value = '';
+    document.getElementById('cancelConfirmCheck').checked = false;
+    renderCase();
+    document.getElementById('cancelModal').classList.add('show');
+  }
+  function closeCancelModal() {
+    document.getElementById('cancelModal').classList.remove('show');
+  }
+
+  /* Demo: switch Subscription Status badge (PM 정정 v2: 5 values 재정의) */
+  var SUB_STATUS_MAP = {
+    not_subscribed: { cls: 'unsubscribed', label: 'Not subscribed', pillCls: 'pending-text', showCancel: false, showSubscribe: true,  graceDate: '—',         accessDate: '—' },
+    subscribed:     { cls: 'subscribed',   label: 'Subscribed',     pillCls: 'ok',           showCancel: true,  showSubscribe: false, graceDate: '—',         accessDate: '—' },
+    grace_period:   { cls: 'failed',       label: 'Grace Period',   pillCls: 'bad',          showCancel: true,  showSubscribe: false, graceDate: '11/10/2025', accessDate: '—' },
+    cancelling:     { cls: 'unsubscribed', label: 'Cancelling',     pillCls: 'pending-text', showCancel: false, showSubscribe: false, graceDate: '—',         accessDate: '12/01/2025' },
+    cancelled:      { cls: 'unsubscribed', label: 'Cancelled',      pillCls: 'pending-text', showCancel: false, showSubscribe: true,  graceDate: '—',         accessDate: '11/15/2025' }
+  };
+  function setSubStatus(v) {
+    var s = SUB_STATUS_MAP[v];
+    if (!s) return;
+    /* Subscription Management 섹션 badge */
+    var b = document.getElementById('subStatusBadge');
+    if (b) {
+      b.className = 'badge ' + s.cls;
+      b.textContent = s.label;
+    }
+    /* 상단 status pill */
+    var topSub = document.getElementById('topSubscription');
+    if (topSub) {
+      topSub.className = s.pillCls;
+      topSub.textContent = s.label;
+    }
+    /* 버튼 표시 룰 */
+    var cancelBtn = document.getElementById('cancelSubscriptionBtn');
+    var subBtn = document.getElementById('resubscribeBtn');
+    if (cancelBtn) cancelBtn.style.display = s.showCancel ? '' : 'none';
+    if (subBtn) subBtn.style.display = s.showSubscribe ? '' : 'none';
+    /* 조건부 날짜 표시 */
+    var gp = document.getElementById('gracePeriodEndDate');
+    var ae = document.getElementById('accessEndDate');
+    if (gp) gp.textContent = s.graceDate;
+    if (ae) ae.textContent = s.accessDate;
+  }
+
+  /* Demo: switch Subscription Transfer Status badge (v2.4: Success / Failed / Pending) */
+  var SUB_TRANSFER_MAP = {
+    success: { cls: 'success', label: 'Success' },
+    failed:  { cls: 'failed',  label: 'Failed' },
+    pending: { cls: 'pending', label: 'Pending' }
+  };
+  function setSubTransferStatus(v) {
+    var b = document.getElementById('subTransferStatusBadge');
+    if (!b || !SUB_TRANSFER_MAP[v]) return;
+    b.className = 'badge ' + SUB_TRANSFER_MAP[v].cls;
+    b.textContent = SUB_TRANSFER_MAP[v].label;
+  }
+  function confirmCancelSubscription() {
+    var reason = document.getElementById('cancelReason').value.trim();
+    var checked = document.getElementById('cancelConfirmCheck').checked;
+    if (!reason) {
+      alert('Please enter a cancellation reason.');
+      return;
+    }
+    if (!checked) {
+      alert('Please confirm that you understand this action cannot be undone.');
+      return;
+    }
+    alert('Subscription canceled.\nReason: ' + reason);
+    closeCancelModal();
+  }
+  document.getElementById('cancelModal').addEventListener('click', function(e){
+    if (e.target === this) closeCancelModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeCancelModal();
+  });
+</script>
+
+<script>
+(function(){
+  function paginateTable(table, pager) {
+    var rows = Array.from(table.querySelectorAll('tbody > tr'))
+      .filter(function(r){ return !r.hasAttribute('data-no-paginate'); });
+    var pageInput = pager.querySelector('.page-input');
+    var ofText = pager.querySelector('.of-text');
+    var btns = pager.querySelectorAll('.nav-btn');
+    var pageSizeSel = pager.querySelector('.page-size');
+    var state = {
+      page: 1,
+      pageSize: pageSizeSel ? (parseInt(pageSizeSel.value) || 5) : 5
+    };
+    function render() {
+      var total = rows.length;
+      var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+      if (state.page > totalPages) state.page = totalPages;
+      if (state.page < 1) state.page = 1;
+      var start = (state.page - 1) * state.pageSize;
+      var end = start + state.pageSize;
+      rows.forEach(function(r, i){ r.style.display = (i >= start && i < end) ? '' : 'none'; });
+      if (ofText) ofText.textContent = 'of ' + totalPages;
+      if (pageInput) pageInput.value = state.page;
+      if (btns[0]) btns[0].disabled = state.page <= 1;
+      if (btns[1]) btns[1].disabled = state.page >= totalPages;
+    }
+    if (btns[0]) btns[0].addEventListener('click', function(){ if (state.page > 1) { state.page--; render(); } });
+    if (btns[1]) btns[1].addEventListener('click', function(){
+      var totalPages = Math.ceil(rows.length / state.pageSize);
+      if (state.page < totalPages) { state.page++; render(); }
+    });
+    if (pageInput) pageInput.addEventListener('change', function(){
+      state.page = parseInt(this.value) || 1; render();
+    });
+    if (pageSizeSel) pageSizeSel.addEventListener('change', function(){
+      state.pageSize = parseInt(this.value) || 5;
+      state.page = 1;
+      render();
+    });
+    render();
+  }
+  function findTable(pager){
+    var prev = pager.previousElementSibling;
+    while (prev) {
+      if (prev.tagName === 'TABLE') return prev;
+      var t = prev.querySelector ? prev.querySelector('table') : null;
+      if (t) return t;
+      prev = prev.previousElementSibling;
+    }
+    return null;
+  }
+  function init(){
+    document.querySelectorAll('.pager').forEach(function(pager){
+      var t = findTable(pager);
+      if (t) paginateTable(t, pager);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+
+<!-- ===== Floating Demo Panel (NOT production UI) ===== -->
+<div class="demo-panel collapsed" id="demoPanel">
+  <div class="demo-panel-head">
+    <span>★ DEMO Controls</span>
+    <button class="toggle-btn" id="demoToggleBtn" onclick="toggleDemoPanel()">+</button>
+  </div>
+  <div class="demo-panel-body">
+    <div class="demo-group">
+      <span class="demo-group-label">PRD Annotations</span>
+      <div class="demo-btn-row" id="annoBtns">
+        <button class="demo-btn" data-val="on" onclick="pickAnnoToggle(this)">On</button>
+        <button class="demo-btn active" data-val="off" onclick="pickAnnoToggle(this)">Off</button>
+      </div>
+    </div>
+    <div class="demo-group">
+      <span class="demo-group-label">Subscription Status (PM 5 values)</span>
+      <div class="demo-btn-row" id="subStatusBtns">
+        <button class="demo-btn" data-val="not_subscribed" onclick="pickSubStatus(this)">Not subscribed</button>
+        <button class="demo-btn active" data-val="subscribed" onclick="pickSubStatus(this)">Subscribed</button>
+        <button class="demo-btn" data-val="grace_period" onclick="pickSubStatus(this)">Grace Period</button>
+        <button class="demo-btn" data-val="cancelling" onclick="pickSubStatus(this)">Cancelling</button>
+        <button class="demo-btn" data-val="cancelled" onclick="pickSubStatus(this)">Cancelled</button>
+      </div>
+    </div>
+    <div class="demo-group">
+      <span class="demo-group-label">Subscription Transfer Status</span>
+      <div class="demo-btn-row" id="subTransferBtns">
+        <button class="demo-btn active" data-val="success" onclick="pickSubTransfer(this)">Success</button>
+        <button class="demo-btn" data-val="failed" onclick="pickSubTransfer(this)">Failed</button>
+        <button class="demo-btn" data-val="pending" onclick="pickSubTransfer(this)">Pending</button>
+      </div>
+    </div>
+    <div class="demo-group">
+      <span class="demo-group-label">SMS Status (5 values)</span>
+      <div class="demo-btn-row" id="smsStatusBtns">
+        <button class="demo-btn" data-val="onboarding" onclick="pickSmsStatus(this)">onboarding</button>
+        <button class="demo-btn" data-val="pending_verification" onclick="pickSmsStatus(this)">pending_verification</button>
+        <button class="demo-btn active" data-val="active" onclick="pickSmsStatus(this)">active</button>
+        <button class="demo-btn" data-val="suspended" onclick="pickSmsStatus(this)">suspended</button>
+        <button class="demo-btn" data-val="deactivated" onclick="pickSmsStatus(this)">deactivated</button>
+      </div>
+    </div>
+    <div class="demo-group">
+      <span class="demo-group-label">Verification Status (TFV 5 values)</span>
+      <div class="demo-btn-row" id="verifyStatusBtns">
+        <button class="demo-btn" data-val="pending_review" onclick="pickVerifyStatus(this)">pending_review</button>
+        <button class="demo-btn" data-val="in_review" onclick="pickVerifyStatus(this)">in_review</button>
+        <button class="demo-btn active" data-val="approved" onclick="pickVerifyStatus(this)">approved</button>
+        <button class="demo-btn" data-val="rejected_resubmit" onclick="pickVerifyStatus(this)">rejected_resubmit</button>
+        <button class="demo-btn" data-val="rejected_final" onclick="pickVerifyStatus(this)">rejected_final</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function pickSubStatus(btn) {
+    document.querySelectorAll('#subStatusBtns .demo-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    setSubStatus(btn.getAttribute('data-val'));
+  }
+  function pickSubTransfer(btn) {
+    document.querySelectorAll('#subTransferBtns .demo-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    setSubTransferStatus(btn.getAttribute('data-val'));
+  }
+  function pickAnnoToggle(btn) {
+    document.querySelectorAll('#annoBtns .demo-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    var on = btn.getAttribute('data-val') === 'on';
+    document.querySelectorAll('.anno').forEach(function(a){
+      a.style.display = on ? '' : 'none';
+    });
+  }
+  /* Initialize: annotations off by default */
+  (function() {
+    function init() {
+      document.querySelectorAll('.anno').forEach(function(a){ a.style.display = 'none'; });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  })();
+  /* Demo panel collapse toggle */
+  function toggleDemoPanel() {
+    var panel = document.getElementById('demoPanel');
+    var btn = document.getElementById('demoToggleBtn');
+    panel.classList.toggle('collapsed');
+    btn.textContent = panel.classList.contains('collapsed') ? '+' : '−';
+  }
+  /* SMS Status switcher — 5 values 재정의 (onboarding / pending_verification / active / suspended / deactivated) */
+  var SMS_STATUS_MAP = {
+    onboarding:           { cls: 'sms-onboarding',  pillCls: 'pending-text', label: 'onboarding' },
+    pending_verification: { cls: 'sms-pending',     pillCls: 'pending-text', label: 'pending_verification' },
+    active:               { cls: 'sms-active',      pillCls: 'ok',           label: 'active' },
+    suspended:            { cls: 'sms-suspended',   pillCls: 'bad',          label: 'suspended' },
+    deactivated:          { cls: 'sms-deactivated', pillCls: 'bad',          label: 'deactivated' }
+  };
+  function pickSmsStatus(btn) {
+    document.querySelectorAll('#smsStatusBtns .demo-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    var v = btn.getAttribute('data-val');
+    var m = SMS_STATUS_MAP[v];
+    if (!m) return;
+    /* SMS Account Info badge */
+    var badge = document.getElementById('smsStatusBadge');
+    if (badge) {
+      badge.className = 'badge ' + m.cls;
+      badge.textContent = m.label;
+    }
+    /* SMS section status pill */
+    var pill = document.getElementById('topSmsStatus');
+    if (pill) {
+      pill.className = m.pillCls;
+      pill.textContent = m.label;
+    }
+  }
+
+  /* Verification Status switcher — TFV 5 values (Twilio): pending_review / in_review / approved / rejected_resubmit / rejected_final */
+  var VERIFY_STATUS_MAP = {
+    pending_review:    { cls: 'verify-pending-review',    pillCls: 'pending-text', label: 'pending_review' },
+    in_review:         { cls: 'verify-in-review',         pillCls: 'pending-text', label: 'in_review' },
+    approved:          { cls: 'verify-approved',          pillCls: 'ok',           label: 'approved' },
+    rejected_resubmit: { cls: 'verify-rejected-resubmit', pillCls: 'bad',          label: 'rejected_resubmit' },
+    rejected_final:    { cls: 'verify-rejected-final',    pillCls: 'bad',          label: 'rejected_final' }
+  };
+  function pickVerifyStatus(btn) {
+    document.querySelectorAll('#verifyStatusBtns .demo-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    var v = btn.getAttribute('data-val');
+    var m = VERIFY_STATUS_MAP[v];
+    if (!m) return;
+    var badge = document.getElementById('verifyStatusBadge');
+    if (badge) {
+      badge.className = 'badge ' + m.cls;
+      badge.textContent = m.label;
+    }
+    var pill = document.getElementById('topVerify');
+    if (pill) {
+      pill.className = m.pillCls;
+      pill.textContent = m.label;
+    }
+  }
+</script>
+
+</body>
+</html>
