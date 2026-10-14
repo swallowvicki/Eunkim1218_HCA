@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopcord — Vendor Admin Orders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* 디자인 = Figma Vendor Admin - Order 381-21731 (Order List 381:21144 · Order Details 381:15235 — 상세 Body는 Figma에서 좌우 반전돼 있어 정방향으로)
+     데이터 = 바이어 Cart · Orders(ORD-20261012-001)와 같은 상품 · 같은 변형(컬러 × 사이즈)별 가격 · 같은 배송일 */
+  :root {
+    --bg: #fdfcfa; --card: #fff; --fg: #1f1f1f; --fg-2: #6b6b6b; --fg-3: #a3a3a3;
+    --line: #f2ede7; --line-2: #ececec; --muted: #f2f2f2; --pink: #e11d74; --pink-soft: #fdf2f8; --red: #ef4444;
+    --blue-bg: #eef2f8; --blue-fg: #4a6fa5;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; line-height: 20px; }
+  button, input { font-family: inherit; }
+  a { color: inherit; }
+  .app { display: flex; gap: 16px; min-height: 100vh; padding: 16px; min-width: 1360px; }
+
+  /* 사이드바 */
+  .side { width: 256px; flex-shrink: 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; padding: 12px 8px; position: sticky; top: 16px; height: calc(100vh - 32px); }
+  .logo { display: flex; align-items: center; gap: 6px; padding: 4px 8px 16px; font-size: 18px; font-weight: 800; letter-spacing: -.5px; }
+  .logo i { width: 14px; height: 14px; border-radius: 3px; background: var(--pink); transform: skewX(-12deg); }
+  .logo b { color: var(--pink); font-weight: 800; }
+  .nav a { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 8px; border-radius: 6px; font-size: 14px; color: var(--fg); text-decoration: none; }
+  .nav a svg { width: 16px; height: 16px; }
+  .nav a.is-on { background: var(--pink-soft); color: var(--pink); font-weight: 500; }
+  .acct { margin-top: auto; display: flex; align-items: center; gap: 8px; padding: 8px; font-size: 14px; font-weight: 600; }
+  .acct span { width: 28px; height: 28px; border-radius: 6px; background: var(--pink); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+  .acct span svg { width: 14px; height: 14px; }
+  .acct em { margin-left: auto; font-style: normal; color: var(--fg-2); }
+
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 32px; }
+  .topbar { height: 64px; background: #fff; border: 1px solid var(--line); border-radius: 12px; display: flex; align-items: center; padding: 0 16px; gap: 8px; }
+  .tab { height: 36px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; border-radius: 8px; font-size: 14px; color: var(--fg); background: none; border: 0; cursor: pointer; }
+  .tab.is-on { background: var(--pink-soft); color: var(--pink); font-weight: 500; }
+  .tab .n { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--pink); color: #fff; font-size: 11px; line-height: 18px; text-align: center; }
+  .back { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; font-size: 14px; font-weight: 500; cursor: pointer; padding: 0; color: var(--fg); }
+  .back svg { width: 16px; height: 16px; }
+  .body { padding: 0 16px; display: flex; flex-direction: column; gap: 24px; }
+  .head { display: flex; align-items: center; gap: 8px; }
+  .head h1 { margin: 0; font-size: 30px; line-height: 36px; font-weight: 700; }
+  .head .sp { margin-left: auto; }
+  .btn { height: 36px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--fg); background: #fff; color: var(--fg); font-size: 14px; font-weight: 500; cursor: pointer; }
+  .btn.sm { height: 32px; padding: 0 12px; }
+  .btn.pink { background: var(--pink); border-color: var(--pink); color: #fff; }
+  .btn.dark { background: var(--fg); color: #fff; }
+  .btn svg { width: 16px; height: 16px; }
+  .badge { height: 20px; padding: 0 8px; border-radius: 100px; font-size: 10px; line-height: 20px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+  .badge.blue { background: var(--blue-bg); color: var(--blue-fg); }
+
+  /* 리스트 — 단계 카드 */
+  .steps { display: flex; gap: 14px; }
+  .step { width: 372px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .step.is-on { border-color: var(--fg); }
+  .step-t { display: flex; align-items: center; gap: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .step-t .num { width: 58px; font-size: 30px; line-height: 36px; font-weight: 600; text-align: center; }
+  .step-t .num.red { color: var(--red); }
+  .step-t small { display: block; font-size: 10px; line-height: 16px; font-weight: 600; letter-spacing: .4px; color: var(--fg-3); }
+  .step-t u { font-size: 12px; font-weight: 500; }
+  .step-t u.red { color: var(--red); }
+  .step-t .go { margin-left: auto; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 8px; background: #fff; display: inline-flex; align-items: center; justify-content: center; }
+  .step-t .go.dim { background: #f1ede8; }
+  .step-t .go svg { width: 14px; height: 14px; }
+  .step p { margin: 0; font-size: 12px; line-height: 16px; color: var(--fg-2); }
+  .step p b { display: block; margin-bottom: 8px; color: var(--fg); font-weight: 500; }
+
+  .panel { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .filters { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .search { width: 340px; height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; color: var(--fg-3); }
+  .search svg { width: 16px; height: 16px; }
+  .search input { flex: 1; border: 0; outline: 0; font-size: 14px; background: none; }
+  .drop { height: 36px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 14px; color: var(--fg); }
+  .drop span { color: var(--fg-2); }
+  .drop svg { width: 14px; height: 14px; color: var(--fg-2); }
+  .filters .sp { margin-left: auto; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { height: 36px; padding: 0 10px; text-align: left; font-size: 14px; font-weight: 500; color: var(--fg); white-space: nowrap; border-bottom: 1px solid var(--line); }
+  th .sort { color: var(--fg-2); font-size: 12px; margin-left: 4px; }
+  td { height: 64px; padding: 0 10px; font-size: 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  .olist td small { display: block; font-size: 12px; color: var(--fg-2); }
+  .olist td small.red { color: var(--red); }
+  .olist td .clip { max-width: 200px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .olist td:nth-child(1), .olist td:nth-child(2), .olist td:last-child { white-space: nowrap; }
+  .olist a.ord { color: var(--fg); text-decoration: underline; cursor: pointer; }
+  .olist a.ord.live { color: var(--pink); }
+  .pager { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; font-size: 14px; color: var(--fg-2); }
+  .pager b { color: var(--fg); }
+
+  /* 상세 — 요약 카드 */
+  .cards { display: flex; gap: 24px; align-items: stretch; }
+  .cgroup { flex: 1; display: flex; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .ccol { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 12px; border-left: 1px solid var(--line); }
+  .ccol:first-child { border-left: 0; }
+  .ccol h3, .cside h3 { margin: 0 0 4px; font-size: 14px; font-weight: 600; display: flex; align-items: center; }
+  .ccol h3 .ic { margin-left: auto; display: flex; gap: 4px; }
+  .ic button { width: 24px; height: 24px; border: 1px solid var(--line); border-radius: 6px; background: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .ic svg { width: 12px; height: 12px; }
+  .kv span { display: block; font-size: 12px; line-height: 16px; color: var(--fg-2); }
+  .kv b { display: block; font-weight: 500; font-size: 14px; line-height: 20px; }
+  .addr { font-size: 14px; line-height: 20px; }
+  .ccol.split { padding: 0; gap: 0; }
+  .ccol.split > div { padding: 24px; }
+  .ccol.split > div + div { border-top: 1px solid var(--line); }
+  .cside { width: 384px; flex-shrink: 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; }
+  .srow { display: flex; justify-content: space-between; font-size: 14px; color: var(--fg-2); padding: 3px 0; }
+  .srow b { color: var(--fg); font-weight: 500; }
+  .stot { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; font-weight: 600; }
+
+  /* 상세 — 품목 표 */
+  .tt { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .tt h2 { margin: 0; font-size: 18px; line-height: 24px; font-weight: 600; }
+  .tt small { font-size: 12px; color: var(--fg-2); }
+  .tt .sp { margin-left: auto; display: flex; gap: 8px; }
+  .items td { font-size: 14px; }
+  .items .cb { width: 16px; height: 16px; border: 1px solid #d4d4d4; border-radius: 4px; background: #fff; display: inline-block; vertical-align: middle; }
+  .items tr.grp td { height: 48px; background: var(--muted); border-bottom: 0; font-size: 12px; }
+  .items tr.grp b { font-weight: 500; margin-right: 8px; }
+  .items tr.grp span { color: var(--fg-2); }
+  .items .iname a { display: block; text-decoration: underline; font-weight: 400; }
+  .items .iname small { display: block; color: var(--fg-2); text-decoration: underline; font-size: 14px; }
+  .qty { display: inline-flex; align-items: center; gap: 8px; }
+  .qty input, .disc input { width: 64px; height: 36px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; font-size: 14px; text-align: right; }
+  .qty span { font-size: 12px; color: var(--fg-2); }
+  .disc { display: inline-flex; align-items: center; gap: 6px; }
+  .disc input { width: 72px; }
+  .disc .u { height: 36px; display: inline-flex; align-items: center; gap: 4px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; }
+  .disc .u svg { width: 12px; height: 12px; color: var(--fg-2); }
+  .pr { white-space: nowrap; }
+  .pr b { font-weight: 400; color: var(--red); }
+  .pr s { margin-left: 4px; font-size: 12px; color: var(--fg-3); }
+  .pr i { font-style: normal; font-size: 12px; color: var(--fg-2); margin-left: 2px; }
+  .amt { white-space: nowrap; }
+  .pr2 { display: inline-flex; flex-direction: column; gap: 2px; }
+  .pr2 .pk { font-size: 12px; color: var(--fg-2); white-space: nowrap; }
+  .pr2 .pk s { color: var(--fg-3); }
+  .qpcs { display: block; margin-top: 4px; font-size: 12px; color: var(--fg-2); text-align: left; }
+  .date { width: 140px; height: 36px; display: inline-flex; align-items: center; justify-content: space-between; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 14px; }
+  .date svg { width: 16px; height: 16px; color: var(--fg-2); }
+  .trash { border: 0; background: none; padding: 0; cursor: pointer; color: var(--fg); }
+  .trash svg { width: 16px; height: 16px; }
+  /* Pre Pack — 팩 줄(팩 금액) 밑에 사이즈 줄(피스당 값). 어드민 Item의 Pre Pack 표(컬러 ▸ 사이즈)와 같은 접기 */
+  .fold { width: 20px; height: 20px; border: 0; background: none; padding: 0; margin-left: 6px; vertical-align: middle; cursor: pointer; color: var(--fg-2); transition: transform .15s; }
+  .fold svg { width: 14px; height: 14px; }
+  tr.is-open .fold { transform: rotate(90deg); }
+  tr.pack { cursor: pointer; }
+  tr.sub td { height: 40px; background: #fcfbf9; font-size: 13px; }
+  tr.sub td.o2 { padding-left: 24px; }
+  tr.sub .pcs { font-size: 12px; color: var(--fg-2); }
+  tr.sub .amt { color: var(--fg-2); }
+  .tip { position: relative; display: inline-block; }
+  .tip .tc { display: none; position: absolute; left: 50%; top: calc(100% + 8px); transform: translateX(-50%); z-index: 5; width: 300px; padding: 8px 12px; border-radius: 8px; background: #111; color: #fff; font-size: 12px; line-height: 18px; white-space: normal; }
+  .tip .tc b { display: block; font-weight: 600; margin-bottom: 4px; color: #fff; }
+  .tip:hover .tc { display: block; }
+  td.nw { white-space: nowrap; }
+
+  /* 데모 컨트롤 */
+  .demo-ctl { position: fixed; right: 20px; bottom: 20px; z-index: 300; }
+  .demo-ctl-btn { width: 40px; height: 40px; border-radius: 9999px; border: none; cursor: pointer; background: #252322; color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.22); display: inline-flex; align-items: center; justify-content: center; }
+  .demo-ctl-btn svg { width: 19px; height: 19px; }
+  .demo-ctl-pop { display: none; position: absolute; right: 0; bottom: 50px; width: 282px; background: #fff; border: 1px solid #eceae7; border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,.16); padding: 6px; max-height: 78vh; overflow: auto; }
+  .demo-ctl.is-open .demo-ctl-pop { display: block; }
+  .demo-ctl-title { font-size: 10px; font-weight: 700; letter-spacing: .6px; color: #a3a3a3; padding: 6px 8px 8px; }
+  .demo-ctl-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px; font-size: 13px; color: #252322; text-decoration: none; }
+  .demo-ctl-item:hover { background: #f4f4f4; }
+  .demo-ctl-item.is-current { background: #f7eef2; color: #9d4862; font-weight: 600; }
+  .demo-ctl-item small { display: block; font-size: 11px; color: #a3a3a3; font-weight: 400; }
+  .demo-ctl-check { width: 14px; flex-shrink: 0; color: #e21d76; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><i></i><span>shop<b>cord</b></span></div>
+    <nav class="nav" id="sideNav"></nav>
+    <div class="acct"><span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="5.5" r="2.5"/><path d="M3 14a5 5 0 0 1 10 0"/></svg></span>My Account<em>›</em></div>
+  </aside>
+  <main class="main">
+    <div class="topbar" id="topbar"></div>
+    <div class="body" id="body"></div>
+  </main>
+</div>
+
+<script>
+(function () {
+  /* ══ 데이터 — 바이어 Cart · Orders 와 같은 값 ══ */
+  var COLORS30 = ['Heathered Olive', 'Light Wash Blue', 'Burgundy Velvet', 'Charcoal Marled', 'Dusty Rose Pink', 'Black/White Dot', 'Sage Green Mist', 'Ivory Off-White', 'Rainbow Tie-Dye', 'Midnight Indigo', 'Heather Oatmeal', 'Soft Lilac Haze', 'Mocha Brown Mix', 'Denim Blue Wash', 'Blush Pink Silk', 'Navy/Red Stripe', 'Rust Orange Rib', 'Pearl Gray Knit', 'Cobalt Blue Tie', 'Camel Tan Plaid', 'Stone Gray Wash', 'Coral Reef Pink', 'Taupe Heathered', 'Wine Red Velvet', 'Teal Green Silk', 'Peach Fuzz Knit', 'Tangerine Twist', 'Cocoa Brown Rib', 'Brick Red Denim', 'Ruby Red Sequin'];
+  function P(ws, sale, special, msrp) { return { ws: ws, sale: sale, special: special, msrp: msrp }; }
+  var BASE = P(21.50, 19.50, 18.50, 45.00);
+  var OWN = { 'Burgundy Velvet': P(23.50, 21.50, 20.50, 49.00), 'Rainbow Tie-Dye': P(22.50, 19.50, 18.50, 48.00), 'Ruby Red Sequin': P(25.00, 23.00, 22.00, 55.00) };
+  var BYSIZE = { 'Heathered Olive': { S: P(20.00, 18.00, 17.00, 42.00), L: P(23.00, 21.00, 20.00, 48.00) } };
+  var SHIP = '04/20/2027';   /* 흐름 숫자 맞추기 (2026-10-12 "모든 숫자를 플로우에 맞게 다 맞춰야돼") — 어드민 Item 데모 Pre Order 04/20/2027 과 같은 날 */
+  function dress(method) {
+    return { name: 'Relaxed Linen Dress', style: 'FG-SS25-999', method: method, sizes: ['S', 'M', 'L'], ratio: { S: 2, M: 2, L: 2 },
+      colors: COLORS30.map(function (n) { return { name: n, price: OWN[n] || BASE, bySize: BYSIZE[n] }; }),
+      qty: method === 'pre' ? { 'Heathered Olive': 2, 'Burgundy Velvet': 1, 'Rainbow Tie-Dye': 1 }
+                            : { 'Heathered Olive': { S: 1, M: 2, L: 3 }, 'Burgundy Velvet': { S: 2, M: 2, L: 2 } } };
+  }
+  var shirt = { name: 'Relaxed Linen Shirt Relaxed Linen Shirt', style: 'FG-SS25-104', method: 'open', sizes: ['S', 'M', 'L'],
+    colors: ['Sky Blue', 'Tan', 'Ivory'].map(function (n) {
+      return { name: n, price: P(18.00, 16.00, 15.00, 38.00), ship: n === 'Tan' ? { L: '05/15/2027' } : null, bySize: { M: P(20.00, 18.00, 17.00, 42.00), L: P(22.00, 19.80, 19.00, 46.00) } };
+    }),
+    qty: { 'Sky Blue': { S: 1, M: 2, L: 3 }, 'Tan': { S: 1, M: 2, L: 3 } } };
+  var ITEMS = [dress('open'), shirt, dress('pre')];
+
+  function color(it, n) { return it.colors.filter(function (c) { return c.name === n; })[0]; }
+  function vprice(c, s) { return (c.bySize && c.bySize[s]) || c.price; }
+  function packPcs(it) { return it.sizes.reduce(function (t, s) { return t + it.ratio[s]; }, 0); }
+  function packPrice(it, c, f) { return it.sizes.reduce(function (t, s) { return t + vprice(c, s)[f] * it.ratio[s]; }, 0); }
+  function money(v) { return '$' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* 오더 줄 — 변형 하나(Open Pack: 컬러 × 사이즈) 또는 팩 하나(Pre Pack: 컬러). 값은 바이어가 산 세일가, 취소선은 WS */
+  var ROWS = [];
+  ITEMS.forEach(function (it, i) {
+    Object.keys(it.qty).forEach(function (n) {
+      var c = color(it, n);
+      if (it.method === 'pre') ROWS.push({ key: i + '|' + n, it: it, c: c, pack: true, q: it.qty[n], disc: 0, ship: SHIP });
+      else it.sizes.forEach(function (s) { var q = it.qty[n][s]; if (q) ROWS.push({ key: i + '|' + n + '|' + s, it: it, c: c, s: s, q: q, disc: 0, ship: (c.ship && c.ship[s]) || SHIP }); });
+    });
+  });
+  function unit(r, f) { return r.pack ? packPrice(r.it, r.c, f || 'sale') : vprice(r.c, r.s)[f || 'sale']; }
+  function amount(r) { return r.q * unit(r) * (1 - r.disc / 100); }
+  function pcsOf(r) { return r.pack ? r.q * packPcs(r.it) : r.q; }
+
+  var ADMIN_PC_AND_PACK = false;   /* 10-13 되돌림 — "예전화면으로 돌려줘": 개당 · 팩 · 총액은 원래도 있었다(펼치면 사이즈별 개당, 팩 줄 팩 금액, Amount 총액) */   /* Pre Pack 팩 줄 = 개당 + 팩 금액 + 수량 밑 pcs · false 면 팩 금액만(A안) · 백업 …backup-before-pc-and-pack.html */
+  var LIVE = 'ORD-20261012-001';
+  var LIST = [
+    { date: '10/12/2026', id: LIVE, buyer: 'Global Trade Co.', ls: 'Summer Collection 2026', live: true, ship: '0 out of 48 items', next: '04/20/2027', nextSub: '190 days left', st: 'In Progress' },
+    { date: '03/12/2026', id: 'ORD-20240311', buyer: 'Long Long Long Long Long Long Long Metro Supplies Inc.', ls: 'Long Long Long Long Long Summer 2026 Collection', total: 999999.99, ship: '999 out of 99,999 items', next: '04/14/2026', nextSub: '15 days overdue', red: true, st: 'In Progress' },
+    { date: '03/12/2026', id: 'ORD-20240312', buyer: 'Global Trade Co.', ls: 'Spring 2026 Collection', total: 1950, ship: '9 out of 99 items', next: '-', st: 'New' },
+    { date: '03/12/2026', id: 'ORD-20240313', buyer: 'Pacific Wholesale', ls: 'Fall 2026 Collection', total: 19.99, ship: '9 out of 199 items', next: '05/03/2026', nextSub: '4 days left', st: 'In Progress' },
+    { date: '03/12/2026', id: 'ORD-20240314', buyer: 'Pacific Wholesale', ls: 'Fall 2026 Collection', total: 412.98, ship: '5 out of 111 items', next: '05/15/2026', nextSub: '16 days left', st: 'Closed' }
+  ];
+  var state = { view: 'list', open: { '2|Heathered Olive': true } };
+
+  var I = {
+    search: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7.2" cy="7.2" r="4.7"/><path d="M10.7 10.7l3 3"/></svg>',
+    chev: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 6.5L8 10l3.5-3.5"/></svg>',
+    right: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5L10.5 8 6 12.5"/></svg>',
+    dbl: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l4 4-4 4M8.5 4l4 4-4 4"/></svg>',
+    back: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>',
+    cal: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/></svg>',
+    trash: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5h11M6 4.5V3a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v1.5M4 4.5l.7 9a1 1 0 0 0 1 .9h4.6a1 1 0 0 0 1-.9l.7-9"/></svg>',
+    pen: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 2.5l3 3L6 13H3v-3z"/></svg>',
+    copy: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5" y="5" width="8.5" height="8.5" rx="1.5"/><path d="M3 10.5V3.5A1 1 0 0 1 4 2.5h7"/></svg>',
+    plus: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3.5 8h9M8 3.5v9"/></svg>',
+    exp: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="5.5"/></svg>'
+  };
+  var NAV = [['Dashboard', 'M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z'], ['Item', 'M8 1.8l5.5 3v6.4L8 14.2l-5.5-3V4.8zM2.5 4.8L8 8l5.5-3.2M8 8v6.2'],
+    ['Linesheet', 'M2.5 3h11v10h-11zM8 3v10'], ['Orders', 'M1.5 2.5h2l1.6 7.5h7.4l1.5-5.5H4.3M6 13.2h.01M12 13.2h.01'],
+    ['Customers', 'M6 7a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM1.5 14a4.5 4.5 0 0 1 9 0M11 2.2a2.5 2.5 0 0 1 0 4.6M12.5 9.5a4.5 4.5 0 0 1 2 4.5'],
+    ['Marketing', 'M2.5 3h11v8H6l-3.5 3z'], ['Payments', 'M2 4h12v8H2zM2 7h12']];
+  document.getElementById('sideNav').innerHTML = NAV.map(function (n) {
+    return '<a href="#"' + (n[0] === 'Orders' ? ' class="is-on"' : '') + '><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="' + n[1] + '"/></svg>' + n[0] + '</a>';
+  }).join('');
+
+  var $ = function (id) { return document.getElementById(id); };
+  function total() { return ROWS.reduce(function (t, r) { return t + amount(r); }, 0); }
+  function totalPcs() { return ROWS.reduce(function (t, r) { return t + pcsOf(r); }, 0); }
+
+  /* ══ Order List (381:21144) ══ */
+  function renderList() {
+    $('topbar').innerHTML = '<button class="tab is-on" type="button">Order List</button><button class="tab" type="button">Shipment List <span class="n">8</span></button><button class="tab" type="button">Draft List</button>';
+    var h = '<div class="head"><h1>Order List</h1><span class="sp"></span><button type="button" class="btn pink">' + I.plus + 'Create Order</button></div>';
+    h += '<div class="steps">' +
+      step('1', 'STEP 1', 'Awaiting Confirmation', 'Confirm orders to notify buyers', 'Review items, adjust qty, and set est. ship dates. Buyers are waiting for your confirmation.', true) +
+      step('0', 'STEP 2', 'Prepare Shipment', 'Group items and create shipments', 'Confirmed orders not yet in a shipment. Create shipments at least 7 days before est. ship date.') +
+      step('0', '', 'Past Due', 'Create a shipment or update the date', 'Est. ship date has passed with no shipment created. Buyers are waiting — act now.', false, true) + '</div>';
+    h += '<div class="panel"><div class="filters"><label class="search">' + I.search + '<input placeholder="Search order #, buyer, linesheet" aria-label="Search orders"></label>' +
+      '<span class="drop">All Statuses' + I.chev + '</span><span class="drop"><span>Created on</span>This Month' + I.chev + '</span><span class="sp"></span><button type="button" class="btn sm">' + I.exp + 'Export' + I.exp + '</button></div>' +
+      '<table class="olist"><thead><tr>' + ['Order Date', 'Order #', 'Buyer', 'Linesheet', 'Total', 'Shipment Created', 'Next Ship Deadline', 'Status'].map(function (t) { return '<th>' + t + (t === 'Order #' ? '' : '<span class="sort">↕</span>') + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      LIST.map(function (o) {
+        return '<tr><td>' + o.date + '</td><td><a class="ord' + (o.live ? ' live' : '') + '" data-ord="' + o.id + '">' + o.id + '</a></td><td><div class="clip">' + esc(o.buyer) + '</div></td><td><div class="clip">' + esc(o.ls) + '</div></td>' +
+          '<td>' + money(o.live ? total() : o.total) + '</td><td>' + (o.live ? '0 out of ' + totalPcs() + ' items' : o.ship) + '</td>' +
+          '<td>' + o.next + (o.nextSub ? '<small' + (o.red ? ' class="red"' : '') + '>' + o.nextSub + '</small>' : '') + '</td><td>' + o.st + '</td></tr>';
+      }).join('') + '</tbody></table>' +
+      '<div class="pager"><span>Row per page: <span class="drop" style="height:32px">30' + I.chev + '</span></span><span>Total <b>' + LIST.length + '</b></span><span>‹ Previous &nbsp; <b>1</b> &nbsp; Next ›</span></div></div>';
+    $('body').innerHTML = h;
+    document.querySelectorAll('[data-ord]').forEach(function (a) {
+      a.onclick = function () { if (a.dataset.ord === LIVE) { state.view = 'detail'; render(); window.scrollTo(0, 0); } };
+    });
+  }
+  function step(n, k, t, b, p, on, red) {
+    return '<div class="step' + (on ? ' is-on' : '') + '"><div class="step-t"><span class="num' + (red ? ' red' : '') + '">' + n + '</span><span>' + (k ? '<small>' + k + '</small>' : '') + '<u' + (red ? ' class="red"' : '') + '>' + t + '</u></span><span class="go' + (red ? ' dim' : '') + '">' + I.dbl + '</span></div><p><b>' + b + '</b>' + p + '</p></div>';
+  }
+
+  /* ══ Order Details (381:15235) ══ */
+  function renderDetail() {
+    $('topbar').innerHTML = '<button class="back" type="button" id="back">' + I.back + 'Back to Order List</button>';
+    var h = '<div class="head"><h1>Order #' + LIVE + '</h1><span class="badge blue">In-progress</span></div>';
+    h += '<div class="cards"><div class="cgroup">' +
+      '<div class="ccol"><h3>Order Summary</h3>' + kv('Ordered On', '10/12/2026') + kv('Linesheet', 'Summer Collection 2026') + kv('Payment Method', 'Credit Card') + '</div>' +
+      '<div class="ccol"><h3>Buyer Information</h3>' + kv('Company', 'Global Trade Co.') + kv('Email', 'sarah@globaltrade.com') + kv('Phone Number', '+1 (123) 456 - 7890') + '</div>' +
+      '<div class="ccol split"><div><h3>Shipping Address<span class="ic"><button type="button" aria-label="Copy">' + I.copy + '</button><button type="button" aria-label="Edit">' + I.pen + '</button></span></h3><div class="addr">Metro Supplies Distribution Center<br>2450 East 57th Street,<br>Suite 1200<br>Los Angeles, CA 90058</div></div>' +
+      '<div><h3>Notes (Internal)<span class="ic"><button type="button" aria-label="Edit">' + I.pen + '</button></span></h3></div></div></div>' +
+      '<div class="cside"><h3>Order Summary</h3><div class="srow"><span>Subtotal (' + totalPcs() + ' pcs)</span><b id="sSub">' + money(total()) + '</b></div><div class="srow"><span>Discount</span><b>-$0.00</b></div><div class="srow"><span>Shipping Fee</span><b>-$0.00</b></div>' +
+      '<div class="stot"><span>Total</span><span id="sTot">' + money(total()) + '</span></div></div></div>';
+    h += '<div class="panel"><div class="tt"><h2>All Items</h2><small>' + ROWS.length + ' total</small><span class="sp"><button type="button" class="btn sm">Save Changes</button><button type="button" class="btn sm dark">' + I.plus + 'Create Shipment</button></span></div>' +
+      '<table class="items"><thead><tr><th style="width:36px"><span class="cb"></span></th><th>Item</th><th>Option1</th><th>Option2</th><th>Qty / Packs</th><th>Discount</th><th>Price</th><th>Amount</th><th>Est. Ship Date <span class="sort">↕</span></th><th>Action</th></tr></thead><tbody id="rows"></tbody></table></div>';
+    $('body').innerHTML = h;
+    $('back').onclick = function () { state.view = 'list'; render(); };
+    paintRows();
+  }
+  function kv(k, v) { return '<div class="kv"><span>' + k + '</span><b>' + v + '</b></div>'; }
+
+  /* 배송일별로 묶는다(Figma sub-header "Ship by … · N items"). Open Pack은 변형마다 날짜, Pre Pack은 팩마다 날짜 하나 */
+  function paintRows() {
+    var groups = {}, order = [];
+    ROWS.forEach(function (r) { if (!groups[r.ship]) { groups[r.ship] = []; order.push(r.ship); } groups[r.ship].push(r); });
+    order.sort(function (a, b) { return new Date(a) - new Date(b); });
+    $('rows').innerHTML = order.map(function (d) {
+      var rs = groups[d];
+      return '<tr class="grp"><td><span class="cb"></span></td><td colspan="7"><b>Ship by ' + d + '</b><span>' + rs.length + ' items</span></td><td><span class="date">' + d + I.cal + '</span></td><td></td></tr>' + rs.map(rowHTML).join('');
+    }).join('');
+    $('rows').querySelectorAll('input[data-k]').forEach(function (inp) {
+      inp.oninput = function () {
+        var r = ROWS.filter(function (x) { return x.key === inp.dataset.k; })[0], v = Math.max(0, parseFloat(inp.value) || 0);
+        if (inp.dataset.f === 'q') r.q = Math.round(v); else r.disc = Math.min(100, v);
+        var row = inp.closest('tr'); row.querySelector('.amt').textContent = money(amount(r));
+        var qp = row.querySelector('.qpcs'); if (qp) qp.textContent = (r.q * packPcs(r.it)) + ' pcs';
+        if (r.pack) document.querySelectorAll('tr.sub[data-of="' + r.key + '"]').forEach(function (sr) {
+          var s = sr.dataset.s; sr.querySelector('.pcs').textContent = (r.it.ratio[s] * r.q) + ' pcs';
+          sr.querySelector('.amt').textContent = money(r.it.ratio[s] * r.q * vprice(r.c, s).sale * (1 - r.disc / 100));
+        });
+        $('sSub').textContent = money(total()); $('sTot').textContent = money(total());
+      };
+      inp.onclick = function (e) { e.stopPropagation(); };
+    });
+    $('rows').querySelectorAll('tr.pack').forEach(function (tr) {
+      tr.onclick = function (e) { if (e.target.closest('input,button:not(.fold)')) return; state.open[tr.dataset.k] = !state.open[tr.dataset.k]; paintRows(); };
+    });
+  }
+  function priceHTML(sale, ws, unitTxt) {
+    return '<span class="pr"><b>' + money(sale) + '</b>' + (ws - sale > 0.005 ? '<s>' + money(ws) + '</s>' : '') + (unitTxt ? '<i>' + unitTxt + '</i>' : '') + '</span>';
+  }
+  function rowHTML(r) {
+    var it = r.it, open = r.pack && state.open[r.key];
+    var h = '<tr' + (r.pack ? ' class="pack' + (open ? ' is-open' : '') + '" data-k="' + r.key + '"' : '') + '><td><span class="cb"></span></td>' +
+      '<td class="iname"><a href="#">' + esc(it.name) + '</a><small>' + it.style + '</small></td>' +
+      '<td>' + esc(r.c.name) + '</td><td class="nw">' + (r.pack ? 'Size Pack' : r.s) + (r.pack ? '<button type="button" class="fold" aria-label="Sizes">' + I.right + '</button>' : '') + '</td>' +
+      '<td><span class="qty"><input data-k="' + r.key + '" data-f="q" value="' + r.q + '" inputmode="numeric" aria-label="Quantity"><span>' + (r.pack ? 'pack' : 'pcs') + '</span></span>' +
+      (r.pack && ADMIN_PC_AND_PACK ? '<span class="qpcs" data-pcs="' + r.key + '">' + (r.q * packPcs(it)) + ' pcs</span>' : '') + '</td>' +
+      '<td><span class="disc"><input data-k="' + r.key + '" data-f="d" value="' + r.disc + '" inputmode="decimal" aria-label="Discount"><span class="u">%' + I.chev + '</span></span></td>';
+    if (r.pack) {
+      /* 팩 줄 = 팩 금액(Qty packs × 값 = Amount가 맞게). 사이즈마다 값이 다르면 그 밑에 한 줄 알림, 펼치면 사이즈별 피스당 값 */
+      var tip = '<span class="tc"><b>' + packPcs(it) + 'pcs / Pack</b>' + it.sizes.map(function (s) { return s + '(' + it.ratio[s] + ') ' + money(vprice(r.c, s).sale) + '/pc'; }).join(' - ') + '</span>';
+      if (ADMIN_PC_AND_PACK) {
+        /* 개당 + 팩 둘 다 (2026-10-13 "피스가격+팩가격 둘다 나와야하고 토탈도 나와야지") — 위 줄 개당(사이즈마다 다르면 최저가~), 아래 줄 팩 금액.
+           총액은 Amount 칸(팩 수 × 팩 금액), 수량 칸 밑엔 pcs. 바이어 화면과 같은 개당 기준 + 벤더가 검산할 팩 금액 */
+        var pcs = it.sizes.map(function (s) { return vprice(r.c, s).sale; }), wps = it.sizes.map(function (s) { return vprice(r.c, s).ws; });
+        var lo = Math.min.apply(null, pcs), t = Math.max.apply(null, pcs) - lo > 0.005 ? '~' : '';
+        var wlo = Math.min.apply(null, wps), wt = Math.max.apply(null, wps) - wlo > 0.005 ? '~' : '';
+        h += '<td><span class="tip"><span class="pr2">' + priceHTML(lo, wlo, '/pc').replace('</b>', t + '</b>').replace('</s>', '</s>' + (wlo - lo > 0.005 ? wt : '')) +
+          '<span class="pk">' + money(unit(r)) + (unit(r, 'ws') - unit(r) > 0.005 ? ' <s>' + money(unit(r, 'ws')) + '</s>' : '') + ' /pack</span></span>' + tip + '</span></td>';
+      } else
+      h += '<td><span class="tip">' + priceHTML(unit(r), unit(r, 'ws'), '/pack') + tip + '</span></td>';
+    } else h += '<td>' + priceHTML(unit(r), unit(r, 'ws')) + '</td>';
+    h += '<td class="amt">' + money(amount(r)) + '</td><td><span class="date">' + r.ship + I.cal + '</span></td><td><button type="button" class="trash" aria-label="Delete">' + I.trash + '</button></td></tr>';
+    if (open) h += it.sizes.map(function (s) {
+      var pr = vprice(r.c, s), n = it.ratio[s] * r.q;
+      return '<tr class="sub" data-of="' + r.key + '" data-s="' + s + '"><td></td><td></td><td></td><td class="o2">' + s + '</td><td><span class="pcs">' + n + ' pcs</span></td><td></td>' +
+        '<td>' + priceHTML(pr.sale, pr.ws, '/pc') + '</td><td class="amt">' + money(n * pr.sale * (1 - r.disc / 100)) + '</td><td></td><td></td></tr>';
+    }).join('');
+    return h;
+  }
+
+  function render() { if (state.view === 'detail') renderDetail(); else renderList(); }
+  window.__view = function (v) { state.view = v; render(); };
+  render();
+})();
+</script>
+
+<div class="demo-ctl" id="demoCtl">
+  <div class="demo-ctl-pop">
+    <div class="demo-ctl-title">LAYOUT</div>
+    <a class="demo-ctl-item" data-file="Shopcord-Item-Phase3-2026-08-06.html" href="Shopcord-Item-Phase3-2026-08-06.html">
+      <span class="demo-ctl-check"></span><span>640 · 원본 기준<small>평면 단일 컬럼</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Buyer-PDP-Price-2026-09-22.html" href="Shopcord-Buyer-PDP-Price-2026-09-22.html">
+      <span class="demo-ctl-check"></span><span>Buyer PDP · 가격 표기<small>바이어가 보는 상품 화면</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Buyer-PLP-Price-2026-09-29.html" href="Shopcord-Buyer-PLP-Price-2026-09-29.html">
+      <span class="demo-ctl-check"></span><span>Buyer PLP · 가격 표기<small>상품 목록 카드</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Buyer-Cart-2026-10-12.html" href="Shopcord-Buyer-Cart-2026-10-12.html">
+      <span class="demo-ctl-check"></span><span>Buyer Cart · Checkout · Orders<small>Figma UI 373-6495 · 규칙 371-2127 · Order 381-12616</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-Order-2026-10-12.html" href="Shopcord-Admin-Order-2026-10-12.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Orders<small>Figma 381-21731 · 리스트 · 상세</small></span>
+    </a>
+  </div>
+  <button class="demo-ctl-btn" type="button" aria-label="Demo control">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+      <circle cx="10" cy="10" r="2.6"/>
+      <path d="M10 1.8v2.2M10 16v2.2M3.2 10H1M19 10h-2.2M5.2 5.2 3.6 3.6M16.4 16.4l-1.6-1.6M14.8 5.2l1.6-1.6M3.6 16.4l1.6-1.6"/>
+    </svg>
+  </button>
+</div>
+<script>
+(function () {
+  var ctl = document.getElementById('demoCtl');
+  var here = window.__SHARE_PAGE || location.pathname.split('/').pop();
+  var CHECK = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 7.5l3 3 5-6"/></svg>';
+  ctl.querySelectorAll('.demo-ctl-item[data-file]').forEach(function (a) {
+    if (a.dataset.file === here) {
+      a.classList.add('is-current');
+      a.querySelector('.demo-ctl-check').innerHTML = CHECK;
+      a.addEventListener('click', function (e) { e.preventDefault(); });
+    }
+  });
+  ctl.querySelector('.demo-ctl-btn').addEventListener('click', function (e) { e.stopPropagation(); ctl.classList.toggle('is-open'); });
+  document.addEventListener('click', function (e) { if (!ctl.contains(e.target)) ctl.classList.remove('is-open'); });
+})();
+</script>
+</body>
+</html>

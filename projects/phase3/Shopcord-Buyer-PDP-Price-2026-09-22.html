@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 사진은 파일 안에 넣었다(data URI) — 2026-10-12 "파일 안에 직접 넣어줘". Unsplash 주소를 걸어 두면 회사 네트워크에서 503 으로 빈칸이 됐다. 원래 주소는 README -->
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopcord — Buyer PDP · 옵션별 가격 표기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --card: #ffffff;
+    --border: #eceae7;      --border-input: #e2e8f0;
+    --fg: #252322;          --fg-secondary: #6b6b6b;   --fg-muted: #a3a3a3;
+    --muted: #f4f4f4;
+    --primary: #e21d76;     --primary-soft: #fdf2f7;   --primary-ink: #9d4862;
+    --success: #4f8f7c;     --success-soft: #e7f2ee;
+    --warn: #b45309;        --warn-soft: #fdf1e3;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; }
+  /* hidden 이 display 규칙보다 이긴다 — .chip-more 가 display 를 가져서 사이즈 3개일 때 "-5 more" 가 떴다 (2026-09-29) */
+  [hidden] { display: none !important; }
+  body {
+    margin: 0; background: #e8e6e3; color: var(--fg);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px; line-height: 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    padding: 24px 16px 64px;
+  }
+
+  .brief { width: 390px; max-width: 100%; }
+  .brief h1 { margin: 0 0 4px; font-size: 16px; line-height: 24px; font-weight: 600; }
+  .brief p { margin: 0; font-size: 12px; line-height: 17px; color: var(--fg-secondary); }
+  .brief b { color: var(--fg); font-weight: 600; }
+
+  /* 데모 전환 바 — 목업 밖의 장치라 폰 프레임 위에 둔다 */
+  .demo-bar {
+    width: 390px; max-width: 100%;
+    display: flex; flex-direction: column; gap: 8px;
+    background: #fff; border: 1px solid #dcd9d5; border-radius: 10px; padding: 12px;
+  }
+  .demo-bar-row { display: flex; align-items: center; gap: 8px; }
+  .demo-bar-label {
+    width: 62px; flex-shrink: 0;
+    font-size: 10px; line-height: 14px; font-weight: 700; letter-spacing: .5px; color: #a3a3a3;
+  }
+  .demo-bar-seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .demo-bar-seg button {
+    height: 28px; padding: 0 12px; border-radius: 9999px; cursor: pointer;
+    border: 1px solid var(--border-input); background: #fff; color: var(--fg-secondary);
+    font-family: inherit; font-size: 12px; line-height: 16px; font-weight: 500;
+  }
+  .demo-bar-seg button:hover { border-color: var(--fg-muted); }
+  .demo-bar-seg button.is-current {
+    background: var(--fg); border-color: var(--fg); color: #fff; font-weight: 600;
+  }
+
+  .phone {
+    width: 390px; max-width: 100%; background: var(--card);
+    border-radius: 18px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,.18);
+  }
+
+  /* ── 이미지 380h ── */
+  .gallery { position: relative; height: 380px; display: flex; gap: 2px; background: var(--border); }
+  .gallery-half { flex: 1; background: var(--muted) center/cover no-repeat; }
+  .gallery-tabs { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; }
+  .badge {
+    height: 20px; padding: 0 8px; border-radius: 9999px;
+    display: inline-flex; align-items: center;
+    font-size: 10px; line-height: 12px; font-weight: 600; letter-spacing: .4px;
+  }
+  .badge-stock { background: var(--success-soft); color: var(--success); }
+  .badge-pre { background: var(--warn-soft); color: var(--warn); }
+  .gallery-close {
+    position: absolute; top: 10px; right: 10px; width: 24px; height: 24px;
+    border: none; border-radius: 9999px; background: var(--primary); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .gallery-close svg { width: 11px; height: 11px; }
+  .gallery-count {
+    position: absolute; left: 12px; bottom: 12px;
+    padding: 2px 9px; border-radius: 9999px; background: rgba(0,0,0,.42);
+    font-size: 12px; line-height: 16px; font-weight: 500; color: #fff;
+  }
+
+  /* ── 본문 ── */
+  .body { padding: 24px 16px 0; }
+  .item-name { margin: 0; font-size: 16px; line-height: 24px; font-weight: 700; }
+  .item-style { margin: 2px 0 0; font-size: 13px; line-height: 18px; color: var(--fg-muted); }
+
+  /* ① 가격 — 원본에 세 가지 상태가 있다: 정가 / 세일(%) / Special Price */
+  .price { margin-top: 10px; }
+  .price-row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .price-off { font-size: 16px; line-height: 24px; font-weight: 700; color: var(--primary); }
+  .price-main { font-size: 20px; line-height: 28px; font-weight: 700; letter-spacing: -.2px; }
+  .price-unit { font-size: 13px; line-height: 20px; font-weight: 500; color: var(--fg-muted); }
+  .price-was { font-size: 13px; line-height: 20px; color: var(--fg-muted); text-decoration: line-through; }
+  /* Special Price는 분홍 패널로 감싼다 — 라인시트 전용 값이라는 신호 */
+  .price.is-special {
+    background: var(--primary-soft); border-radius: var(--radius);
+    padding: 12px; margin-top: 12px;
+  }
+  .price-tag {
+    display: inline-flex; align-items: center; height: 22px; padding: 0 10px; margin-bottom: 6px;
+    border: 1px solid var(--primary); border-radius: 9999px;
+    font-size: 11px; line-height: 14px; font-weight: 600; color: var(--primary);
+  }
+  .price.is-special .price-main { color: var(--primary); }
+  /* 두 번째 줄 — 예전 표기 그대로: Sale $~~9.50~~ · WS $~~10.00~~ · MSRP $45.00 (취소선은 금액에만) */
+  .price-line { margin: 4px 0 0; font-size: 13px; line-height: 20px; color: var(--fg-secondary); }
+  .price-line s { color: var(--fg-muted); }
+  .qty-szs { flex-basis: 100%; display: flex; flex-direction: column; gap: 2px; }
+  .qty-sz { font-size: 13px; line-height: 18px; color: var(--fg); }
+  .qty-sz b { font-weight: 700; }
+  .qty-sz i { font-style: normal; font-size: 12px; font-weight: 500; color: var(--fg-muted); }
+  .qty-sz .sz { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
+  .qty-sz-was { display: inline-block; white-space: nowrap; font-size: 12px; color: var(--fg-muted); }
+  .qty-row.is-oos .qty-sz, .qty-row.is-oos .qty-sz b { color: var(--fg-muted); }
+  .qty-sp { display: inline-flex; align-items: center; height: 18px; padding: 0 8px; margin: 2px 100% 2px 0; border: 1px solid var(--primary); border-radius: 9999px; font-size: 10px; line-height: 12px; font-weight: 600; color: var(--primary); white-space: nowrap; }   /* 헤더 Special Price 라벨과 같은 모양, 작게 */
+  .qty-cmp.is-wrap { white-space: normal; }
+  .qty-cmp.is-wrap .cp { display: inline-block; white-space: nowrap; }
+  .pgrid { flex-basis: 100%; display: grid; column-gap: 8px; row-gap: 1px; margin-top: 2px; font-size: 12px; line-height: 17px; font-variant-numeric: tabular-nums; }
+  .pgrid .pg-l { color: var(--fg-muted); font-size: 11px; padding-right: 2px; white-space: nowrap; }
+  .pgrid .pg-h { color: var(--fg-secondary); text-align: right; white-space: nowrap; }
+  .pgrid .pg-p { text-align: right; font-size: 13px; line-height: 20px; font-weight: 700; letter-spacing: -.2px; color: var(--fg); white-space: nowrap; }   /* 칸이 좁아(3칸 ≈ 52px) 14px 굵게면 붙는다 */
+  .pgrid .pg-c { text-align: right; color: var(--fg-muted); white-space: nowrap; }
+  .qty-row.is-oos .pgrid .pg-p { color: var(--fg-muted); }
+  .row-off { font-size: 14px; line-height: 20px; font-weight: 700; color: var(--primary); white-space: nowrap; margin-right: -4px; }   /* 행 할인% — 티켓 규칙(453), 헤더 up to N% 와 같은 색 */
+  .vtab .vt-p .row-off { font-size: 12px; margin-right: 4px; }
+  .qty-row.is-oos .row-off { color: var(--fg-muted); }
+  .qty-inl { font-size: 12px; line-height: 20px; color: var(--fg-muted); }
+  .qty-inl .cp { display: inline-block; white-space: nowrap; }
+  .vtab { flex-basis: 100%; display: grid; column-gap: 14px; row-gap: 2px; margin-top: 4px; font-size: 12px; line-height: 18px; font-variant-numeric: tabular-nums; }
+  .vtab .vt-h { font-size: 11px; color: var(--fg-muted); text-align: right; white-space: nowrap; }
+  .vtab .vt-h:first-child { text-align: left; }
+  .vtab .vt-n { min-width: 0; overflow-wrap: anywhere; color: var(--fg); font-size: 13px; }
+  .vtab .vt-p { text-align: right; font-size: 13px; font-weight: 700; color: var(--fg); white-space: nowrap; }
+  .vtab .vt-c { text-align: right; color: var(--fg-muted); white-space: nowrap; }
+  .qty-row.is-oos .vtab .vt-p, .qty-row.is-oos .vtab .vt-n { color: var(--fg-muted); }
+  /* 표가 있는 행 — 표가 행 폭을 다 쓰고, 수량 칸은 아래 오른쪽 (캡션 · 스테퍼 한 줄) */
+  .qty-row.has-vtab .qty-info { flex-basis: 100%; }
+  .qty-row.has-vtab .qty-step { margin-left: auto; }   /* 표가 있는 행도 캡션은 수량 칸 아래 — 다른 행과 같은 자리 */
+  .qty-step { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .qty-step-sub { font-size: 11px; line-height: 14px; color: var(--fg-muted); }
+  .qty-pack { flex-basis: 100%; font-size: 12px; line-height: 16px; color: var(--fg-muted); white-space: nowrap; }
+  .qty-row.is-oos .qty-pack { color: var(--fg-muted); }
+  .qty-cmp { flex-basis: 100%; font-size: 12px; line-height: 16px; color: var(--fg-muted); white-space: nowrap; }
+  .qty-was { margin-left: 2px; font-size: 12px; line-height: 20px; font-weight: 400; color: var(--fg-muted); white-space: nowrap; }
+  /* 옵션마다 값이 다를 때만 붙는 한 줄 */
+  .price-msrp { margin: 4px 0 0; font-size: 13px; line-height: 20px; color: var(--fg-secondary); }
+  .price-msrp.has-rule { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }   /* 와이어 ⑤⑦ — 위 가격 묶음과 MSRP 참고 줄 사이 가는 선 */
+  .price-off.is-sale { color: #ef4444; }   /* 세일 할인% = 빨강 (와이어 ②⑤ · PLP · 카트), Special 은 분홍 그대로 */
+  .price-note { margin: 8px 0 0; font-size: 12px; line-height: 16px; color: var(--fg-secondary); }
+
+  .sep { height: 1px; background: var(--border); margin: 24px 0; }
+
+  .block { margin-bottom: 24px; }
+  .block-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .block-label { font-size: 14px; line-height: 20px; color: var(--fg-secondary); }
+  .block-label b { color: var(--fg); font-weight: 600; }
+  .block-head .spacer { flex: 1; }
+  .quick-fill {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+    font-size: 14px; line-height: 20px; color: var(--fg);
+  }
+  .quick-fill svg { width: 16px; height: 16px; }
+
+  /* Pre Pack — 박스 구성 */
+  .prepack-box {
+    border: 1px solid var(--border-input); border-radius: var(--radius);
+    padding: 10px 12px; text-align: center;
+    font-size: 14px; line-height: 20px; overflow-wrap: anywhere;
+  }
+
+  /* Open Pack — Size를 칩으로 고른다 (최신 노드는 Size가 칩, Color가 행) */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    height: 36px; padding: 0 14px;
+    border: 1px solid var(--border-input); border-radius: 9999px;
+    background: var(--card); color: var(--fg);
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer;
+  }
+  .chip.is-active { border-color: var(--fg); border-width: 1.5px; font-weight: 600; }
+  .chip[disabled] { background: var(--muted); border-color: var(--muted); color: var(--fg-muted); cursor: default; }
+  .chip-count {
+    min-width: 20px; height: 20px; padding: 0 7px; border-radius: 9999px;
+    background: var(--fg); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; line-height: 12px; font-weight: 600;
+  }
+  .chip[disabled] .chip-count { background: var(--fg-muted); }
+  /* 차액 — 값이 다른 옵션에만 (가드 통과 시) */
+  .chip-delta { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--fg-muted); }
+  .chip-more {
+    display: flex; justify-content: flex-end; margin-top: 12px;
+  }
+  .chip-more button {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+    font-size: 14px; line-height: 20px; color: var(--fg);
+  }
+  .chip-more svg { width: 16px; height: 16px; transition: transform .18s; }
+  .chip-more.is-open svg { transform: rotate(180deg); }
+
+  /* ── 수량 행 — 38h · pitch 54 · stepper 160×36 ── */
+  /* 높이는 38 이 기본이지만 고정하지 않는다 — 최대 데이터(999pcs)에선 가격+취소선이 186px 칸을 넘어
+     수량 버튼을 덮었다(2026-09-29). 넘칠 때만 취소선이 다음 줄로 내려가고 행이 그만큼 늘어난다 */
+  .qty-row { display: flex; align-items: center; gap: 12px; min-height: 38px; margin-bottom: 16px; }
+  .qty-row.has-top { flex-wrap: wrap; row-gap: 2px; }
+  .qty-top { flex-basis: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .qty-top .qty-name { min-width: 0; }
+  .qty-top-ship { flex-shrink: 0; white-space: nowrap; font-size: 12px; line-height: 16px; color: var(--fg-muted); }
+  .qty-row.is-oos .qty-top-ship { color: var(--fg-muted); font-weight: 500; }
+  .qty-info { flex: 1 0 0; min-width: 0; }
+  /* 달라진 것이 가격이므로 가격이 행에서 잘 보여야 한다 */
+  .qty-name { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 0; font-size: 14px; line-height: 20px; font-weight: 500; }
+  .qty-priceline { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; }
+  .qty-price { font-size: 14px; line-height: 20px; font-weight: 700; white-space: nowrap; }
+  .qty-price i { font-style: normal; font-size: 12px; font-weight: 500; color: var(--fg-muted); }
+  .qty-sub { font-size: 12px; line-height: 16px; color: var(--fg-muted); }
+  /* 행 할인 배지 — 할인율이 행마다 다를 때만 나온다 */
+  .qty-off {
+    flex-shrink: 0; height: 18px; padding: 0 6px; border-radius: 9999px;
+    background: var(--primary-soft); color: var(--primary);
+    display: inline-flex; align-items: center;
+    font-size: 11px; line-height: 12px; font-weight: 700; white-space: nowrap;
+  }
+  .stepper {
+    flex-shrink: 0; width: 160px; display: inline-flex; align-items: center;
+    height: 36px; border: 1px solid var(--border-input); border-radius: 9999px;
+  }
+  .stepper button {
+    width: 40px; height: 34px; background: none; border: none; cursor: pointer;
+    color: var(--fg); display: inline-flex; align-items: center; justify-content: center;
+  }
+  .stepper button:disabled { color: #d8d8d8; cursor: default; }
+  .stepper button svg { width: 16px; height: 16px; }
+  /* Out of Stock 컬러 — 행 전체 회색, 날짜 자리에 `Out of Stock`, 수량 버튼 잠김 (품절 사이즈 칩의 회색과 같은 색) */
+  .qty-row.is-oos .qty-name, .qty-row.is-oos .qty-price, .qty-row.is-oos .qty-cmp, .qty-row.is-oos .qty-was { color: var(--fg-muted); }
+  .qty-row.is-oos .qty-sub { color: var(--fg-muted); font-weight: 500; }
+  .qty-row.is-oos .stepper { border-color: var(--muted); }
+  .qty-row.is-oos .stepper span { color: var(--fg-muted); }
+  .stepper span { flex: 1; text-align: center; font-size: 14px; line-height: 20px; font-weight: 600; }
+
+  /* ── 합계 44h ── */
+  .total { background: var(--muted); border-radius: var(--radius); overflow: hidden; }
+  .total-head {
+    width: 100%; display: flex; align-items: center; gap: 8px; min-height: 44px; flex-wrap: wrap;
+    padding: 10px 12px; background: none; border: none; text-align: left;
+    font-family: inherit; font-size: 14px; line-height: 24px; font-weight: 600; color: var(--fg);
+  }
+  .total-head.is-toggle { cursor: pointer; }
+  .total-head .spacer { flex: 1; }
+  /* 최대값(10,999,999 · $29,895,045,104.92)에서도 라벨이 쪼개지지 않게 한다 */
+  .total-head > span { white-space: nowrap; }
+  .total-chev { width: 16px; height: 16px; color: var(--fg-secondary); flex-shrink: 0; }
+  .total-chev svg { width: 16px; height: 16px; transition: transform .18s; }
+  .total.is-open .total-chev svg { transform: rotate(180deg); }
+  .total-detail { display: none; padding: 0 12px 10px; }
+  .total.is-open .total-detail { display: block; }
+  .total-line {
+    display: flex; align-items: center; gap: 8px; padding: 6px 0;
+    border-top: 1px solid #e4e4e4;
+    font-size: 12px; line-height: 16px; color: var(--fg-secondary);
+  }
+  .total-line .spacer { flex: 1; }
+  .total-line b { font-weight: 600; color: var(--fg); }
+
+  .attr-text { margin: 8px 0 0; font-size: 14px; line-height: 20px; }
+
+  .cta-wrap { padding: 24px 16px; }
+  .cta {
+    width: 100%; height: 40px; border: none; border-radius: var(--radius);
+    background: var(--primary); color: #fff; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 600;
+  }
+  .cta svg { width: 16px; height: 16px; }
+
+  /* ── 데모 컨트롤 ── */
+  .demo-ctl { position: fixed; right: 20px; bottom: 20px; z-index: 300; }
+  .demo-ctl-btn {
+    width: 40px; height: 40px; border-radius: 9999px; border: none; cursor: pointer;
+    background: var(--fg); color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.22);
+    display: inline-flex; align-items: center; justify-content: center; transition: transform .14s;
+  }
+  .demo-ctl-btn:hover { transform: scale(1.06); }
+  .demo-ctl-btn svg { width: 19px; height: 19px; }
+  .demo-ctl-pop {
+    display: none; position: absolute; right: 0; bottom: 50px; width: 282px;
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.16); padding: 6px; max-height: 78vh; overflow: auto;
+  }
+  .demo-ctl.is-open .demo-ctl-pop { display: block; }
+  .demo-ctl-title { font-size: 10px; font-weight: 700; letter-spacing: .6px; color: #a3a3a3; padding: 6px 8px 8px; }
+  .demo-ctl-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px; font-size: 13px; color: #252322; text-decoration: none; }
+  .demo-ctl-item:hover { background: #f4f4f4; }
+  button.demo-ctl-item { width: 100%; border: none; background: none; text-align: left; cursor: pointer; font-family: inherit; }
+  .demo-ctl-item.is-current { background: #f7eef2; color: #9d4862; font-weight: 600; }
+  .demo-ctl-item small { display: block; font-size: 11px; color: #a3a3a3; font-weight: 400; }
+  .demo-ctl-item.is-current small { color: #9d4862; opacity: .8; }
+  .demo-ctl-check { width: 14px; flex-shrink: 0; color: #e21d76; }
+  .demo-ctl-sep { height: 1px; background: #f3eee8; margin: 6px 4px; }
+</style>
+</head>
+<body>
+
+<div class="brief">
+  <h1>Buyer PDP — 옵션별 가격 표기</h1>
+  <p>Figma <b>92-6589</b>(Pre Pack) · <b>92-6327</b>(Open Pack) — 최신. 아래 전환 바로 판매방식 · 가격 종류 · 옵션별 가격 · 데이터 양을 바꿔가며 보세요(우측 하단 톱니바퀴에도 같은 항목이 있습니다).
+     가격 아래 한 줄 — 세일이면 <b>할인 전 WS에 취소선, MSRP는 그대로</b>(<code>WS $<s>10.00</s> · MSRP $45.00</code>). <b>Special Price</b>도 티켓 규칙(Figma 453-109931, 10-13)대로 분홍 박스 안에 <b>할인% + 가격 + WS 취소선</b>, MSRP는 박스 밖 참고 줄 — Sale은 Special이 있으면 안 씁니다. 행(컬러 · 사이즈)도 같은 규칙: <code>15% $17.00/pc  WS $<s>20.00</s> · MSRP $42.00</code>. 재고 <b>일부 Out of Stock</b>이면 품절 컬러 행은 회색 + <code>Out of Stock</code>, 수량을 담을 수 없고, <b>헤더 가격·할인율은 살 수 있는 컬러로만</b> 계산합니다(전부 품절이면 전체로). 가격종류 <b>4가지 모두</b>는 WS · Sale · MSRP · Special Price가 다 있는 아이템입니다 — 티켓 규칙상 Special이 Sale을 대체해 Special Price와 같게 보입니다.
+     <b>컬러마다 값이 다르면</b> 범위 대신 <b>최저가에 <code>~</code></b>(<code>up to 14% $18.00~/pc</code> · <code>MSRP $42.00~</code> — 사이즈까지 보고 최저가). 그 줄엔 MSRP만 남고, 취소선은 <b>할인된 컬러 행</b>으로 내려갑니다.
+     데이터는 <b>어드민 데모와 같습니다</b> — Color 30개 · Size S/M/L · 1pack 6pcs(S2-M2-L2) · 기준가 WS $21.50 · Sale $19.50 · MSRP $45.00.</p>
+</div>
+
+<div class="demo-bar">
+  <div class="demo-bar-row">
+    <span class="demo-bar-label">판매방식</span>
+    <span class="demo-bar-seg">
+      <button type="button" data-method="pre">Pre Pack</button>
+      <button type="button" data-method="open">Open Pack</button>
+    </span>
+  </div>
+  <div class="demo-bar-row">
+    <span class="demo-bar-label">가격종류</span>
+    <span class="demo-bar-seg">
+      <button type="button" class="pt-old" data-ptype="regular">정가</button>
+      <button type="button" class="pt-old" data-ptype="sale">세일 5%</button>
+      <button type="button" class="pt-old" data-ptype="special">Special Price</button>
+      <button type="button" class="pt-old" data-ptype="special4">4가지 모두</button>
+      <button type="button" class="pt-new" data-ptype="c1">① WS</button>
+      <button type="button" class="pt-new" data-ptype="c2">② +Sale</button>
+      <button type="button" class="pt-new" data-ptype="c3">③ +MSRP</button>
+      <button type="button" class="pt-new" data-ptype="c4">④ +Special</button>
+      <button type="button" class="pt-new" data-ptype="c5">⑤ +Sale+MSRP</button>
+      <button type="button" class="pt-new" data-ptype="c6">⑥ +Sale+Special</button>
+      <button type="button" class="pt-new" data-ptype="c7">⑦ +Special+MSRP</button>
+      <button type="button" class="pt-new" data-ptype="c8">⑧ 넷 다</button>
+      <button type="button" data-ptype="mixed">옵션마다 다름</button>
+    </span>
+  </div>
+  <div class="demo-bar-row">
+    <span class="demo-bar-label">옵션가격</span>
+    <span class="demo-bar-seg">
+      <button type="button" data-ocase="same">전부 같음</button>
+      <button type="button" data-ocase="base">어드민과 동일</button>
+      <button type="button" data-ocase="scattered">제각각</button>
+    </span>
+  </div>
+  <div class="demo-bar-row">
+    <span class="demo-bar-label">데이터</span>
+    <span class="demo-bar-seg">
+      <button type="button" data-data="normal">보통 값</button>
+      <button type="button" data-data="max">최대값</button>
+    </span>
+  </div>
+  <div class="demo-bar-row" data-oos-row>
+    <span class="demo-bar-label">재고</span>
+    <span class="demo-bar-seg">
+      <button type="button" data-stock="all">전부 In Stock</button>
+      <button type="button" data-stock="some">일부 Out of Stock</button>
+      <button type="button" data-stock="none">전부 Out of Stock</button>
+    </span>
+  </div>
+</div>
+
+<div class="phone">
+  <div class="gallery">
+    <div class="gallery-half" style="background-image:url('data:image/jpeg;base64,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')"></div>
+    <div class="gallery-half" style="background-image:url('data:image/jpeg;base64,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')"></div>
+    <div class="gallery-tabs">
+      <span class="badge badge-stock" id="badgeStock">IN STOCK</span>
+      <span class="badge badge-pre">PRE-ORDER</span>
+    </div>
+    <button class="gallery-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+    </button>
+    <span class="gallery-count">1/50</span>
+  </div>
+
+  <div class="body">
+    <h2 class="item-name" id="itemName">Relaxed Linen Dress</h2>
+    <p class="item-style">FG-SS25-999</p>
+
+    <div class="price" id="priceBox"></div>
+    <p class="price-msrp" id="priceMsrp">MSRP $45.00</p>
+    <p class="price-note" id="priceNote" hidden></p>
+
+    <div class="sep"></div>
+
+    <!-- Pre Pack 전용 — 박스 구성 -->
+    <div class="block" id="prepackBlock">
+      <div class="block-head">
+        <span class="block-label">Size / Pack <b id="packSummary">1pack x 7pcs</b></span>
+      </div>
+      <div class="prepack-box" id="packRatio">S-M-L / 2-3-2</div>
+    </div>
+
+    <!-- Open Pack 전용 — Size를 칩으로 고른다 -->
+    <div class="block" id="sizeBlock" hidden>
+      <div class="block-head"><span class="block-label">Size</span></div>
+      <div class="chips" id="sizeChips"></div>
+      <div class="chip-more" id="sizeMore" hidden>
+        <button type="button" id="sizeMoreBtn">
+          <span id="sizeMoreLabel">9 more</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-head">
+        <span class="block-label">Color</span>
+        <span class="spacer"></span>
+        <button class="quick-fill" type="button" id="applyAll">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2 2 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+          Update quantity for all
+        </button>
+      </div>
+      <div id="qtyList"></div>
+      <div class="total" id="total">
+        <button class="total-head" type="button" id="totalHead">
+          <span id="totalLabel">Total pcs:</span> <span id="totalCount">0</span>
+          <span class="spacer"></span>
+          <span id="totalAmount">$0.00</span>
+          <span class="total-chev" id="totalChev"></span>
+        </button>
+        <div class="total-detail" id="totalDetail"></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-head"><span class="block-label" id="attrLabel">Attribute</span></div>
+      <p class="attr-text" id="attrText"></p>
+    </div>
+  </div>
+
+  <div class="cta-wrap">
+    <button class="cta" type="button">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 1.5h2l1.7 8.2a1 1 0 0 0 1 .8h5.6a1 1 0 0 0 1-.8L14.5 4H4"/><circle cx="6" cy="14" r="1"/><circle cx="12" cy="14" r="1"/></svg>
+      Add to Cart
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  var WS = 10.00;           /* 정가 낱개가 */
+  var SALE_OFF = 0.05;      /* 원본의 `5%` */
+
+  /* 옵션 가격은 Color가 진다 — 두 방식 모두 Color가 행이라 행 절대값으로 나타난다.
+     Size가 값을 지는 경우는 Open Pack 칩에서만 생긴다 (sizeAdd) */
+  /* 어드민에서 행마다 WS · Sale · MSRP 를 따로 넣을 수 있게 됐다(2026-09-28).
+     그래서 바이어 화면의 `5%`도 `MSRP $45.00`도 더 이상 한 숫자가 아니다. */
+  /* 모든 컬러 · 모든 케이스에서 Special ≤ Sale ≤ WS ≤ MSRP (2026-09-29 확인) */
+  var LEGACY_COLORS = [
+    { name: 'Red',
+      ws:      { same: 10.00, base: 11.50, scattered: 11.50 },
+      sale:    { same: 9.50,  base: 10.93, scattered: 9.20 },   /* 제각각: 컬러마다 할인율이 다름 */
+      special: { same: 9.00,  base: 10.40, scattered: 8.80 },
+      msrp:    { same: 45.00, base: 52.00, scattered: 52.00 } },
+    { name: 'Yellow',
+      ws:      { same: 10.00, base: 10.00, scattered: 10.80 },
+      sale:    { same: 9.50,  base: 9.50,  scattered: 10.80 },  /* 제각각: 이 컬러는 할인 없음 */
+      special: { same: 9.00,  base: 9.00,  scattered: 10.20 },
+      msrp:    { same: 45.00, base: 45.00, scattered: 48.00 } },
+    { name: 'Green',
+      ws:      { same: 10.00, base: 10.00, scattered: 10.00 },
+      sale:    { same: 9.50,  base: 9.50,  scattered: 8.50 },
+      special: { same: 9.00,  base: 9.00,  scattered: 8.00 },
+      msrp:    { same: 45.00, base: 45.00, scattered: 45.00 } }
+  ];
+
+  /* ══ 어드민과 같은 데이터 (2026-09-29) ═══════════════════════════════════════
+     Shopcord-Item-Phase3-2026-08-06.html 의 데모를 그대로 옮겼다 —
+     Color 30개(전부 15자) · Size S/M/L · Pre Pack = Pack By Size, S2-M2-L2 = 6pcs
+     기준가 WS 21.50 · Sale 19.50 · MSRP 45.00 /pc, 따로 가격을 가진 컬러 3개.
+     어드민 표는 팩(6pcs) 단위라 여기선 ÷6 한 낱개가로 적는다. Special Price 는 어드민에 없는 값이라 데모용.
+     되돌리려면 false — 예전 Red · Yellow · Green 3색 데이터로 돌아간다 */
+  var ADMIN_DATA = true;
+  var ADMIN_COLOR_NAMES = [
+    'Heathered Olive', 'Light Wash Blue', 'Burgundy Velvet', 'Charcoal Marled', 'Dusty Rose Pink',
+    'Black/White Dot', 'Sage Green Mist', 'Ivory Off-White', 'Rainbow Tie-Dye', 'Midnight Indigo',
+    'Heather Oatmeal', 'Soft Lilac Haze', 'Mocha Brown Mix', 'Denim Blue Wash', 'Blush Pink Silk',
+    'Navy/Red Stripe', 'Rust Orange Rib', 'Pearl Gray Knit', 'Cobalt Blue Tie', 'Camel Tan Plaid',
+    'Stone Gray Wash', 'Coral Reef Pink', 'Taupe Heathered', 'Wine Red Velvet', 'Teal Green Silk',
+    'Peach Fuzz Knit', 'Tangerine Twist', 'Cocoa Brown Rib', 'Brick Red Denim', 'Ruby Red Sequin'
+  ];
+  var ADMIN_BASE = { ws: 21.50, sale: 19.50, special: 18.50, msrp: 45.00 };
+  var ADMIN_OWN = {
+    'Burgundy Velvet': { ws: 23.50, sale: 21.50, special: 20.50, msrp: 49.00 },   /* 어드민 141 / 129 / 294 */
+    'Rainbow Tie-Dye': { ws: 22.50, sale: 19.50, special: 18.50, msrp: 48.00 },   /* 어드민 135 / (117) / 288 — Sale 은 기준가 */
+    'Ruby Red Sequin': { ws: 25.00, sale: 23.00, special: 22.00, msrp: 55.00 }    /* 어드민 150 / 138 / 330 */
+  };
+  /* 옵션가격 전환: same = 30색 전부 기준가 · base = 어드민 그대로 · scattered = 30색이 제각각(가드 확인용) */
+  function buildAdminColors() {
+    return ADMIN_COLOR_NAMES.map(function (name, i) {
+      var own = ADMIN_OWN[name] || ADMIN_BASE;
+      var sw = 21.50 + (i % 4);
+      var ss = (i % 5 === 1) ? sw : sw - 1.50 - (i % 3) * 0.50;   /* 다섯에 하나는 할인 없음 */
+      var sc = { ws: sw, sale: ss, special: ss - 0.75, msrp: 45 + (i % 4) * 2 };
+      var c = { name: name };
+      ['ws', 'sale', 'special', 'msrp'].forEach(function (f) {
+        c[f] = { same: ADMIN_BASE[f], base: own[f], scattered: +sc[f].toFixed(2) };
+      });
+      return c;
+    });
+  }
+  var COLORS = ADMIN_DATA ? buildAdminColors() : LEGACY_COLORS;
+  /* ══ 변형(컬러 × 사이즈)별 가격 (2026-10-12) ══════════════════════════════════
+     어드민(640)에서 Pre Pack 가격을 사이즈별로 넣을 수 있게 됐다(PRE_BY_SIZE). 데모의 Heathered Olive 는
+     S 20.00 / 18.00 / 42.00 · L 23.00 / 21.00 / 48.00 (M 은 기준가). Special Price 는 라인시트 값이라 데모로 S 17.00 · L 20.00.
+     사용자: "Vendor Admin Item, PLP, PDP, Checkout, Cart 모두 동일한 정보를 가지고 만들어야함 ·
+     각각의 베리언트별로 가격을 보여주는거잖아! 그래서 그것이 카트와 체크아웃에 반영되어야함"
+     Pre Pack 은 팩 금액 = Σ 사이즈 가격 × 팩 안 수량(S2-M2-L2), 헤더의 피스당 값은 팩 금액 ÷ pcs.
+     Open Pack 은 고른 사이즈의 그 컬러 값, 헤더는 살 수 있는 변형 전체에서 최저가~. 되돌리려면 false */
+  var VARIANT_PRICE = true;
+  var ADMIN_SIZE = {
+    'Heathered Olive': { S: { ws: 20.00, sale: 18.00, special: 17.00, msrp: 42.00 },
+                         L: { ws: 23.00, sale: 21.00, special: 20.00, msrp: 48.00 } }
+  };
+  var PACK_RATIO = { S: 2, M: 2, L: 2 };   /* 어드민 Pack Configuration 그대로 */
+  /* Pre Pack 행도 피스당 값이 크게, 팩 금액은 아래 회색 한 줄 (2026-10-12 · Figma 172-58207 / 172-58904 위에서 수정)
+     "PDP에서 위에 보여지는 가격은 개당가격인데 밑에 옵션에 보여지는 가격은 팩가격이라서 위아래가 헷갈려" —
+     어드민 Item 표도 피스당 입력으로 바꿨다. 근거: Shopify B2B 는 묶음을 따로 값 매기지 않고 개당(each) 가격 + 수량 규칙(increments of N)으로 판다.
+     헤더 · 행 · 어드민이 모두 /pc 기준이 되고, 사이즈마다 값이 다르면 행도 최저가~ (헤더도 사이즈까지 보고 최저가).
+     false 면 예전 `$117.00/pack` 행 · 헤더는 팩 평균 · 백업 …backup-before-pre-row-per-pc.html */
+  var PRE_ROW_PER_PC = true;
+  var PDP_PRE_SHIP_HEAD = true;
+  var PREORDER_WORD = true;   /* false 면 Pre Pack 은 예전 `Est.ship date` */   /* Pre Pack 날짜를 팩 이름 줄 오른쪽으로 — 카트(PRE_SHIP_HEAD)와 같은 자리 */
+  function sizeOverride(colorName, s) {
+    if (!VARIANT_PRICE || !ADMIN_DATA || state.optionCase !== 'base') return null;
+    var o = ADMIN_SIZE[colorName];
+    return o && o[s] ? o[s] : null;
+  }
+
+  /* ══ 가격 한 줄 (2026-09-29) ══════════════════════════════════════════════
+     사용자가 예전에 쓰던 표기 — 실제 내는 값을 크게, 그보다 높은 값은 한 줄에 취소선으로,
+     MSRP 는 청구되는 값이 아니라 참고값이라 취소선 없이:  Sale $~~9.50~~ · WS $~~10.00~~ · MSRP $45.00
+     컬러마다 값이 다르면 이 줄이 358px 을 넘으므로(범위 셋이면 435px) 취소선은 각 행으로 내린다.
+     되돌리려면 false */
+  var PRICE_LINE = true;
+  /* Special Price 는 비교 없이 값만 — 분홍 패널 + 라벨 + 가격, 아래엔 MSRP 만 (2026-09-29).
+     PDP Figma 92-6327 · PLP Figma 148-52245 둘 다 Special 에 할인율도 취소선도 없다.
+     바이어별로 따로 주는 값이라 "무엇보다 싸다"를 말하지 않는다. 되돌리려면 false */
+  var SPECIAL_PLAIN = true;
+  /* ══ 옵션마다 표기 규칙 (2026-10-12) ══════════════════════════════════════════
+     "실제로 내는 값 하나를 크게, 그보다 높은 값은 취소선 — Special Price 가 있으면 비교 없이"를 아이템이 아니라 옵션(행)마다 정한다.
+       ① WS 만            → $21.50          ② WS + Sale         → $19.50 ~~$21.50~~
+       ③ WS + Sale + Special → $18.50 (비교 없음)   ④ WS + Special → $18.50 (비교 없음)
+     ③ 과 ④ 를 같게 — Special 은 그 바이어에게만 주는 값이라 "무엇보다 싸다"를 말하지 않는다(Figma 92-6327 · 148-52245).
+     예전 「4가지 모두」는 ③ 에서만 Sale · WS 취소선을 붙여 Sale 유무에 따라 같은 Special 이 다르게 보였다.
+     사용자: "응 그렇게 반영해줘 각각의 옵션에 반영하는것으로 해줘" · false 면 예전 · 백업 …backup-before-option-price-rule.html */
+  var OPTION_PRICE_RULE = true;
+  /* 옵션(행)마다 4가지 가격을 전부 — 내는 값을 크게, 그 아래 그 옵션의 `Sale ~~$~~ · WS ~~$~~ · MSRP $` (2026-10-12 "4개를 전부 다 보여줘야함",
+     "4개의 가격이 각각 옵션별로 다르잖아! 그게 다 나와야대"). 행에선 Special 이 있어도 Sale · WS 를 숨기지 않는다.
+     헤더는 기존 규칙 유지 — Special 패널 + 가격 + MSRP, Sale 이면 up to N% + (행에 값이 없을 때만) 취소선 줄 ("기존규칙을 유지하면서 확정해주면돼").
+     없는 값은 안 쓴다(Sale 이 없으면 Sale 칸 없음, 내는 값과 같으면 취소선 없음). MSRP 는 참고값이라 취소선 없이 늘.
+     false 면 바로 전(내는 값 + WS 취소선, Special 이면 비교 없음) · 백업 …backup-before-row-all-prices.html */
+  var ROW_ALL_PRICES = true;
+  /* ══ 가격 표기 = 티켓 규칙 (2026-10-13 Figma 453-106593 PLP · 453-109931 PDP, "이런규칙이 있었더라고.... 이대로 수정해줘") ══
+     PDP 는 가격 투명성(바이어 마진 계산용):  ① WS → WS  ② WS+MSRP → WS + MSRP  ③ WS+Sale(+MSRP) → ~~WS~~ + Sale + 할인% + MSRP
+       ④ WS+Special(+MSRP) → Special 박스 안에 할인% + Special + ~~WS~~, MSRP 는 박스 밖 참고 줄  ⑤ WS+Sale+Special → ④ 와 같음(Sale 은 안 보임)
+     티켓은 변형별 가격 전이라 "우리거는 베리언트별 가격도 다 각각 … 저 규칙에 따라서" — 행(컬러 · 사이즈)마다 같은 규칙: 할인% + 내는 값 + ~~WS~~ + MSRP, Sale 은 Special 이 있으면 안 씀.
+     할인%는 기존 계산 그대로 올림(헤더 up to N% = 행 % 중 최대). Special 도 이제 할인%를 말한다(예전 SPECIAL_PLAIN · 10-12 「행에 4가지 전부」의 Sale 은 이 규칙으로 대체).
+     false 면 바로 전 · 백업 …backup-before-ticket-453.html */
+  var TICKET_453 = true;
+  /* ══ 가격 조합 8가지 = 티켓 표 그대로 (2026-10-13 "가격종류의 콤비네이션 조합을 잘 봐" · Figma 453-111079 와이어 1~8) ══
+     ① WS  ② WS+Sale  ③ WS+MSRP  ④ WS+Special  ⑤ WS+Sale+MSRP  ⑥ WS+Sale+Special  ⑦ WS+Special+MSRP  ⑧ 넷 다.
+     예전 데모는 MSRP 가 늘 있는 ③⑤⑦⑧ 만 있었다. MSRP 는 "있으면 표기, 없으면 표기 안 함" — 헤더 · 박스 밖 줄 · 행 · Pre Pack 표 칸까지.
+     변형마다 MSRP 가 비어 있을 수 있어(어드민 빈 칸 = 위 칸 상속, 위도 비면 없음) 칸 단위로 본다: 전부 없으면 칸째 빼고, 일부만 없으면 그 칸 —.
+     false 면 예전 버튼 5개 · 백업 …backup-before-combo8.html */
+  var COMBO8 = true;
+  var COMBO = { c1: ['regular', 1], c2: ['sale', 1], c3: ['regular', 0], c4: ['special', 1], c5: ['sale', 0], c6: ['special4', 1], c7: ['special', 0], c8: ['special4', 0] };
+  window.__combo8 = COMBO8;
+  /* ══ 헤더 줄 배치 = 와이어 ② ⑤ ⑦ (2026-10-13) — 가격 바로 밑 ~~WS~~ 한 줄, MSRP 는 따로 참고 줄(위에 WS 줄이나 Special 박스가 있으면 가는 선으로 나눔).
+     세일 할인%는 빨강, Special 할인%는 분홍(와이어 · PLP · 카트와 같음). 예전엔 `WS ~~$20.00~~~ · MSRP $42.00~` 한 줄 · 할인% 늘 분홍. false 면 예전 */
+  var HEAD_LINES = true;
+  function pctOf(p, w) { return w > p + 0.005 ? Math.ceil((1 - p / w) * 100 - 0.0001) : 0; }
+  /* 행에는 %를 안 쓴다 (2026-10-13 "여기 이렇게 각각 전부 퍼센테지 쓰래?" → "응 행 퍼센트 빼줘") — 티켓 453 은 헤더 · 카드 규칙이고 행 규칙은 없다.
+     행은 내는 값 + ~~WS~~ + MSRP(Special 이면 Sale 없음), %는 헤더 up to N% 하나. true 면 행마다 % · 백업 …backup-before-no-row-pct.html */
+  var ROW_PCT = false;
+  function offTag(p, w, sp) { if (!ROW_PCT) return ''; var n = pctOf(p, w); return n ? '<span class="row-off' + (sp ? ' is-sp' : '') + '">' + n + '%</span>' : ''; }
+  function allCmp(name, s) {
+    var p = pcPrice(name, s), out = [];
+    if (!TICKET_453 && hasSpecial(name) && hasSale(name)) { var sv = fieldOf(name, 'sale', s); if (sv > p + 0.005) out.push('Sale $<s>' + money(sv).slice(1) + '</s>'); }
+    var w = listPrice(name, s); if (w > p + 0.005) out.push('WS $<s>' + money(w).slice(1) + '</s>');
+    if (msrpOf(name, s) > 0) out.push('MSRP ' + money(msrpOf(name, s)));
+    if (!out.length) return '';
+    /* 값 하나(`Sale ~~$18.00~~`)는 끊기지 않는 덩어리, 덩어리 사이에서만 줄바꿈 — 한 줄로 묶어 두면 수량 칸 밑으로 밀려 들어갔다 */
+    return '<span class="qty-cmp is-wrap">' + out.map(function (x, i) { return '<span class="cp">' + (i ? '· ' : '') + x + '</span>'; }).join(' ') + '</span>';
+  }
+  /* 「옵션마다 다름」 데모 — 한 화면에 네 케이스 (Special 은 라인시트에서 옵션마다 넣는 값) */
+  var MIXED = { 'Heathered Olive': 'sale+special', 'Light Wash Blue': 'sale', 'Burgundy Velvet': 'special', 'Charcoal Marled': 'ws' };
+  function optCase(name) {
+    var t = state.priceType;
+    if (t === 'mixed') return MIXED[name] || 'sale';
+    return t === 'regular' ? 'ws' : t === 'sale' ? 'sale' : t === 'special' ? 'special' : 'sale+special';
+  }
+  function hasSpecial(name) { return OPTION_PRICE_RULE ? /special/.test(optCase(name)) : isSpecial(); }
+  function hasSale(name) { return /sale/.test(optCase(name)); }
+  /* 헤더는 기존 규칙 그대로 — Special Price 면 패널 + 가격 + MSRP 만 (Figma 92-6327). 4가지 전부는 행에서만 (2026-10-12 "기존규칙을 유지하면서 확정") */
+  function plainSpecial() { return SPECIAL_PLAIN && (state.priceType === 'special' || (OPTION_PRICE_RULE && state.priceType === 'special4')); }
+  /* 4가지 모두 (2026-09-30) — WS · Sale · MSRP · Special Price 가 다 들어간 아이템. "4가지가 다 나와있는 케이스 추가해줘"
+     Special Price 패널 + 가격, 그 아래 Sale · WS 취소선 · MSRP. 할인율(%)은 Special Price 와 같이 안 쓴다.
+     컬러마다 값이 다르면 취소선은 행으로 내려가고, 행에도 Sale · WS 를 이름 붙여 둘 다 쓴다. 되돌리려면 false (버튼이 숨는다) */
+  var SPECIAL4_CASE = true;
+  window.__special4 = SPECIAL4_CASE;   /* 아래 전환 스크립트가 버튼을 숨길지 본다 */
+  /* 헤더 분홍 패널 — 살 수 있는 옵션이 전부 Special 일 때만 (일부만이면 패널 대신 그 행에 작은 Special Price 표시) */
+  function isSpecial() {
+    if (OPTION_PRICE_RULE && state.priceType === 'mixed') return pricedColors().every(function (c) { return hasSpecial(c.name); });
+    return state.priceType === 'special' || state.priceType === 'special4';
+  }
+  function isSpecial4() { return !OPTION_PRICE_RULE && state.priceType === 'special4'; }
+  /* ══ Out of Stock (2026-10-02) ═══════════════════════════════════════════════
+     Out of Stock 은 Inactive 가 아니다 — 어드민에선 가격을 그대로 넣을 수 있고, 프론트에선 그 컬러 행을 회색으로 둔다
+     (이름·가격 회색, 날짜 자리에 `Out of Stock`, 수량 버튼 잠김). 사용자: "아웃오브 스탁이라고 그레이아웃되어 나올예정"
+     헤더 가격(`up to N% $19.50~`)은 살 수 있는 컬러만으로 계산한다 — 품절 컬러가 제일 싸면 바이어가 못 사는 값을 말하게 된다.
+     전부 품절이면 전체로 계산한다. 사용자: "살 수 있는 옵션만으로 계산하고 회색 케이스 넣어줘"
+     되돌리려면 false — 재고 전환이 숨고 늘 전 컬러로 계산한다 */
+  var OOS_CASE = true;
+  window.__oos = OOS_CASE;
+  /* 일부 품절일 때 어느 컬러인가 — Rainbow Tie-Dye 는 할인율이 제일 큰 컬러(13.3% → up to 14%)라 빠지면 헤더가 바뀐다 */
+  var OOS_SOME = ADMIN_DATA ? ['Rainbow Tie-Dye', 'Charcoal Marled'] : ['Green'];
+  function isOos(name) {
+    if (!OOS_CASE || state.stock === 'all') return false;
+    return state.stock === 'none' || OOS_SOME.indexOf(name) >= 0;
+  }
+  /* 헤더 계산에 쓰는 컬러 — 살 수 있는 것만, 하나도 없으면 전부 */
+  function pricedColors() {
+    var a = COLORS.filter(function (c) { return !isOos(c.name); });
+    return a.length ? a : COLORS;
+  }
+  /* 8개까지 보이고 나머지는 `9 more`로 접힌다 — 원본과 같은 개수 */
+  var SIZES = ADMIN_DATA ? ['S', 'M', 'L'] :   /* 어드민 Size 옵션 그대로 */
+              ['XXX Small','XX Small','X Small','Small','Medium','Large','X Large','XX Large',
+               '3X Large','4X Large','5X Large','6X Large','7X Large','8X Large','9X Large',
+               '10X Large','11X Large'];
+  var SOLD_OUT = ADMIN_DATA ? {} : { 'Small': true };
+  /* base = 큰 사이즈만 웃돈(기준가가 분명) · scattered = 절반 넘게 제각각(가드가 막는다) */
+  /* 어드민엔 사이즈별 가격이 없다 — base(어드민 그대로)는 차액 없음, scattered 에서만 L 에 차액을 둬 칩 표기를 확인 */
+  var SIZE_ADD = ADMIN_DATA ? { same: {}, base: {}, scattered: { 'L': 1.00 } } : {
+    same: {},
+    base: { 'XX Large': 1.50, '3X Large': 1.50 },
+    scattered: { 'X Small': 0.30, 'Medium': 0.45, 'Large': 0.60, 'X Large': 0.80,
+                 'XX Large': 1.50, '3X Large': 1.70, '4X Large': 2.00, '5X Large': 2.20,
+                 '6X Large': 2.40 }
+  };
+
+  var PACK_QTY = {}, UNIT_QTY = {};
+  /* 흐름 숫자 맞추기 (2026-10-12 "모든 숫자를 플로우에 맞게 다 맞춰야돼") — 배송일은 어드민 데모 Pre Order 04/20/2027 과 같은 값(2026 은 오늘보다 앞이라 어드민 달력에서 못 넣는 날짜였다).
+     데모 수량은 카트에 담겨 있는 수량 그대로 — Pre Pack Olive 2 · Burgundy 1 · Rainbow 1 팩 = 4 packs $480.00,
+     Open Pack Olive S1 M2 L3 · Burgundy S2 M2 L2 = 12 pcs $249.00. 예전 데모(Olive 1 · Light Wash Blue 2)는 카트와 달랐다.
+     false 면 예전 수량 · 백업 …backup-before-flow-numbers.html */
+  var FLOW_QTY = true;
+  /* 2026-10-12 전체 일관성 점검 — 데모 아이템은 전 컬러 Pre Order(어드민 04/20/2027)라 사진 위 IN STOCK 배지는 숨김. 재고 전환에서 In Stock 이 생기는 경우는 없음 */
+  if (FLOW_QTY && ADMIN_DATA) { var bs = document.getElementById('badgeStock'); if (bs) bs.hidden = true; }
+  var SHIP_DATE = FLOW_QTY ? '04/20/27' : '04/20/26';
+  var CART_PRE = { 'Heathered Olive': 2, 'Burgundy Velvet': 1, 'Rainbow Tie-Dye': 1 };
+  var CART_OPEN = { 'Heathered Olive': { S: 1, M: 2, L: 3 }, 'Burgundy Velvet': { S: 2, M: 2, L: 2 } };
+  function resetQty(big) {
+    COLORS.forEach(function (c, i) {
+      if (FLOW_QTY && ADMIN_DATA && !big) {
+        PACK_QTY[c.name] = CART_PRE[c.name] || 0;
+        UNIT_QTY[c.name] = JSON.parse(JSON.stringify(CART_OPEN[c.name] || {}));
+        return;
+      }
+      PACK_QTY[c.name] = big ? 999999 : ([1, 2][i] || 0);
+      /* Open Pack 은 사이즈마다 수량이 따로다 (2026-10-12 — 카트 Edit Qty 와 같은 값을 주고받아야 해서) */
+      UNIT_QTY[c.name] = {};
+      UNIT_QTY[c.name][SIZES[0]] = big ? 999999 : ([8, 62][i] || 0);
+    });
+  }
+  resetQty(false);
+
+  var state = { method: 'pre', priceType: 'sale', optionCase: 'base',
+                data: 'normal', stock: 'all', size: ADMIN_DATA ? 'S' : 'XX Small', sizesOpen: false, open: false };
+
+  var CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+  var MINUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>';
+  var PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>';
+
+  function isPre() { return state.method === 'pre'; }
+  function isMax() { return state.data === 'max'; }
+  function money(v) {
+    return '$' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  function num(v) { return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function el(tag, cls, html) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (html != null) n.innerHTML = html;
+    return n;
+  }
+
+  function pcs() { return isMax() ? 999 : (ADMIN_DATA ? 6 : 7); }   /* 어드민 S2-M2-L2 = 6pcs */
+  function colorOf(n) {
+    for (var i = 0; i < COLORS.length; i++) if (COLORS[i].name === n) return COLORS[i];
+    return COLORS[0];
+  }
+  /* 낱개가 = 정가 × 컬러 배수 × (세일이면 할인) */
+  function fieldAt(colorName, f, s) {
+    var o = sizeOverride(colorName, s);
+    return o ? o[f] : colorOf(colorName)[f][state.optionCase];
+  }
+  /* 사이즈를 주면 그 변형 값. 안 주면 — Pre Pack 은 팩 안 사이즈들의 평균(= 팩 금액 ÷ pcs), Open Pack 은 고른 사이즈 */
+  function fieldOf(colorName, f, s) {
+    if (s) return fieldAt(colorName, f, s);
+    if (!VARIANT_PRICE || !ADMIN_DATA) return colorOf(colorName)[f][state.optionCase];
+    if (isPre()) {
+      var t = 0, n = 0;
+      Object.keys(PACK_RATIO).forEach(function (k) { t += fieldAt(colorName, f, k) * PACK_RATIO[k]; n += PACK_RATIO[k]; });
+      return Math.round(t / n * 10000) / 10000;
+    }
+    return fieldAt(colorName, f, state.size);
+  }
+  /* 바이어가 실제로 내는 값 — 세일/Special 이면 sale, 아니면 ws */
+  function pcPrice(colorName, s) {
+    if (OPTION_PRICE_RULE) {
+      var oc = optCase(colorName);
+      return fieldOf(colorName, /special/.test(oc) ? 'special' : oc === 'sale' || oc === 'sale+special' ? 'sale' : 'ws', s);
+    }
+    if (state.priceType === 'regular') return fieldOf(colorName, 'ws', s);
+    if (isSpecial() && PRICE_LINE) return fieldOf(colorName, 'special', s);
+    return fieldOf(colorName, 'sale', s);
+  }
+  function saleOf(colorName, s) { return (OPTION_PRICE_RULE && !hasSale(colorName)) ? fieldOf(colorName, 'ws', s) : fieldOf(colorName, 'sale', s); }
+  /* 행에 값이 나오는가 — 실제 내는 값이나 할인율이 컬러마다 다를 때만 */
+  function rowsShowPrice() {
+    var pay = rangeOf(pcPrice);
+    var ex = pricedColors().map(offExact_name);
+    return pay.lo !== pay.hi || (!plainSpecial() && Math.max.apply(null, ex) - Math.min.apply(null, ex) > 0.01);
+  }
+  function listPrice(colorName, s) { return fieldOf(colorName, 'ws', s); }
+  function msrpOf(colorName, s) { return COMBO8 && state.noMsrp ? 0 : fieldOf(colorName, 'msrp', s); }   /* 0 = MSRP 없음 */
+  /* 헤더 계산의 단위 — Open Pack 은 변형(컬러 × 사이즈) 하나하나, Pre Pack 은 팩(컬러) */
+  function eachUnit(fn) {
+    var out = [];
+    pricedColors().forEach(function (c) {
+      if ((isPre() && !PRE_ROW_PER_PC) || !VARIANT_PRICE || !ADMIN_DATA) out.push(fn(c.name));
+      else if (isPre()) Object.keys(PACK_RATIO).forEach(function (s) { out.push(fn(c.name, s)); });   /* 팩 안 사이즈 하나하나 */
+      else SIZES.forEach(function (s) { if (!SOLD_OUT[s]) out.push(fn(c.name, s)); });
+    });
+    return out;
+  }
+  /* 할인율은 아무도 입력하지 않는다 — WS 와 Sale 두 절대값에서 계산된 값이다.
+     그래서 4.96% 같은 수가 나오고, 반올림하면 5%로 "부풀려" 말하게 된다.
+     돈에 대한 주장이라 올림한 상한을 `up to N%` 로만 쓴다 — 어떤 값이든 참이 된다. */
+  function offExact(colorName, s) {
+    var w = listPrice(colorName, s), p = pcPrice(colorName, s);
+    if (state.priceType === 'regular' || w <= 0 || p >= w) return 0;
+    if (OPTION_PRICE_RULE && hasSpecial(colorName) && !TICKET_453) return 0;   /* Special 은 할인율을 말하지 않는다 — TICKET_453 부터는 말한다 */
+    return (1 - p / w) * 100;
+  }
+  function offExact_name(c) { return offExact(c.name); }
+  function offCap() {
+    var m = Math.max.apply(null, eachUnit(offExact));
+    return m > 0 ? Math.ceil(m - 0.0001) : 0;   /* 5.00% 가 6% 로 새지 않게 */
+  }
+  function rangeOf(fn) {
+    var v = eachUnit(fn);
+    return { lo: Math.min.apply(null, v), hi: Math.max.apply(null, v) };
+  }
+  /* 옵션마다 값이 달라도 범위($19.50 – $23.00)를 쓰지 않고 최저가에 `~`($19.50~)만 붙인다.
+     2026-09-30 "range를 보여주지 않고 up to nn%, $00.00~ 이런식으로" · 되돌리려면 false (범위로 돌아간다) */
+  var FROM_PRICE = true;
+  function moneyRange(r) { return r.lo === r.hi ? money(r.lo) : FROM_PRICE ? money(r.lo) + '~' : money(r.lo) + ' – ' + money(r.hi); }
+  /* 파는 단위 하나의 값 */
+  function unitPrice(colorName) { return isPre() ? pcPrice(colorName) * pcs() : pcPrice(colorName); }
+  function lowPc() { return Math.min.apply(null, pricedColors().map(function (c) { return pcPrice(c.name); })); }
+  function highPc() { return Math.max.apply(null, pricedColors().map(function (c) { return pcPrice(c.name); })); }
+  function varies() { return highPc() - lowPc() > 0.005; }
+
+  /* ── 차액 가드 ① 기준가가 실재할 때만 ──
+     `$10 · $10 · $11.50`이면 $10이 기준인 게 분명해 "+$1.50 더"가 참이다.
+     제각각이면 최저가는 그냥 제일 싼 값이라 "웃돈"이라는 말 자체가 거짓이 된다. */
+  function hasBasePrice() {
+    if (!varies()) return false;
+    var lo = lowPc(), at = 0;
+    pricedColors().forEach(function (c) { if (Math.abs(pcPrice(c.name) - lo) < 0.005) at++; });
+    return at * 2 >= pricedColors().length;
+  }
+  function sizeAdd(s) { return SIZE_ADD[state.optionCase][s] || 0; }
+  /* 사이즈 웃돈도 같은 가드 — 절반 이상이 기본값일 때만 칩에 띄운다 */
+  function sizeDeltaUsable() {
+    var at = 0;
+    SIZES.forEach(function (s) { if (sizeAdd(s) < 0.005) at++; });
+    return at * 2 >= SIZES.length;
+  }
+
+  function qtyOf(name, s) {   /* 품절 컬러는 담을 수 없다 · Open Pack 은 고른 사이즈(또는 s)의 수량 */
+    if (isOos(name)) return 0;
+    if (isPre()) return PACK_QTY[name] || 0;
+    return (UNIT_QTY[name] || {})[s || state.size] || 0;
+  }
+  function setQty(name, v) {
+    if (isPre()) PACK_QTY[name] = v;
+    else (UNIT_QTY[name] = UNIT_QTY[name] || {})[state.size] = v;
+  }
+
+  /* ① 가격 — 정가 / 세일(5%) / Special Price 세 상태 */
+  function renderPrice() {
+    var box = $('priceBox');
+    var pay = rangeOf(pcPrice), list = rangeOf(listPrice), msrp = rangeOf(msrpOf);
+    var cap = offCap();
+
+    box.className = 'price' + (isSpecial() ? ' is-special' : '');
+    var html = '';
+    if (isSpecial()) html += '<span class="price-tag">Special Price</span>';
+    html += '<div class="price-row">';
+    /* 할인율도 행마다 다를 수 있다 — 같으면 한 숫자, 다르면 `up to N%`.
+       `5–13%`처럼 범위로 쓰면 낮은 쪽이 먼저 읽혀 오히려 역효과다 */
+    if (cap > 0 && (TICKET_453 || (!plainSpecial() && !isSpecial4() && !(OPTION_PRICE_RULE && isSpecial())))) html += '<span class="price-off' + (HEAD_LINES && !isSpecial() ? ' is-sale' : '') + '">up to ' + cap + '%</span>';
+    html += '<span class="price-main">' + moneyRange(pay) + '</span><span class="price-unit">/pc</span>';
+    if (cap > 0 && !PRICE_LINE) html += '<span class="price-was">WS ' + moneyRange(list) + '</span>';
+    html += '</div>';
+
+    if (PRICE_LINE) {
+      /* 두 번째 줄 — 실제 내는 값보다 높은 값을 취소선으로, MSRP 는 그대로.
+         값이 컬러마다 다르면(행에 가격이 나오면) 취소선은 행이 말하고, 여기엔 MSRP 만 남긴다 */
+      var parts = [];
+      var strike = function (label, r) {
+        var t = moneyRange(r).replace(/\$/g, ''), from = /~$/.test(t);   /* `~` 는 취소선 밖에 */
+        return label + ' $<s>' + t.replace(/~$/, '') + '</s>' + (from ? '~' : '');
+      };
+      if (TICKET_453 && HEAD_LINES) {
+        /* 와이어 ②⑤⑦: [Special Price] / 할인% 가격 /pc / ~~WS~~  ─  MSRP (있으면) */
+        var wl2 = cap > 0 ? strike('WS', list) : '';
+        if (wl2) html += '<p class="price-line">' + wl2 + '</p>';
+        box.innerHTML = html;
+        var mv = eachUnit(msrpOf).filter(function (v) { return v > 0; });
+        var pm = $('priceMsrp');
+        pm.hidden = !mv.length;
+        pm.className = 'price-msrp' + (wl2 || isSpecial() ? ' has-rule' : '');
+        if (mv.length) pm.textContent = 'MSRP ' + moneyRange({ lo: Math.min.apply(null, mv), hi: Math.max.apply(null, mv) });
+        return finishNote();
+      }
+      if (TICKET_453) {
+        /* 티켓 규칙 — 할인이 있으면 늘 ~~WS~~ (값이 다르면 최저가~). Sale 은 Special 이 있으면 안 씀.
+           Special 박스면 WS 만 박스 안, MSRP 는 박스 밖 참고 줄 */
+        var wl = cap > 0 ? strike('WS', list) : '';
+        if (isSpecial()) {
+          if (wl) html += '<p class="price-line">' + wl + '</p>';
+          box.innerHTML = html;
+          $('priceMsrp').hidden = false;
+          $('priceMsrp').textContent = 'MSRP ' + moneyRange(msrp);
+          return finishNote();
+        }
+        if (wl) parts.push(wl);
+      } else if (!rowsShowPrice() && !(OPTION_PRICE_RULE && isSpecial())) {
+        var sale = rangeOf(saleOf);
+        if (!plainSpecial() && isSpecial() && sale.hi > pay.lo + 0.005) parts.push(strike('Sale', sale));
+        if (cap > 0 && !plainSpecial()) parts.push(strike('WS', list));
+      }
+      parts.push('MSRP ' + moneyRange(msrp));
+      html += '<p class="price-line">' + parts.join(' · ') + '</p>';
+      $('priceMsrp').hidden = true;
+    } else {
+      /* MSRP 는 행에 안 내린다 — 참고값이라 행마다 쓰면 무게만 세 배가 된다. 달라지면 범위로 */
+      $('priceMsrp').hidden = false;
+      $('priceMsrp').textContent = 'MSRP ' + moneyRange(msrp);
+    }
+    box.innerHTML = html;
+    finishNote();
+  }
+  function finishNote() {
+    var pay = rangeOf(pcPrice);
+    var varyWhat = [];
+    if (pay.lo !== pay.hi) varyWhat.push('price');
+    var ex = pricedColors().map(offExact_name);
+    if (Math.max.apply(null, ex) - Math.min.apply(null, ex) > 0.01) varyWhat.push('discount');
+    /* 사유 한 줄(The price and discount below depend on…)은 Figma 에 없는, 지어낸 문구였다.
+       행이 컬러별 가격과 취소선으로 직접 보여주므로 가격 한 줄 방식에선 뺀다 (2026-09-29) */
+    $('priceNote').hidden = PRICE_LINE || !varyWhat.length;
+    $('priceNote').textContent = 'The ' + varyWhat.join(' and ') + ' below ' +
+      (varyWhat.length > 1 ? 'depend' : 'depends') + ' on the Color you pick.';
+  }
+
+  /* ② Open Pack의 Size 칩 — 최신 노드는 Size가 칩, Color가 행이다.
+     차액은 칩에만 붙는다. 칩은 작아서 절대값을 못 담고 가로로 놓여 비교가 안 된다. */
+  function renderSizes() {
+    $('sizeBlock').hidden = isPre();
+    if (isPre()) return;
+    var wrap = $('sizeChips');
+    wrap.innerHTML = '';
+    var shown = state.sizesOpen ? SIZES.length : 8;
+    var usable = sizeDeltaUsable();
+    SIZES.slice(0, shown).forEach(function (s) {
+      var chip = el('button', 'chip' + (state.size === s ? ' is-active' : ''));
+      chip.type = 'button';
+      if (SOLD_OUT[s]) chip.disabled = true;
+      chip.appendChild(el('span', null, s));
+      var d = usable ? sizeAdd(s) : 0;
+      if (d > 0.005) chip.appendChild(el('span', 'chip-delta', '+' + money(d)));
+      if (state.size === s) {
+        var n = 0;
+        COLORS.forEach(function (c) { n += qtyOf(c.name, s); });
+        if (n > 0) chip.appendChild(el('span', 'chip-count', num(n)));
+      }
+      chip.addEventListener('click', function () { state.size = s; render(); });
+      wrap.appendChild(chip);
+    });
+    var rest = Math.max(0, SIZES.length - shown);   /* 사이즈가 8개 이하면 0 — 음수를 세지 않는다 */
+    $('sizeMore').hidden = SIZES.length <= 8;
+    $('sizeMore').classList.toggle('is-open', state.sizesOpen);
+    $('sizeMoreLabel').textContent = state.sizesOpen ? 'Show less' : (rest + ' more');
+  }
+
+  /* ③ 행은 파는 단위의 절대값만 말한다 — 두 방식 모두 Color가 행이다 */
+  function renderRows() {
+    var list = $('qtyList');
+    list.innerHTML = '';
+    /* 행은 품절 컬러까지 다 보여주므로, 행에 가격을 쓸지는 전 컬러로 정한다 (헤더 계산과 다르다) */
+    var pv = COLORS.map(function (c) { return pcPrice(c.name); });
+    var pay = { lo: Math.min.apply(null, pv), hi: Math.max.apply(null, pv) };
+    var ex = COLORS.map(offExact_name);
+    var offVaries = Math.max.apply(null, ex) - Math.min.apply(null, ex) > 0.01;
+    /* 값이 전부 같으면 행에 아무것도 안 쓴다 — 같은 숫자를 세 번 반복하게 된다 */
+    var show = pay.lo !== pay.hi || (!plainSpecial() && offVaries);
+    COLORS.forEach(function (c) {
+      var oos = isOos(c.name);
+      var row = el('div', 'qty-row' + (oos ? ' is-oos' : ''));
+      var extra = isPre() ? 0 : sizeAdd(state.size);
+      var p = unitPrice(c.name) + (isPre() ? 0 : extra);
+      var price = '';
+      if (show && isPre() && PRE_ROW_PER_PC) price = prePcPrice(c.name);
+      else if (show) {
+        price = '<span class="qty-price">' + money(p) + '<i>' + (isPre() ? '/pack' : '/pc') + '</i></span>';
+        /* 어느 컬러가 할인인지 — 헤더의 up to N% 만으로는 모른다. 할인된 행에만 정가(WS) 취소선.
+           퍼센트는 여전히 헤더 하나뿐 (헤더 올림 · 행 내림이 한 화면에 섞이지 않게) */
+        var w = (isPre() ? listPrice(c.name) * pcs() : listPrice(c.name)) + (isPre() ? 0 : extra);
+        if (PRICE_LINE && isSpecial4()) {
+          /* 취소선이 둘이면 어느 게 Sale 이고 어느 게 WS 인지 모른다 — 헤더 줄처럼 이름을 붙인다.
+             Sale 이 WS 와 같으면(그 컬러는 세일 없음) WS 하나만 */
+          var sv = (isPre() ? saleOf(c.name) * pcs() : saleOf(c.name)) + (isPre() ? 0 : extra);
+          var cmp = [];
+          if (sv > p + 0.005 && sv < w - 0.005) cmp.push('Sale $<s>' + money(sv).slice(1) + '</s>');
+          if (w > p + 0.005) cmp.push('WS $<s>' + money(w).slice(1) + '</s>');
+          /* 둘이면 가격 옆에 두면 어중간하게 접힌다 — 가격 아래 한 줄로, 헤더 줄과 같은 모양 */
+          if (cmp.length) price += '<span class="qty-cmp">' + cmp.join(' · ') + '</span>';
+        } else if (PRICE_LINE && !(OPTION_PRICE_RULE ? hasSpecial(c.name) : plainSpecial()) && w > p + 0.005) price += '<s class="qty-was">' + money(w) + '</s>';
+        if (ROW_ALL_PRICES && !isPre()) price = (TICKET_453 ? offTag(p, w, hasSpecial(c.name)) : '') + '<span class="qty-price">' + money(p) + '<i>/pc</i></span>' + allCmp(c.name);
+        if (spTag(c.name)) price = spTag(c.name) + price;
+        /* 행에는 퍼센트를 안 쓴다 — 헤더의 `up to N%`(올림)와 행의 값(내림)이
+           반올림 방향 때문에 어긋나 보인다. 행은 실제로 내는 금액만 말한다. */
+      }
+      /* 옵션 / 가격 / 프리오더 날짜 — 세 줄 (2026-09-29, Pre Pack · Open Pack 공통).
+         전엔 가격이 이름 옆에 붙었다가 넘칠 때만 내려가서, Pre Pack(팩가)은 3줄 · Open Pack(낱개가)은 2줄로 갈렸다 */
+      /* Pre Pack 날짜 = 팩 이름 줄 오른쪽 — 카트와 같은 자리 (2026-10-12 "이렇게 하기로 했었는데..... 사라짐").
+         날짜는 팩 하나에 붙는 정보라 팩 이름 옆, Open Pack 은 변형(사이즈) 행 밑 그대로. false 면 예전(맨 아래 줄) · 백업 …backup-before-pre-ship-head.html */
+      /* 날짜 문구는 바이어 화면 전체 `Preorder` 로 통일 (2026-10-12 "Preorder로 통일해줘" — 예전 Pre Pack 은 Figma PDP 의 `Est.ship date`) */
+      var shipTxt = oos ? 'Out of Stock' : (isPre() && !PREORDER_WORD ? 'Est.ship date ' + SHIP_DATE : 'Preorder ' + SHIP_DATE);
+      var head = PDP_PRE_SHIP_HEAD && isPre();
+      if (head) {
+        row.classList.add('has-top');
+        row.appendChild(el('div', 'qty-top', '<span class="qty-name"><span>' + c.name + '</span></span><span class="qty-top-ship">' + shipTxt + '</span>'));
+      }
+      row.appendChild(el('div', 'qty-info',
+        (head ? '' : '<div class="qty-name"><span>' + c.name + '</span></div>') +
+        (price ? '<div class="qty-priceline">' + price + '</div>' : '') +
+        (head ? '' : '<div class="qty-sub">' + shipTxt + '</div>')));
+
+      var q = qtyOf(c.name);
+      var st = el('div', 'stepper',
+        '<button type="button" aria-label="Decrease"' + (q === 0 ? ' disabled' : '') + '>' + MINUS + '</button>' +
+        '<span>' + num(q) + '</span>' +
+        '<button type="button" aria-label="Increase"' + (oos ? ' disabled' : '') + '>' + PLUS + '</button>');
+      var b = st.querySelectorAll('button');
+      b[0].addEventListener('click', function () { if (qtyOf(c.name) > 0) { setQty(c.name, qtyOf(c.name) - 1); render(); } });
+      b[1].addEventListener('click', function () { setQty(c.name, qtyOf(c.name) + 1); render(); });
+      if (PRE_VTABLE && price.indexOf('class="vtab"') >= 0) row.classList.add('has-vtab');
+      if (PRE_PC_ONLY && isPre()) {
+        /* 팩은 수량에만 — `2 packs · 12 pcs` (0 이면 `6 pcs/pack` 으로 팩 구성만) */
+        var box = el('div', 'qty-step');
+        box.appendChild(st);
+        /* 늘 수량 칸 바로 아래, 문구 하나 — 담았을 때만 `2 packs · 12 pcs` (2026-10-12 "숫자 넣는곳이랑 팩이랑 피스 보여주는 부분이 두개가 다른데").
+           0 이면 비운다 — 팩 구성(6pcs)은 위 `Size / Pack 1pack x 6pcs` 가 이미 말한다. 자리는 비워 둬 행 높이가 수량에 따라 안 흔들리게 */
+        /* 0 이어도 늘 보인다 — `0 packs · 0 pcs` (2026-10-12 "2 packs · 12 pcs 이런게 없네?") */
+        box.appendChild(el('span', 'qty-step-sub', num(q) + ' pack' + (q === 1 ? '' : 's') + ' · ' + num(q * pcs()) + ' pc' + (q * pcs() === 1 ? '' : 's')));
+        row.appendChild(box);
+      } else row.appendChild(st);
+      list.appendChild(row);
+    });
+  }
+
+  /* 일부 옵션만 Special 일 때 그 행에 작은 라벨 — 헤더 패널이 없으니 왜 취소선이 없는지 알 수 있게 (헤더 패널과 같은 모양) */
+  function spTag(name) {
+    return OPTION_PRICE_RULE && state.priceType === 'mixed' && !isSpecial() && hasSpecial(name) ? '<span class="qty-sp">Special Price</span>' : '';
+  }
+  /* Pre Pack 행 가격 — 피스당(사이즈마다 다르면 최저가~) + 할인된 행만 WS 취소선, 아래 회색으로 팩 금액 */
+  /* ══ Pre Pack 행 = 전부 개당 (2026-10-12 「③ 전부 개당」 선택) ══════════════════════════════
+     "팩으로 보이니까 헷갈려 그게 가장 큰 문제야 … 펼치기를 하면 안될거같아". 근거: Shopify B2B 는 팩을 따로 값 매기지 않고
+     개당 가격 + 수량 규칙(increments of N)으로 판다 — 한 줄 = 한 단위. 그래서 행에서 팩 금액 줄(`$111.00/pack`)을 없애고,
+     팩은 수량에만(스테퍼 밑 `2 packs · 12 pcs`). 사이즈 값이 다르면 사이즈를 칸으로 놓은 작은 표 —
+     맨 윗줄 = 내는 값(굵게, $), 그 아래 Sale · WS 취소선 · MSRP 를 같은 칸에 (없는 줄은 안 씀). 값이 하나면 한 줄: `$19.50/pc  WS ~~$21.50~~ · MSRP $45.00`.
+     false 면 바로 전(사이즈 줄 + 비교 줄 + 팩 금액) · 백업 …backup-before-pc-only.html */
+  var PRE_PC_ONLY = true;
+  /* 세로 표 — 사이즈 = 줄, 가격 종류 = 칸 (2026-10-12 체크아웃 표와 같은 방향으로: "이 두개를 비교햐봐" → "응 그렇게 맞춰줘").
+     가로(사이즈 = 칸)는 사이즈 이름 30자 · 사이즈 5개+ 에서 깨졌다. 칸 머리(/pc · Sale · WS · MSRP)는 컬러마다 한 번, 없는 값은 칸째 뺀다.
+     표가 있는 행은 수량 칸을 표 아래로 내려 표가 행 폭을 다 쓴다. false 면 가로 표 · 백업 …backup-before-vertical-table.html */
+  var PRE_VTABLE = true;
+  function preVTable(name) {
+    var sz = Object.keys(PACK_RATIO);
+    var pay = sz.map(function (k) { return pcPrice(name, k); });
+    var sale = sz.map(function (k) { return fieldOf(name, 'sale', k); });
+    var ws = sz.map(function (k) { return listPrice(name, k); });
+    var ms = sz.map(function (k) { return msrpOf(name, k); });
+    var showSale = !TICKET_453 && hasSpecial(name) && hasSale(name) && sale.some(function (v, i) { return v > pay[i] + 0.005; });
+    var showWs = ws.some(function (v, i) { return v > pay[i] + 0.005; });
+    var showM = ms.some(function (v) { return v > 0; });
+    var cols = ['auto', 'auto'].concat(showSale ? ['auto'] : [], showWs ? ['auto'] : [], showM ? ['auto'] : []);
+    var cell = function (cls, t) { return '<span class="' + cls + '">' + t + '</span>'; };
+    var strike = function (v, p) { return v > p + 0.005 ? '<s>' + money(v).slice(1) + '</s>' : '\u2014'; };
+    var h = '<div class="vtab" style="grid-template-columns: minmax(0, 1fr) ' + cols.slice(1).join(' ') + ';">' +
+      cell('vt-h', '') + cell('vt-h', '/pc') + (showSale ? cell('vt-h', 'Sale') : '') + (showWs ? cell('vt-h', 'WS') : '') + (showM ? cell('vt-h', 'MSRP') : '');
+    sz.forEach(function (k, i) {
+      h += cell('vt-n', k + '(' + PACK_RATIO[k] + ')') + cell('vt-p', (TICKET_453 ? offTag(pay[i], ws[i], hasSpecial(name)) : '') + money(pay[i])) +
+        (showSale ? cell('vt-c', strike(sale[i], pay[i])) : '') + (showWs ? cell('vt-c', strike(ws[i], pay[i])) : '') + (showM ? cell('vt-c', ms[i] > 0 ? money(ms[i]).slice(1) : '\u2014') : '');
+    });
+    return spTag(name) + h + '</div>';
+  }
+  function preGrid(name) {
+    if (PRE_VTABLE) return preVTable(name);
+    var sz = Object.keys(PACK_RATIO);
+    var pay = sz.map(function (k) { return pcPrice(name, k); });
+    var sale = sz.map(function (k) { return fieldOf(name, 'sale', k); });
+    var ws = sz.map(function (k) { return listPrice(name, k); });
+    var ms = sz.map(function (k) { return msrpOf(name, k); });
+    var showSale = hasSpecial(name) && hasSale(name) && sale.some(function (v, i) { return v > pay[i] + 0.005; });
+    var showWs = ws.some(function (v, i) { return v > pay[i] + 0.005; });
+    var n = sz.length, cols = 'grid-template-columns: auto repeat(' + n + ', minmax(0, 1fr));';
+    var cell = function (cls, t) { return '<span class="' + cls + '">' + t + '</span>'; };
+    var h = '<div class="pgrid" style="' + cols + '">' + cell('pg-l', '/pc') + sz.map(function (k) { return cell('pg-h', k + '(' + PACK_RATIO[k] + ')'); }).join('');
+    h += cell('pg-l', '') + pay.map(function (v) { return cell('pg-p', money(v)); }).join('');
+    if (showSale) h += cell('pg-l', 'Sale') + sale.map(function (v, i) { return cell('pg-c', v > pay[i] + 0.005 ? '<s>' + money(v).slice(1) + '</s>' : '\u2014'); }).join('');
+    if (showWs) h += cell('pg-l', 'WS') + ws.map(function (v, i) { return cell('pg-c', v > pay[i] + 0.005 ? '<s>' + money(v).slice(1) + '</s>' : '\u2014'); }).join('');
+    h += cell('pg-l', 'MSRP') + ms.map(function (v) { return cell('pg-c', money(v).slice(1)); }).join('');
+    return spTag(name) + h + '</div>';
+  }
+  function preOne(name) {   /* 사이즈 값이 같은 팩 — 한 줄 */
+    var k = Object.keys(PACK_RATIO)[0], p = pcPrice(name, k), out = [];
+    if (!TICKET_453 && hasSpecial(name) && hasSale(name)) { var sv = fieldOf(name, 'sale', k); if (sv > p + 0.005) out.push('Sale $<s>' + money(sv).slice(1) + '</s>'); }
+    var w = listPrice(name, k); if (w > p + 0.005) out.push('WS $<s>' + money(w).slice(1) + '</s>');
+    if (msrpOf(name, k) > 0) out.push('MSRP ' + money(msrpOf(name, k)));
+    return spTag(name) + (TICKET_453 ? offTag(p, w, hasSpecial(name)) : '') + '<span class="qty-price">' + money(p) + '<i>/pc</i></span>' +
+      '<span class="qty-inl">' + out.map(function (x, i) { return '<span class="cp">' + (i ? '· ' : '') + x + '</span>'; }).join(' ') + '</span>';
+  }
+  function prePcPrice(name) {
+    if (PRE_PC_ONLY && VARIANT_PRICE && ADMIN_DATA) {
+      var ks = Object.keys(PACK_RATIO), v = ks.map(function (k) { return pcPrice(name, k) + '|' + listPrice(name, k) + '|' + fieldOf(name, 'sale', k) + '|' + msrpOf(name, k); });
+      return v.every(function (x) { return x === v[0]; }) ? preOne(name) : preGrid(name);
+    }
+    var sz = (VARIANT_PRICE && ADMIN_DATA) ? Object.keys(PACK_RATIO) : [null];
+    function low(fn) { var v = sz.map(function (k) { return fn(name, k || undefined); }); return { lo: Math.min.apply(null, v), t: Math.max.apply(null, v) - Math.min.apply(null, v) > 0.005 }; }
+    var p = low(pcPrice), w = low(listPrice), sv = low(saleOf);
+    var tl = function (r) { return r.t ? '~' : ''; };
+    /* 팩이어도 사이즈마다 값이 다르면 사이즈별로 한 줄씩 — `S(2) · $18.00/pc $20.00` (같은 값끼리는 한 줄로 묶음).
+       2026-10-12 "팩이지만.... 옵션별 사이즈별 가격이 다를 수 있잖아 그런경우 표기가 되지가 않았어" — 카트 Pre Pack 줄과 같은 모양.
+       괄호 = 팩 안 개수. 최저가~ 한 숫자로는 어느 사이즈가 얼마인지 몰랐다 */
+    if (p.t && sz[0]) {
+      var groups = [];
+      sz.forEach(function (k) {
+        var pv = pcPrice(name, k), wv = listPrice(name, k), sv2 = saleOf(name, k), mv = msrpOf(name, k);
+        var g = groups.filter(function (x) { return Math.abs(x.p - pv) < 0.005 && Math.abs(x.w - wv) < 0.005 && Math.abs(x.s - sv2) < 0.005 && Math.abs(x.m - mv) < 0.005; })[0];
+        if (g) g.k.push(k); else groups.push({ p: pv, w: wv, s: sv2, m: mv, k: [k] });
+      });
+      var lines = groups.map(function (g) {
+        var cmp = '';
+        if (PRICE_LINE && isSpecial4()) {
+          var c2 = [];
+          if (g.s > g.p + 0.005 && g.s < g.w - 0.005) c2.push('Sale $<s>' + money(g.s).slice(1) + '</s>');
+          if (g.w > g.p + 0.005) c2.push('WS $<s>' + money(g.w).slice(1) + '</s>');
+          if (c2.length) cmp = ' <span class="qty-sz-was">' + c2.join(' · ') + '</span>';
+        } else if (PRICE_LINE && !(OPTION_PRICE_RULE ? hasSpecial(name) : plainSpecial()) && g.w > g.p + 0.005) cmp = ' <span class="qty-sz-was"><s>' + money(g.w) + '</s></span>';
+        return '<span class="qty-sz">' + g.k.map(function (k) { return '<span class="sz">' + k + '(' + PACK_RATIO[k] + ')</span>'; }).join(', ') +
+          ' · <b>' + money(g.p) + '</b><i>/pc</i>' + (ROW_ALL_PRICES ? '' : cmp) + '</span>' + (ROW_ALL_PRICES ? allCmp(name, g.k[0]) : '');
+      }).join('');
+      return spTag(name) + '<span class="qty-szs">' + lines + '</span><span class="qty-pack">' + money(unitPrice(name)) + '/pack</span>';
+    }
+    var h = '<span class="qty-price">' + money(p.lo) + tl(p) + '<i>/pc</i></span>';
+    if (PRICE_LINE && isSpecial4()) {
+      var cmp = [];
+      if (sv.lo > p.lo + 0.005 && sv.lo < w.lo - 0.005) cmp.push('Sale $<s>' + money(sv.lo).slice(1) + '</s>' + tl(sv));
+      if (w.lo > p.lo + 0.005) cmp.push('WS $<s>' + money(w.lo).slice(1) + '</s>' + tl(w));
+      if (cmp.length) h += '<span class="qty-cmp">' + cmp.join(' · ') + '</span>';
+    } else if (PRICE_LINE && !(OPTION_PRICE_RULE ? hasSpecial(name) : plainSpecial()) && w.lo > p.lo + 0.005) h += '<span class="qty-was"><s>' + money(w.lo) + '</s>' + tl(w) + '</span>';
+    if (ROW_ALL_PRICES) h = '<span class="qty-price">' + money(p.lo) + tl(p) + '<i>/pc</i></span>' + allCmp(name, sz[0] || undefined);
+    return spTag(name) + h + '<span class="qty-pack">' + money(unitPrice(name)) + '/pack</span>';
+  }
+
+  /* ④ 합계 — 값이 섞였을 때만 펼칠 수 있다. 총액을 검산하는 자리라 차액은 안 넣는다 */
+  function renderTotal() {
+    var n = 0, amount = 0, lines = [];
+    COLORS.forEach(function (c) {
+      /* Open Pack 은 모든 사이즈의 수량을 더한다 — 지금 고른 칩만이 아니라 (카트에 들어가는 전부) */
+      var sizes = isPre() ? [null] : SIZES;
+      sizes.forEach(function (s) {
+        var q = qtyOf(c.name, s);
+        if (!q) return;
+        var p = isPre() ? unitPrice(c.name) : pcPrice(c.name, s) + sizeAdd(s);
+        /* 스테퍼가 세는 단위를 그대로 합산한다 — Pre Pack은 팩, Open Pack은 낱개 */
+        n += q;
+        amount += q * p;
+        lines.push({ label: c.name + (s ? ' · ' + s : ''), q: q, price: p });
+      });
+    });
+    $('totalLabel').textContent = isPre() ? 'Total packs:' : 'Total pcs:';
+    $('totalCount').textContent = num(n);
+    $('totalAmount').textContent = money(amount);
+
+    var box = $('total'), head = $('totalHead');
+    var canOpen = varies() && lines.length > 0;
+    head.classList.toggle('is-toggle', canOpen);
+    $('totalChev').innerHTML = canOpen ? CHEV : '';
+    box.classList.toggle('is-open', canOpen && state.open);
+
+    var d = $('totalDetail');
+    d.innerHTML = '';
+    if (!canOpen) return;
+    lines.forEach(function (l) {
+      d.appendChild(el('div', 'total-line',
+        '<span>' + l.label + ' ' + (PRE_PC_ONLY && isPre() ? num(l.q) + ' pack' + (l.q > 1 ? 's' : '') + ' · ' + num(l.q * pcs()) + ' pcs' : num(l.q) + ' × ' + money(l.price)) + '</span>' +   /* 팩 금액(× $117.00)은 안 쓴다 — 전부 개당 */
+        '<span class="spacer"></span><b>' + money(l.q * l.price) + '</b>'));
+    });
+  }
+
+  function renderStatic() {
+    $('prepackBlock').hidden = !isPre();
+    $('itemName').textContent = isMax()
+      ? 'Relaxed Linen DressRelaxed Linen Dress Relaxed Linen DressRelaxed'
+      : 'Relaxed Linen Dress';
+    $('packSummary').textContent = '1pack x ' + pcs() + 'pcs';
+    $('packRatio').textContent = isMax()
+      ? 'S-M-L-S-M-L-S-M-L / 3-2-3-3-2-3-3-2-3'
+      : (ADMIN_DATA ? 'S-M-L / 2-2-2' : 'S-M-L / 2-3-2');
+    $('attrLabel').textContent = isPre() ? 'Attribute' : 'Material / Fabric composition';
+    $('attrText').textContent = isMax()
+      ? 'Add fabric details such as material blend, lining, or composition to help buyers better understand the product before purchase. This field can be used to describe the main fabric content as well as important material information that may affect comfort, texture, care, or quality perception. Clear material details can improve trust and support buying decisions. Example: 60% Cotton, 40% Polyester.'
+      : '60% Linen, 40% Cotton. Woven, breathable. Machine wash cold.';
+  }
+
+  function render() { renderStatic(); renderPrice(); renderSizes(); renderRows(); renderTotal(); }
+
+
+  $('totalHead').addEventListener('click', function () {
+    if (!$('totalHead').classList.contains('is-toggle')) return;
+    state.open = !state.open; renderTotal();
+  });
+  $('sizeMoreBtn').addEventListener('click', function () { state.sizesOpen = !state.sizesOpen; renderSizes(); });
+  $('applyAll').addEventListener('click', function () {
+    var first = COLORS.filter(function (c) { return !isOos(c.name); })[0];
+    var q = (first && qtyOf(first.name)) || 1;
+    COLORS.forEach(function (c) { if (!isOos(c.name)) setQty(c.name, q); });
+    render();
+  });
+
+  window.__set = function (k, v) {
+    if (k === 'priceType') { state.noMsrp = false; if (COMBO[v]) { state.combo = v; state.noMsrp = !!COMBO[v][1]; v = COMBO[v][0]; } }
+    state[k] = v;
+    if (k === 'data') {
+      resetQty(v === 'max');
+    }
+    state.open = false; render();
+  };
+  render();
+})();
+</script>
+
+<div class="demo-ctl" id="demoCtl">
+  <div class="demo-ctl-pop">
+    <div class="demo-ctl-title">SELLING METHOD</div>
+    <button class="demo-ctl-item" type="button" data-method="pre">
+      <span class="demo-ctl-check"></span><span>Pre Pack<small>박스 구성 + 컬러 행 (node 92-6589)</small></span>
+    </button>
+    <button class="demo-ctl-item" type="button" data-method="open">
+      <span class="demo-ctl-check"></span><span>Open Pack<small>Size = 칩, Color = 행 (node 92-6327)</small></span>
+    </button>
+    <div class="demo-ctl-sep"></div>
+    <div class="demo-ctl-title">PRICE TYPE</div>
+    <button class="demo-ctl-item pt-old" type="button" data-ptype="regular">
+      <span class="demo-ctl-check"></span><span>정가<small>WS 그대로</small></span>
+    </button>
+    <button class="demo-ctl-item pt-old" type="button" data-ptype="sale">
+      <span class="demo-ctl-check"></span><span>세일<small><b>5%</b> + 정가 취소선 (92-6589)</small></span>
+    </button>
+    <button class="demo-ctl-item pt-old" type="button" data-ptype="special">
+      <span class="demo-ctl-check"></span><span>Special Price<small>분홍 박스 · 할인% + WS 취소선 (티켓 453)</small></span>
+    </button>
+    <button class="demo-ctl-item pt-old" type="button" data-ptype="special4">
+      <span class="demo-ctl-check"></span><span>4가지 모두<small>Special Price · Sale · WS · MSRP — Special 이 Sale 대체</small></span>
+    </button>
+    <button class="demo-ctl-item pt-new" type="button" data-ptype="c1"><span class="demo-ctl-check"></span><span>① WS만<small>도매가 하나 · MSRP 없음</small></span></button>
+    <button class="demo-ctl-item pt-new" type="button" data-ptype="c2"><span class="demo-ctl-check"></span><span>② WS + Sale<small>할인% + 세일가 + WS 취소선</small></span></button>
+    <button class="demo-ctl-item pt-new" type="button" data-ptype="c3"><span class="demo-ctl-check"></span><span>③ WS + MSRP<small>도매가 + MSRP 참고 줄</small></span></button>
+    <button class="demo-ctl-item pt-new" type="button" data-ptype="c4"><span class="demo-ctl-check"></span><span>④ WS + Special<small>분홍 박스 · 할인% + WS 취소선</small></span></button>
+    <button class="demo-ctl-item pt-new" type="button" data-ptype="c5"><span class="demo-ctl-check"></span><span>⑤ WS + Sale + MSRP<small>② + MSRP 참고 줄</small></span></button>
+    <button class="demo-ctl-item pt-new" type="button" data-ptype="c6"><span class="demo-ctl-check"></span><span>⑥ WS + Sale + Special<small>④ 와 같음 — 세일가 안 보임</small></span></button>
+    <button class="demo-ctl-item pt-new" type="button" data-ptype="c7"><span class="demo-ctl-check"></span><span>⑦ WS + Special + MSRP<small>④ + 박스 밖 MSRP</small></span></button>
+    <button class="demo-ctl-item pt-new" type="button" data-ptype="c8"><span class="demo-ctl-check"></span><span>⑧ 넷 다<small>⑦ 과 같음 — 세일가 안 보임</small></span></button>
+    <button class="demo-ctl-item" type="button" data-ptype="mixed">
+      <span class="demo-ctl-check"></span><span>옵션마다 다름<small>Olive ③ · Light Wash ② · Burgundy ④ · Charcoal ①</small></span>
+    </button>
+    <div class="demo-ctl-sep"></div>
+    <div class="demo-ctl-title">OPTION PRICE</div>
+    <button class="demo-ctl-item" type="button" data-ocase="same">
+      <span class="demo-ctl-check"></span><span>전부 같은 값<small>원본 그대로 — 표기 추가 없음</small></span>
+    </button>
+    <button class="demo-ctl-item" type="button" data-ocase="base">
+      <span class="demo-ctl-check"></span><span>어드민과 동일<small>30색 중 3색만 따로 가격 · 나머지는 기준가</small></span>
+    </button>
+    <button class="demo-ctl-item" type="button" data-ocase="scattered">
+      <span class="demo-ctl-check"></span><span>전부 제각각<small>기준가가 없어 <b>칩 차액을 안 띄움</b></small></span>
+    </button>
+    <div class="demo-ctl-sep"></div>
+    <div class="demo-ctl-title">DATA</div>
+    <button class="demo-ctl-item" type="button" data-data="normal">
+      <span class="demo-ctl-check"></span><span>보통 값<small>1pack x 6pcs · 수량 한 자리</small></span>
+    </button>
+    <button class="demo-ctl-item" type="button" data-data="max">
+      <span class="demo-ctl-check"></span><span>최대값<small>원본 노드와 같은 한계 테스트</small></span>
+    </button>
+    <div class="demo-ctl-sep" data-oos-row></div>
+    <div class="demo-ctl-title" data-oos-row>STOCK</div>
+    <button class="demo-ctl-item" type="button" data-stock="all">
+      <span class="demo-ctl-check"></span><span>전부 In Stock<small>모든 컬러를 살 수 있음</small></span>
+    </button>
+    <button class="demo-ctl-item" type="button" data-stock="some">
+      <span class="demo-ctl-check"></span><span>일부 Out of Stock<small>품절 컬러는 회색 · 헤더 가격은 살 수 있는 컬러로만</small></span>
+    </button>
+    <button class="demo-ctl-item" type="button" data-stock="none">
+      <span class="demo-ctl-check"></span><span>전부 Out of Stock<small>살 수 있는 컬러가 없으면 헤더는 전체로</small></span>
+    </button>
+    <div class="demo-ctl-sep"></div>
+    <div class="demo-ctl-title">LAYOUT</div>
+    <a class="demo-ctl-item" data-file="Shopcord-Item-Phase3-2026-08-06.html" href="Shopcord-Item-Phase3-2026-08-06.html">
+      <span class="demo-ctl-check"></span><span>640 · 원본 기준<small>평면 단일 컬럼</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Buyer-PDP-Price-2026-09-22.html" href="Shopcord-Buyer-PDP-Price-2026-09-22.html">
+      <span class="demo-ctl-check"></span><span>Buyer PDP · 가격 표기<small>바이어가 보는 화면</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Buyer-PLP-Price-2026-09-29.html" href="Shopcord-Buyer-PLP-Price-2026-09-29.html">
+      <span class="demo-ctl-check"></span><span>Buyer PLP · 가격 표기<small>상품 목록 카드</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Buyer-Cart-2026-10-12.html" href="Shopcord-Buyer-Cart-2026-10-12.html">
+      <span class="demo-ctl-check"></span><span>Buyer Cart · Checkout · Orders<small>Figma UI 373-6495 · 규칙 371-2127 · Order 381-12616</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-Order-2026-10-12.html" href="Shopcord-Admin-Order-2026-10-12.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Orders<small>Figma 381-21731 · 리스트 · 상세</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="pack-model-explainer.html" href="pack-model-explainer.html">
+      <span class="demo-ctl-check"></span><span>Pre Pack 모델 설명<small>박스 그림으로 비교</small></span>
+    </a>
+  </div>
+  <button class="demo-ctl-btn" type="button" aria-label="Demo control">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+      <circle cx="10" cy="10" r="2.6"/>
+      <path d="M10 1.8v2.2M10 16v2.2M3.2 10H1M19 10h-2.2M5.2 5.2 3.6 3.6M16.4 16.4l-1.6-1.6M14.8 5.2l1.6-1.6M3.6 16.4l1.6-1.6"/>
+    </svg>
+  </button>
+</div>
+<script>
+(function () {
+  var ctl = document.getElementById('demoCtl');
+  var here = location.pathname.split('/').pop();
+  var CHECK = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 7.5l3 3 5-6"/></svg>';
+  ctl.querySelectorAll('.demo-ctl-item[data-file]').forEach(function (a) {
+    if (a.dataset.file === here) {
+      a.classList.add('is-current');
+      a.querySelector('.demo-ctl-check').innerHTML = CHECK;
+      a.addEventListener('click', function (e) { e.preventDefault(); });
+    }
+  });
+  /* attr = DOM의 data-* 키(전부 소문자) · stateKey = 상태 이름 */
+  function group(attr, stateKey, initial) {
+    /* 상단 전환 바와 popover가 같은 버튼 집합으로 묶인다 — 한쪽을 누르면 양쪽이 같이 표시된다 */
+    var btns = document.querySelectorAll('[data-' + attr + ']');
+    function mark(v) {
+      btns.forEach(function (b) {
+        var on = b.dataset[attr] === v;
+        b.classList.toggle('is-current', on);
+        var chk = b.querySelector('.demo-ctl-check');
+        if (chk) chk.innerHTML = on ? CHECK : '';
+      });
+    }
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () { window.__set(stateKey, b.dataset[attr]); mark(b.dataset[attr]); });
+    });
+    mark(initial);
+  }
+  if (window.__special4 === false) document.querySelectorAll('[data-ptype=special4]').forEach(function (b) { b.hidden = true; });
+  group('method', 'method', 'pre');
+  document.querySelectorAll(window.__combo8 ? '.pt-old' : '.pt-new').forEach(function (b) { b.hidden = true; });
+  group('ptype', 'priceType', window.__combo8 ? 'c5' : 'sale');
+  group('ocase', 'optionCase', 'base');
+  group('data', 'data', 'normal');
+  group('stock', 'stock', 'all');
+  if (window.__oos === false) document.querySelectorAll('[data-oos-row], [data-stock]').forEach(function (b) { b.hidden = true; });
+  ctl.querySelector('.demo-ctl-btn').addEventListener('click', function (e) { e.stopPropagation(); ctl.classList.toggle('is-open'); });
+  document.addEventListener('click', function (e) { if (!ctl.contains(e.target)) ctl.classList.remove('is-open'); });
+})();
+</script>
+</body>
+</html>

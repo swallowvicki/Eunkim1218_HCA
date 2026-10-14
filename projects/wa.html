@@ -741,6 +741,24 @@
   }
   .cmodal-body .confirm-check label { cursor: pointer; }
 
+  /* ===== TFV Submission viewer (Verification Status History) ===== */
+  .submission-link { color: #1a73e8; text-decoration: none; }
+  .submission-link:hover { text-decoration: underline; }
+  .cmodal.submission { width: 640px; max-height: min(640px, 90vh); display: flex; flex-direction: column; overflow: hidden; }
+  .cmodal.submission .cmodal-body { flex: 1; min-height: 0; overflow-y: auto; }
+  .cmodal.submission .cmodal-title { color: #222; }
+  .sub-meta { font-size: 12px; color: #666; margin-bottom: 14px; }
+  .sub-result { padding: 10px 12px; margin: 0 0 16px; background: #f7f8fa; border: 1px solid #e3e5e8; border-radius: 3px; font-size: 12px; line-height: 1.6; }
+  .sub-result .r-title { font-weight: 700; color: #222; margin-bottom: 2px; }
+  .sub-result .r-row { display: flex; }
+  .sub-result .r-row .k { width: 96px; flex-shrink: 0; color: #666; }
+  .sub-result .r-row .v { flex: 1; color: #222; }
+  .sub-group { font-size: 12px; font-weight: 700; color: #1a73e8; margin: 16px 0 6px; padding-bottom: 4px; border-bottom: 1px solid #ececec; }
+  .sub-group:first-of-type { margin-top: 0; }
+  .sub-row { display: flex; padding: 5px 0; font-size: 12.5px; line-height: 1.5; }
+  .sub-row .k { width: 210px; flex-shrink: 0; color: #666; }
+  .sub-row .v { flex: 1; color: #222; word-break: break-word; }
+
   .cmodal-foot {
     padding: 12px 20px;
     border-top: 1px solid #ececec;
@@ -1445,7 +1463,7 @@
   </div>
 
   <!-- Verification Status History -->
-  <div class="history-title sub-black" style="margin-top:32px;">Verification Status History<span class="anno">28<span class="anno-tip"><span class="anno-tip-title">Verification Status History — TFV (Twilio, 5 values)</span><span class="anno-tip-body">TFV Verification 상태 변경 이력. Columns: Date / Status / Error / Description. Twilio webhook으로 받은 TFV 상태 변경 기록. 현재 status는 상단 status pill에서 확인.<br><br>TFV 5 values (Twilio):<br>(1) <b>pending_review</b> — 제출됨 (검토 대기 중)<br>(2) <b>in_review</b> — 검토 중<br>(3) <b>approved</b> — 승인됨 (Verified)<br>(4) <b>rejected_resubmit</b> — 거절, Resubmit eligible (edit_allowed = true)<br>(5) <b>rejected_final</b> — 거절, Resubmit ineligible (edit_allowed = false)</span></span></span></div>
+  <div class="history-title sub-black" style="margin-top:32px;">Verification Status History<span class="anno">28<span class="anno-tip"><span class="anno-tip-title">Verification Status History — TFV (Twilio, 5 values)</span><span class="anno-tip-body">TFV Verification 상태 변경 이력. Columns: Date / Status / Error / Description. Twilio webhook으로 받은 TFV 상태 변경 기록. 현재 status는 상단 status pill에서 확인.<br><br>TFV 5 values (Twilio):<br>(1) <b>pending_review</b> — 제출됨 (검토 대기 중)<br>(2) <b>in_review</b> — 검토 중<br>(3) <b>approved</b> — 승인됨 (Verified)<br>(4) <b>rejected_resubmit</b> — 거절, Resubmit eligible (edit_allowed = true)<br>(5) <b>rejected_final</b> — 거절, Resubmit ineligible (edit_allowed = false)</span></span></span><span class="anno">29<span class="anno-tip"><span class="anno-tip-title">TFV Submission Content (new)</span><span class="anno-tip-body"><b>목적</b><br>TFV Rejected 시 Sales/CS가 Twilio console 확인 없이 WA에서 벤더가 실제 제출한 문구를 확인하고 resubmit 안내.<br><br><b>데이터</b><br>· 벤더가 TFV 제출(최초/재제출)할 때마다 Twilio에 전송한 내용을 <b>제출 건별 스냅샷</b>으로 DB 저장<br>· 이유: Twilio는 Edit &amp; resubmit 시 같은 verification 건을 수정 → 이전 제출 원문이 Twilio에 남지 않음<br>· <b>EIN (Business registration type / number), Use case categories, Age gated content는 저장 불가 → 저장·표시 제외</b><br><br><b>진입</b><br>pending_review(제출) 행의 Description 열 <b>View submission</b> 링크 → 모달 (read-only, 최대 640px, 초과 시 본문 스크롤)<br><br><b>모달 구성</b><br>· 상단: 제출일 / Initial submission·Resubmission<br>· Review Result: 해당 제출 행의 Status (Pending + 날짜) / Error<br>· Toll-Free Number: Toll-free phone number<br>· Registration Information: Company / DBA / Business address / Business type / Business registration country / Business website / Privacy policy URL / Terms and conditions URL / Business contact name / Business email address / Business contact phone<br>· Use Case: Use case description / Estimated monthly SMS volume / Production message sample / Additional information<br>· Opt-in: Opt-in type / Opt-in proof / Opt-in keywords / Opt-in confirmation message / Help message sample<br>· Notification: Notification email<br><br><b>확인 필요</b><br>· Notification email: 벤더별 값 vs Shopcord 공용 DL<br>· Opt-in proof / URL 항목 링크 처리 여부</span></span></span></div>
   <table class="history">
     <thead>
       <tr>
@@ -1472,7 +1490,7 @@
         <td>02/28/2026</td>
         <td>pending_review</td>
         <td>n/a</td>
-        <td>TFN resubmitted</td>
+        <td><a href="#" class="submission-link" onclick="event.preventDefault(); openSubmissionModal('02/28/2026');">View submission</a></td>
       </tr>
       <tr>
         <td>02/10/2026</td>
@@ -1496,7 +1514,7 @@
         <td>12/20/2025</td>
         <td>pending_review</td>
         <td>n/a</td>
-        <td>TFN submitted</td>
+        <td><a href="#" class="submission-link" onclick="event.preventDefault(); openSubmissionModal('12/20/2025');">View submission</a></td>
       </tr>
       <tr>
         <td>11/15/2025</td>
@@ -1514,7 +1532,7 @@
         <td>10/15/2025</td>
         <td>pending_review</td>
         <td>n/a</td>
-        <td>TFN initial submission</td>
+        <td><a href="#" class="submission-link" onclick="event.preventDefault(); openSubmissionModal('10/15/2025');">View submission</a></td>
       </tr>
     </tbody>
   </table>
@@ -1650,6 +1668,19 @@
 </div>
 
 <!-- ===== Cancel Subscription Confirmation Modal ===== -->
+<div class="cmodal-overlay" id="submissionModal">
+  <div class="cmodal submission">
+    <div class="cmodal-head">
+      <span class="cmodal-title">Submitted Registration Information</span>
+      <button class="cmodal-x" onclick="closeSubmissionModal()">×</button>
+    </div>
+    <div class="cmodal-body" id="submissionBody"></div>
+    <div class="cmodal-foot">
+      <button class="btn ghost" onclick="closeSubmissionModal()">Close</button>
+    </div>
+  </div>
+</div>
+
 <div class="cmodal-overlay" id="cancelModal">
   <div class="cmodal">
     <div class="cmodal-head">
@@ -1817,6 +1848,74 @@
       if (trigger) trigger.classList.remove('open');
     }
   });
+
+  /* TFV submission content — dummy per submission (pending_review rows) */
+  var TFV_BASE = {
+    tfn: '+1 (833) 555-0142',
+    company: '&amp;merci Inc.',
+    dba: '&amp;merci',
+    address: '1100 S San Pedro St, Los Angeles, CA 90015',
+    bizType: 'Private_profit',
+    regCountry: 'US',
+    website: 'https://www.shopcord.com/andmerci',
+    privacyUrl: 'https://www.shopcord.com/andmerci/privacy',
+    termsUrl: 'https://www.shopcord.com/andmerci/terms',
+    contactName: 'Jenny Park',
+    contactEmail: 'jenny@andmerci.com',
+    contactPhone: '+1 (213) 555-0187',
+    useCase: 'This number will be used to send marketing and promotional contents, such as product catalogs, to our buyers who opted in to our sms marketing.',
+    volume: '10,000',
+    sample: 'Hi Gina, our new Summer catalog is here! Check out our latest products: https://www.shopcord.com/linesheet/341/summer. Reply STOP to unsubscribe, HELP for help. Msg&amp;Data rates may apply.',
+    additionalInfo: 'n/a',
+    optinType: 'Web form',
+    optinKeywords: 'n/a',
+    optinConfirm: '&amp;merci: You are subscribed to marketing messages. Msg frequency varies. Reply HELP for help, STOP to cancel. Msg&amp;Data rates may apply.',
+    helpSample: '&amp;merci: For help, contact support@andmerci.com. Reply STOP to unsubscribe. Msg&amp;Data rates may apply.',
+    optinProof: 'https://www.shopcord.com/andmerci/sms-optin.png',
+    email: 'dl_fgsms@nhnglobal.com'
+  };
+  var TFV_SUBMISSIONS = {
+    '10/15/2025': { type: 'Initial submission', prev: null,
+      data: { useCase: 'Send new arrivals to buyers.', optinProof: 'https://www.shopcord.com/andmerci' } },
+    '12/20/2025': { type: 'Resubmission', prev: '10/15/2025',
+      data: { useCase: 'Send new arrivals to buyers.' } },
+    '02/28/2026': { type: 'Resubmission', prev: '12/20/2025',
+      data: {} }
+  };
+  function openSubmissionModal(date) {
+    var sub = TFV_SUBMISSIONS[date];
+    var d = Object.assign({}, TFV_BASE, sub.data);
+    function row(key, k) {
+      return '<div class="sub-row"><span class="k">' + k + '</span><span class="v">' + d[key] + '</span></div>';
+    }
+    document.getElementById('submissionBody').innerHTML =
+      '<div class="sub-meta">Submitted: <b>' + date + '</b> &nbsp;|&nbsp; ' + sub.type + '</div>' +
+      '<div class="sub-result"><div class="r-title">Review Result</div>' +
+        '<div class="r-row"><span class="k">Status</span><span class="v">Pending (' + date + ')</span></div>' +
+        '<div class="r-row"><span class="k">Error</span><span class="v">n/a</span></div></div>' +
+      '<div class="sub-group">Toll-Free Number</div>' +
+      row('tfn', 'Toll-free phone number') +
+      '<div class="sub-group">Registration Information</div>' +
+      row('company', 'Company') + row('dba', 'DBA') + row('address', 'Business address') +
+      row('bizType', 'Business type') +
+      row('regCountry', 'Business registration country') +
+      row('website', 'Business website') + row('privacyUrl', 'Privacy policy URL') + row('termsUrl', 'Terms and conditions URL') +
+      row('contactName', 'Business contact name') + row('contactEmail', 'Business email address') + row('contactPhone', 'Business contact phone') +
+      '<div class="sub-group">Use Case</div>' +
+      row('useCase', 'Use case description') +
+      row('volume', 'Estimated monthly SMS volume') + row('sample', 'Production message sample') +
+      row('additionalInfo', 'Additional information') +
+      '<div class="sub-group">Opt-in</div>' +
+      row('optinType', 'Opt-in type') + row('optinProof', 'Opt-in proof') + row('optinKeywords', 'Opt-in keywords') +
+      row('optinConfirm', 'Opt-in confirmation message') + row('helpSample', 'Help message sample') +
+      '<div class="sub-group">Notification</div>' +
+      row('email', 'Notification email');
+    document.getElementById('submissionBody').scrollTop = 0;
+    document.getElementById('submissionModal').classList.add('show');
+  }
+  function closeSubmissionModal() {
+    document.getElementById('submissionModal').classList.remove('show');
+  }
 
   function openCancelModal() {
     resetCaseSelect();

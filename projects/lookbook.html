@@ -3012,6 +3012,27 @@ body[data-picker="tray"] [data-drawer="add-items"][data-mode="connect-box"] .ite
 /* Lookbook: empty state IS the chooser — no separate CTA screen. */
 .lb-empty { display: none !important; }
 /* Chooser shows by default (data-image-state="chooser"); editor hides then. */
+/* the format picker owns the 'kind' state; both other views stay out of the way */
+[data-view="lb-kind"] { display: none; }
+.s3-kind { display: none; }
+#step-3[data-image-state="kind"] .s3-kind { display: inline; }
+#step-3[data-image-state="kind"] .s3-rest { display: none; }
+#step-3[data-image-state="kind"] [data-view="lb-kind"] { display: block; }
+#step-3[data-image-state="kind"] [data-view="image-chooser"],
+#step-3[data-image-state="kind"] [data-view="image-template"] { display: none !important; }
+.lb-kind-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.lb-kind-card { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--card); font-family: inherit;
+  text-align: left; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,.05); transition: border-color .12s, box-shadow .12s; }
+.lb-kind-card:hover { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.lb-kind-art { width: 100%; border-radius: 8px; overflow: hidden; background: var(--bg); }
+.lb-kind-art svg { display: block; width: 100%; height: auto; }
+.lb-kind-t { font-size: 14px; font-weight: 600; color: var(--fg); }
+.lb-kind-d { font-size: 12px; line-height: 18px; color: var(--fg-secondary); }
+.lb-kind-go { margin-top: 2px; font-size: 12px; font-weight: 600; color: var(--primary); }
+.lb-kind-note { margin: 14px 0 0; font-size: 12px; line-height: 18px; color: var(--fg-muted); }
+.lb-kind-note b { color: var(--fg-secondary); font-weight: 600; }
+
 #step-3[data-image-state="chooser"] [data-view="image-template"] { display: none !important; }
 #step-3:not([data-image-state="chooser"]) [data-view="image-chooser"] { display: none !important; }
 /* Remove Lookbook button visible only after a template is picked. */
@@ -3021,7 +3042,7 @@ body[data-picker="tray"] [data-drawer="add-items"][data-mode="connect-box"] .ite
 /* ===== Phase 2.5 — Lookbook summary card (under Selected Items) + editor drawer ===== */
 .lb-summary .step-head { margin-bottom: 0; }
 /* Summary-card "Remove" — subtle destructive text link left of Edit Lookbook; reuses the [data-lb-remove] confirm modal */
-.lb-sum-remove { margin-left: auto; display: inline-flex; align-items: center; background: none; border: none; padding: 4px 2px; font-family: inherit; font-size: 13px; font-weight: 500; line-height: 1; color: var(--destructive); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.lb-sum-remove { margin-left: auto; display: inline-flex; align-items: center; background: none; border: none; padding: 4px 2px; font-family: inherit; font-size: 13px; font-weight: 500; line-height: 1; color: var(--primary); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .lb-sum-remove:hover { opacity: .8; }
 .lb-sum-remove[hidden] { display: none !important; }
 .lb-sum-remove:not([hidden]) ~ .lb-sum-btn { margin-left: 14px; }
@@ -3231,6 +3252,22 @@ body[data-fbk-mode="preview"] .fbk-pin-x { display: none !important; }
 @media (max-height: 880px) { .fbk-phone { width: 300px; } .fbk-th, .fbk-th-add { width: 48px; height: 66px; } }
 @media (max-height: 780px) { .fbk-phone { width: 268px; } .fbk-hd-s { display: none; } }
 
+/* the page's Lookbook card, when the format is a flipbook: its pages, not a template canvas */
+.lb-sum-fbk { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.lb-sum-fbk-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+.lb-sum-fbk-pg { position: relative; flex: 0 0 auto; width: 54px; height: 74px; border-radius: 8px;
+  overflow: hidden; background: var(--base-muted); border: 1px solid var(--border); }
+.lb-sum-fbk-pg.is-empty { border-style: dashed; }
+.lb-sum-fbk-pg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lb-sum-fbk-no { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(23,23,27,.78); color: #fff; font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; }
+.lb-sum-fbk-tags { position: absolute; bottom: 3px; right: 3px; height: 18px; padding: 0 6px;
+  border-radius: 999px; background: var(--primary); color: #fff; font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; }
+.lb-sum-fbk-meta { font-size: 12px; color: var(--fg-secondary); }
+.lb-sum-fbk-meta b { color: var(--primary); font-weight: 600; }
+
 /* ============================================================================================
    FB2 · PREVIEW MODE + the Figma product sheet (entry 60 — Figma node 131:11822).
    Edit builds the book; Preview IS the buyer experience, in the same phone frame:
@@ -3247,17 +3284,56 @@ body[data-fbk-mode="preview"] .fbk-pin-x { display: none !important; }
 .fbk-hd-l { flex: 1 1 auto; min-width: 0; text-align: center; }
 .fbk-hd-t { display: block; font-size: 13px; font-weight: 700; color: var(--fg); }
 .fbk-hd-s { display: block; font-size: 12px; color: var(--fg-muted); margin-top: 1px; }
-.fbk-modes { flex: 0 0 auto; display: flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--base-muted); }
+.fbk-modes { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 2px; height: 32px; padding: 2px;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--card); }
 /* the toggle lives in the drawer HEADER, which is the one thing that never moves between modes */
 .fbk-modes-hd { display: none !important; margin-left: 14px; }
-body[data-fbk="true"] .fbk-modes-hd { display: flex !important; margin-right: auto; }
+body[data-fbk="true"] .fbk-modes-hd { display: inline-flex !important; margin-right: auto; }
+/* the format is stated once, as a chip beside the title — not glued into the title string */
+.fbk-fmt { display: none; }
+body[data-fbk="true"] .fbk-fmt { display: inline-flex; align-items: center; height: 22px; padding: 0 9px;
+  border: 1px solid var(--border); border-radius: 999px; background: var(--card);
+  font-size: 12px; font-weight: 500; color: var(--fg-secondary); }
+/* ✕ already cancels, so the header holds the same two controls in both modes */
+body[data-fbk="true"] .drawer-lookbook .drawer-cancel { display: none !important; }
+/* the orientation control belongs with the phone it changes, and only while previewing */
+.fbk-orient { display: none; }
+body[data-fbk-mode="preview"] .fbk-orient { display: inline-flex; }
 /* pin the toggle right after the title so it sits at the SAME x in both modes — with the title
    flexing, it drifted with the header width (464 in edit, 1024 in preview) */
 body[data-fbk="true"] .drawer-lookbook .drawer-header .drawer-title { flex: 0 0 auto; }
 /* one action in the header in both modes: Done (edit shows the tray pane's, preview the Lookbook's) */
 body[data-fbk-mode="preview"][data-lb-embed="true"] .drawer-lookbook .drawer-cancel { display: none; }
-.fbk-mode { border: none; background: none; padding: 5px 14px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 500; color: var(--fg-secondary); cursor: pointer; }
-.fbk-mode.is-on { background: var(--card); color: var(--fg); box-shadow: 0 1px 3px rgba(23,23,27,.14); }
+.fbk-mode { display: inline-flex; align-items: center; height: 26px; padding: 0 12px; border: none;
+  border-radius: 6px; background: none; font-family: inherit; font-size: 12px; font-weight: 500;
+  color: var(--fg-secondary); cursor: pointer; }
+.fbk-mode:hover:not(.is-on) { color: var(--fg); }
+.fbk-mode.is-on { background: var(--fg); color: #fff; }
+
+/* ---- LANDSCAPE = a two-page spread (preview only) ----
+   Reference behaviour: FlippingBook shows "a single page when you hold the device in portrait mode,
+   and two pages if you hold it in landscape mode", and always shows the cover and back cover as
+   single pages rather than pairing them. So: page 1 alone, then 2-3, 4-5 …, a trailing odd page
+   alone. Pages are letterboxed in a spread (as a real reader does) instead of cropped, so a full
+   look is never cut in half. */
+body[data-fbk-orient="landscape"] .fbk-phone { width: 620px; aspect-ratio: 730 / 375; }
+body[data-fbk-orient="landscape"] .fbk-book { background: #17171b; }
+body[data-fbk-orient="landscape"] .fbk-page { width: 50%; }
+body[data-fbk-orient="landscape"] .fbk-page.is-cur { left: 0; }
+body[data-fbk-orient="landscape"] .fbk-page.is-mate { left: 50%; display: block; }
+/* a lone page (cover / back cover) sits centred, the way a closed book reads */
+body[data-fbk-orient="landscape"] .fbk-page.is-cur.is-alone { left: 25%; }
+body[data-fbk-orient="landscape"] .fbk-pg-img { object-fit: contain; background: #17171b; }
+body[data-fbk-orient="landscape"] .fbk-page.is-mate::before,
+body[data-fbk-orient="landscape"] .fbk-page.is-cur:not(.is-alone)::before {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(0,0,0,.55); z-index: 5; }
+body[data-fbk-orient="landscape"] .fbk-page.is-cur:not(.is-alone)::before { right: 0; }
+body[data-fbk-orient="landscape"] .fbk-page.is-mate::before { left: 0; }
+/* the item detail drawer takes about half a landscape screen — photo left, detail right */
+body[data-fbk-orient="landscape"] .fbk-sheet.pdx { width: 54%; }
+body[data-fbk-orient="landscape"] .pdx { --pdx-cell: 100%; }
+body[data-fbk-orient="landscape"] .pdx-hero { height: 168px; }
+body[data-fbk-orient="landscape"] .pdx-nav.is-next { left: auto; right: 6px; }
 
 /* ---- what a buyer must not see ---- */
 body[data-fbk-mode="preview"] .fbk-add-link,
@@ -5590,6 +5666,7 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
           </button>
           <h2 class="drawer-title">Lookbook</h2>
+          <span class="fbk-fmt">Flipbook</span>
           <span class="fbk-modes fbk-modes-hd" role="group" aria-label="Mode">
             <button type="button" class="fbk-mode is-on" data-fbk-mode="edit">Edit</button>
             <button type="button" class="fbk-mode" data-fbk-mode="preview">Preview</button>
@@ -5601,11 +5678,11 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
           </button>
         </div>
         <div class="drawer-content lb-drawer-content">
-      <section class="step" id="step-3" data-type="image" data-image-state="chooser" data-has-lookbook="false">
+      <section class="step" id="step-3" data-type="image" data-image-state="kind" data-has-lookbook="false">
         <div class="step-head">
           <div class="step-title">Lookbook <span class="tpl-label-opt">(Optional)</span></div>
         </div>
-        <p class="step-3-sub">Choose a template, or upload a completed Lookbook image.</p>
+        <p class="step-3-sub"><span class="s3-kind">How should this Lookbook be built? Pick a format — you can change it later.</span><span class="s3-rest">Choose a template, or upload a completed Lookbook image.</span></p>
           <!-- VIEW: Empty state — Add Lookbook CTA (PLCY P2-1.1) -->
           <div class="lb-empty" data-lb-empty>
             <div class="lb-empty-inner">
@@ -5619,6 +5696,43 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
             </div>
           </div>
           <!-- VIEW: Template chooser (inline, opens in ③) -->
+          <!-- VIEW: which KIND of Lookbook — the format is picked before any layout work, the way
+               Shopify picks a section type and Flipsnack/Canva pick a document format. One kind per
+               linesheet: the two are set up separately and never share a page. -->
+          <div data-view="lb-kind">
+            <div class="lb-kind-grid">
+              <button class="lb-kind-card" type="button" data-lb-kind="layout">
+                <span class="lb-kind-art">
+                  <svg viewBox="0 0 96 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="0.5" y="0.5" width="95" height="67" rx="3" fill="#fff" stroke="#f2ede7"/>
+                    <rect x="9" y="9" width="34" height="50" fill="#f2f2f2"/>
+                    <rect x="49" y="9" width="38" height="23" fill="#f2f2f2"/>
+                    <rect x="49" y="36" width="38" height="23" fill="#f2f2f2"/>
+                  </svg>
+                </span>
+                <span class="lb-kind-t">Layout pages</span>
+                <span class="lb-kind-d">A print-style layout shown above the item list. Pick from 8 templates, up to 6 layouts, one item per frame.</span>
+                <span class="lb-kind-go">Set up layouts &rarr;</span>
+              </button>
+              <button class="lb-kind-card" type="button" data-lb-kind="flipbook">
+                <span class="lb-kind-art">
+                  <svg viewBox="0 0 96 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="0.5" y="0.5" width="95" height="67" rx="3" fill="#fff" stroke="#f2ede7"/>
+                    <rect x="33" y="6" width="30" height="56" rx="5" fill="#f2f2f2" stroke="#e6e4e0"/>
+                    <rect x="36" y="12" width="24" height="38" fill="#e6e4e0"/>
+                    <circle cx="44" cy="26" r="4" fill="#e11d74"/>
+                    <circle cx="53" cy="40" r="4" fill="#e11d74"/>
+                    <rect x="20" y="26" width="8" height="16" rx="2" fill="#f2f2f2"/>
+                    <rect x="68" y="26" width="8" height="16" rx="2" fill="#f2f2f2"/>
+                  </svg>
+                </span>
+                <span class="lb-kind-t">Flipbook</span>
+                <span class="lb-kind-d">A mobile lookbook buyers flip through page by page, with up to 3 items tagged on each page.</span>
+                <span class="lb-kind-go">Set up pages &rarr;</span>
+              </button>
+            </div>
+            <p class="lb-kind-note">One Lookbook per linesheet — the two formats are set up separately. You can switch later with <b>Remove Lookbook</b>.</p>
+          </div>
           <div data-view="image-chooser">
             <div class="tpl-chooser">
             <button class="tpl-card tpl-E" type="button" data-pick-template="E" aria-pressed="false">
@@ -5715,6 +5829,10 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
           <span class="fbk-hd-l">
             <span class="fbk-hd-t">Flipbook</span>
             <span class="fbk-hd-s" data-fbk-cap>Mobile — this is exactly what buyers flip through</span>
+          </span>
+          <span class="fbk-modes fbk-orient" role="group" aria-label="Device orientation">
+            <button type="button" class="fbk-mode is-on" data-fbk-orient="portrait" title="Portrait — one page at a time">Portrait</button>
+            <button type="button" class="fbk-mode" data-fbk-orient="landscape" title="Landscape — two-page spread">Landscape</button>
           </span>
         </div>
         <div class="fbk-stage">
@@ -6106,7 +6224,7 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
        · default            → TRAY  (item rows carry their own photos; click or drag onto a frame)
        · ?picker=classic    → the earlier flat strip (one row of Upload + the linked item's photos)
      Switchable from the demo FAB popover ("Photo picker" pills). */
-  const PICKER_CLASSIC = /[?&]picker=classic\b/.test(window.location.search)
+  let PICKER_CLASSIC = /[?&]picker=classic\b/.test(window.location.search)
     && !/[?&]flipbook=1\b/.test(window.location.search);   // FB2 needs the tray rows — flipbook wins
   // Exposed on <body> so the tray-only CSS (1-col grid, row layout) can't leak into the classic design.
   document.body.setAttribute('data-picker', PICKER_CLASSIC ? 'classic' : 'tray');
@@ -6122,13 +6240,17 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
      `FLIPBOOK` above gates the first, rejected in-file attempt (template P + fb-pins) and must stay
      hard-false. FB2 swaps the LEFT pane's template canvas for a phone-frame page canvas and reuses
      the RIGHT pane (item tray) as both the page-image source and the pin-item picker. */
-  const FB2 = /[?&]flipbook=1\b/.test(window.location.search);
+  // Runtime state, not a URL constant: the vendor picks the format in the drawer, so this flips at
+  // runtime (?flipbook=1 stays as a demo shortcut that lands straight in it).
+  let FB2 = /[?&]flipbook=1\b/.test(window.location.search);
   document.body.setAttribute('data-fbk', FB2 ? 'true' : 'false');
+  let fbkActivate = null, fbkDeactivate = null;   // set by the FB2 module
   let fbkHeading = null;    // set by the FB2 module — updateConnectHeading() delegates to it
   let fbkPinCount = null;   // set by the FB2 module — the tray sub-line shows "· N pins" per item
   let fbkPageUse = null;    // set by the FB2 module — which PAGES already use a given photo
   let fbkLinkedId = null;   // set by the FB2 module — the item the SELECTED tag is linked to
   let fbkTakenBy = null;    // set by the FB2 module — which OTHER tag on this page holds an item
+  let fbkSummary = null;    // set by the FB2 module — page thumbnails for the page's Lookbook card
 
   /* ============ Popover toggle (generic) ============ */
   function closeAllPopovers(except) {
@@ -8458,7 +8580,7 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
       boxStates = {};
       selectedBox = null;
       setTemplates = [];
-      applyStep2State('Image', 'chooser');
+      applyStep2State('Image', 'kind');
       if (step2) document.querySelectorAll('[data-pick-template]').forEach((c) => c.setAttribute('aria-pressed', 'false'));
       return;
     }
@@ -9725,12 +9847,12 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
     step2.dataset.imageState = imageState;
     if (step3) { step3.dataset.type = step2.dataset.type; step3.dataset.imageState = imageState; }
 
-    if (step2.dataset.type === 'image' && imageState !== 'chooser') {
+    if (step2.dataset.type === 'image' && imageState !== 'chooser' && imageState !== 'kind') {
       // Set title text for active state
       step2ActiveTitle.textContent = TEMPLATE_NAMES[imageState] || 'Image Type';
       const metaEl = document.querySelector('[data-step2-tpl-meta]');
       if (metaEl) metaEl.textContent = TEMPLATE_META[imageState] || '';
-      if (imageState !== 'chooser') { renderTemplateEditor(imageState); selectBox(1); }
+      if (imageState !== 'chooser' && imageState !== 'kind') { renderTemplateEditor(imageState); selectBox(1); }
     }
   }
 
@@ -9763,11 +9885,11 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
   document.querySelectorAll('[data-remove-image-type]').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      // Lookbook (Optional): clear all sets and return to the template chooser
+      // Lookbook (Optional): clear all sets and return to the FORMAT picker
       boxStates = {};
       selectedBox = null;
       setTemplates = [];
-      applyStep2State('Image', 'chooser');
+      applyStep2State('Image', 'kind');
       document.querySelectorAll('[data-pick-template]').forEach((c) => c.setAttribute('aria-pressed', 'false'));
     });
   });
@@ -9966,7 +10088,7 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
      Reference-matched (Shopify "Shoppable image": Add hotspot -> pick product -> position; the
      3-per-image cap is theirs too). The buyer viewer stays in flipbook.html for now.
      ============================================================================================ */
-  if (FB2) (function fbkEditor() {
+  (function fbkEditor() {
     const PIN_MAX = 3, PAGE_MAX = 10;
     const root = document.querySelector('[data-fbk-root]');   // NOT [data-fbk] — <body> carries that too
     const book = document.querySelector('[data-fbk-book]');
@@ -9974,7 +10096,7 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
     const strip = document.querySelector('[data-fbk-strip]');
     const fileIn = document.querySelector('[data-fbk-file]');
     if (!root || !book || !foot || !strip || !fileIn) return;
-    root.hidden = false;
+    root.hidden = !FB2;
 
     const UP_ICO = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11V3M5 6l3-3 3 3M3 11v1.5A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5V11"/></svg>';
 
@@ -9987,6 +10109,9 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
     let drag = null;
     let docked = false;     // true once the tray is docked as the right pane
     let mode = 'edit';      // 'edit' builds the book · 'preview' IS the buyer experience
+    let orient = 'portrait';// buyer's device orientation — landscape means a two-page spread
+    let mateIdx = null;     // the page paired with `cur` in a spread (null = lone page)
+    const isLand = () => mode === 'preview' && orient === 'landscape';
     let cart = [];          // [{ itemId, color, packs }]
     let pd = null;          // open product sheet: { id, img, colors, qty, sel }
     const isPrev = () => mode === 'preview';
@@ -10030,7 +10155,9 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
           + '<span class="fbk-pg-sub">Upload one here, or click any item photo in the list &rarr;</span>'
           + '</button>';
       }
-      return '<div class="fbk-page' + (i === cur ? ' is-cur' : '') + (imgSel && i === cur ? ' is-imgsel' : '')
+      const alone = (i === cur && mateIdx == null);
+      return '<div class="fbk-page' + (i === cur ? ' is-cur' : '') + (i === mateIdx ? ' is-mate' : '')
+        + (alone ? ' is-alone' : '') + (imgSel && i === cur ? ' is-imgsel' : '')
         + '" data-fbk-page="' + i + '">' + inner + '</div>';
     }
     /* A buyer only ever flips through finished pages, so empty pages leave the flow entirely in
@@ -10039,6 +10166,21 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
       const out = [];
       pages.forEach(function (pg, i) { if (!isPrev() || pg.img) out.push(i); });
       return out;
+    }
+    /* Landscape groups the visible pages into spreads the way every flipbook reader does: the cover
+       stands alone, then 2-3, 4-5 …, and a trailing odd page stands alone like a back cover. */
+    function spreads() {
+      const nav = navList();
+      if (!isLand()) return nav.map(function (i) { return [i]; });
+      const out = [];
+      if (nav.length) out.push([nav[0]]);
+      for (let k = 1; k < nav.length; k += 2) out.push(nav.slice(k, k + 2));
+      return out;
+    }
+    function spreadAt(i) {
+      const sp = spreads();
+      for (let k = 0; k < sp.length; k++) if (sp[k].indexOf(i) !== -1) return k;
+      return -1;
     }
     function render() {
       const pgNow = pages[cur];
@@ -10054,12 +10196,16 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
                     : (imgSel ? 'img' : (pgNow && pgNow.img ? 'ready' : 'empty')))
                     + '|' + ((pgNow && pgNow.pins.length) || 0) + '|' + (pgNow && pgNow.img ? '1' : '0');
       if (ctxNow !== lastCtx) { lastCtx = ctxNow; try { renderItems(); } catch (_) {} }
+      const sp = spreads();
+      const at = spreadAt(cur);
+      const group = (at !== -1) ? sp[at] : [cur];
+      mateIdx = (group.length > 1) ? (group[0] === cur ? group[1] : group[0]) : null;
+      if (mateIdx != null && group[0] !== cur) { cur = group[0]; mateIdx = group[1]; }   // always the left page
       book.innerHTML = pages.map(pageHTML).join('');
-      const nav = navList();
-      const at = nav.indexOf(cur);
-      foot.innerHTML = nav.map(function (i) {
-        return '<span class="fbk-dot' + (i === cur ? ' is-on' : '') + '" data-fbk-goto="' + i + '" title="Page ' + (i + 1) + '"></span>';
-      }).join('') + '<span class="fbk-cnt">' + (at + 1) + ' / ' + nav.length + '</span>';
+      foot.innerHTML = sp.map(function (g, k) {
+        return '<span class="fbk-dot' + (k === at ? ' is-on' : '') + '" data-fbk-goto="' + g[0] + '" title="'
+          + (g.length > 1 ? 'Pages ' + (g[0] + 1) + '-' + (g[1] + 1) : 'Page ' + (g[0] + 1)) + '"></span>';
+      }).join('') + '<span class="fbk-cnt">' + (at + 1) + ' / ' + sp.length + '</span>';
       strip.innerHTML = pages.map(function (pg, i) {
         return '<button type="button" class="fbk-th' + (i === cur ? ' is-cur' : '') + '" data-fbk-goto="' + i + '" title="Page ' + (i + 1) + '">'
           + '<span class="fbk-th-no">' + (i + 1) + '</span>'
@@ -10082,7 +10228,7 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
       if (brand && ttl && ttl.textContent.trim()) brand.textContent = ttl.textContent.trim();
       const prev = root.querySelector('[data-fbk-turn="-1"]'), next = root.querySelector('[data-fbk-turn="1"]');
       if (prev) prev.disabled = at <= 0;
-      if (next) next.disabled = at >= nav.length - 1;
+      if (next) next.disabled = at >= sp.length - 1;
       if (!isPrev()) paintTray();
     }
 
@@ -10139,6 +10285,29 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
       if (cb) cb.disabled = false;
     }
     fbkHeading = paintTray;                   // updateConnectHeading() delegates here
+    // the summary card lives in its own IIFE, so this hook is reachable through window too
+    fbkSummary = window.__fbkSummary = function () {
+      let tags = 0, filled = 0;
+      pages.forEach(function (pg) { if (pg.img) filled++; tags += pg.pins.length; });
+      const missing = pages.length - filled;
+      return {
+        sig: pages.map(function (pg) { return (pg.img ? pg.img.length : 0) + ':' + pg.pins.length; }).join('|'),
+        html: '<div class="lb-sum-fbk">'
+          + '<div class="lb-sum-fbk-row">'
+          +   pages.map(function (pg, i) {
+                return '<span class="lb-sum-fbk-pg' + (pg.img ? '' : ' is-empty') + '">'
+                  + (pg.img ? '<img src="' + pg.img + '" alt="">' : '')
+                  + '<span class="lb-sum-fbk-no">' + (i + 1) + '</span>'
+                  + (pg.pins.length ? '<span class="lb-sum-fbk-tags">' + pg.pins.length + '</span>' : '')
+                  + '</span>';
+              }).join('')
+          + '</div>'
+          + '<div class="lb-sum-fbk-meta">' + pages.length + ' page' + (pages.length === 1 ? '' : 's')
+          +   ' · ' + tags + ' tagged item' + (tags === 1 ? '' : 's')
+          +   (missing ? ' · <b>' + missing + ' page' + (missing === 1 ? '' : 's') + ' still without an image</b>' : '')
+          + '</div></div>'
+      };
+    };
     fbkTakenBy = function (itemId) {          // the other tag on THIS page already holding it
       const pg = page();
       if (!pg) return null;
@@ -10175,10 +10344,10 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
 
     /* ---------- page turning (through the buyer's page list in preview) ---------- */
     function step(dir) {
-      const nav = navList();
-      const at = nav.indexOf(cur);
-      const ni = nav[at + dir];
-      if (ni != null) goTo(ni);
+      const sp = spreads();
+      const at = spreadAt(cur);
+      const g = sp[at + dir];
+      if (g) goTo(g[0]);
     }
     function goTo(i, instant) {
       if (i < 0 || i >= pages.length || flipping) return;
@@ -10790,14 +10959,23 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
       try { renderImageRail(null); } catch (_) {}   // paints the upload bar (openDrawer skips it with a null box)
       const p2 = document.querySelector('.drawer[data-drawer="add-items"]');
       if (p2) { const t = p2.querySelector('.drawer-title'); if (t) t.textContent = 'Flipbook'; }
-      const lbT = document.querySelector('[data-lb-drawer] .drawer-title');
-      if (lbT) lbT.textContent = 'Lookbook · Flipbook';
       docked = true;
       paintTray();
+    }
+    function setOrient(next) {
+      if (next !== 'portrait' && next !== 'landscape' || next === orient) return;
+      orient = next;
+      document.body.setAttribute('data-fbk-orient', orient);
+      document.querySelectorAll('[data-fbk-orient]').forEach(function (b) {
+        if (b.tagName === 'BUTTON') b.classList.toggle('is-on', b.dataset.fbkOrient === orient);
+      });
+      closeSheets();
+      render();
     }
     function setMode(next) {
       if (next !== 'edit' && next !== 'preview' || next === mode) return;
       mode = next;
+      if (next === 'edit' && orient === 'landscape') setOrient('portrait');   // authoring is portrait
       if (linkIdx != null) exitPin();
       closeSheets();
       document.body.setAttribute('data-fbk-mode', mode);
@@ -10819,13 +10997,59 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
     document.addEventListener('click', function (e) {
       if (!e.target.closest) return;
       const b = e.target.closest('.fbk-mode');
-      if (b) setMode(b.dataset.fbkMode);
+      if (!b) return;
+      if (b.dataset.fbkOrient) setOrient(b.dataset.fbkOrient); else setMode(b.dataset.fbkMode);
     });
+
+    /* ---------- turned on and off by the format picker in the drawer ---------- */
+    fbkActivate = window.__fbkActivate = function () {
+      FB2 = true;
+      PICKER_CLASSIC = false;          // the flipbook drives the tray ROWS, not the flat strip
+      document.body.setAttribute('data-fbk', 'true');
+      document.body.setAttribute('data-picker', 'tray');
+      document.body.setAttribute('data-fbk-mode', 'edit');
+      mode = 'edit';
+      root.hidden = false;
+      if (!pages.length) pages = [{ img: null, pins: [] }];
+      cur = 0; linkIdx = null; imgSel = false; rmAsk = false;
+      const st = document.getElementById('step-3');
+      if (st) {
+        st.setAttribute('data-has-lookbook', 'true');
+        st.setAttribute('data-image-state', 'flipbook');
+      }
+      render();
+      setTimeout(dock, 60);
+    };
+    fbkDeactivate = window.__fbkDeactivate = function () {
+      FB2 = false;
+      document.body.setAttribute('data-fbk', 'false');
+      document.body.removeAttribute('data-fbk-mode');
+      document.body.removeAttribute('data-fbk-tagready');
+      document.body.removeAttribute('data-fbk-tagfull');
+      document.body.removeAttribute('data-fbk-imgsel');
+      document.body.removeAttribute('data-fbk-pin');
+      root.hidden = true;
+      docked = false;
+      // The tray pane has nothing to pick for any more — collapse back to the single 640 drawer,
+      // otherwise the format picker renders inside a 464px pane. Set the attributes directly:
+      // clicking the pane's ✕ runs the composition-wide close and takes the Lookbook drawer with it.
+      const pane = document.querySelector('.drawer[data-drawer="add-items"]');
+      if (pane && pane.dataset.open === 'true') {
+        pane.dataset.open = 'false';
+        pane.setAttribute('aria-hidden', 'true');
+        const abd = document.querySelector('[data-drawer-backdrop]');
+        if (abd) abd.dataset.open = 'false';
+      }
+      pages = [{ img: null, pins: [] }];
+      cur = 0; linkIdx = null; imgSel = false; rmAsk = false;
+      closeSheets();
+      try { renderItems(); } catch (_) {}
+    };
 
     /* ---------- demo entry (?flipbook=1 · demo FAB -> Lookbook -> Flipbook) ----------
        Page images come from the demo items' own embedded data-URI galleries, so this works
        offline and via file:// in the shared snapshot. */
-    setTimeout(function () {
+    if (FB2) setTimeout(function () {
       const g = function (i, k) {
         const it = ITEMS[i];
         return (it && it.gallery && it.gallery[k]) || (it && it.image) || null;
@@ -10838,6 +11062,8 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
       ];
       cur = 0;
       document.body.setAttribute('data-fbk-mode', 'edit');
+      const st0 = document.getElementById('step-3');
+      if (st0) { st0.setAttribute('data-has-lookbook', 'true'); st0.setAttribute('data-image-state', 'flipbook'); }
       const lbDrawer = document.querySelector('[data-lb-drawer]');
       const lbBd = document.querySelector('[data-lb-backdrop]');
       if (lbDrawer) {
@@ -10854,7 +11080,7 @@ In digital wholesale platforms, linesheets are increasingly interactive&mdash;le
       setTimeout(function () { try { renderItems(); } catch (_) {} paintTray(); }, 1700);
     }, 300);
 
-    render();
+    if (FB2) render();
   })();
 })();
 
@@ -12090,10 +12316,22 @@ else lbEntryGate();
     var rm = step3.querySelector('[data-lb-remove]');
     if (rm) rm.hidden = !v;
   }
-  // Add Lookbook CTA — show chooser
+  // Add Lookbook CTA — ask which FORMAT first (layout pages vs flipbook)
   document.addEventListener('click', function(e){
     if (!e.target.closest || !e.target.closest('[data-lb-add]')) return;
     setHasLookbook(true);
+    step3.setAttribute('data-image-state', 'kind');
+  });
+  // Format picked
+  document.addEventListener('click', function(e){
+    if (!e.target.closest) return;
+    var card = e.target.closest('[data-lb-kind]');
+    if (!card) return;
+    if (card.dataset.lbKind === 'flipbook') {
+      if (typeof window.__fbkActivate === 'function') window.__fbkActivate();
+    } else {
+      step3.setAttribute('data-image-state', 'chooser');   // the 8 layout templates
+    }
   });
   // Remove Lookbook — open confirm
   document.addEventListener('click', function(e){
@@ -12112,8 +12350,9 @@ else lbEntryGate();
     } catch(_){}
     // Reset chooser to unselected
     document.querySelectorAll('[data-pick-template]').forEach(function(c){ c.setAttribute('aria-pressed','false'); });
-    // Reset step data-image-state back to chooser
-    step3.setAttribute('data-image-state','chooser');
+    // back to the format picker, and the flipbook (if that was the format) is torn down
+    try { if (typeof window.__fbkDeactivate === 'function') window.__fbkDeactivate(); } catch(_){}
+    step3.setAttribute('data-image-state','kind');
     setHasLookbook(false);
     var modal = document.querySelector('[data-lb-remove-modal]');
     if (modal) modal.hidden = true;
@@ -12222,7 +12461,8 @@ else lbEntryGate();
   function maybeDockPhotoPane(delay){
     setTimeout(function(){
       if (drawer.dataset.open !== 'true') return;
-      if (!step3 || step3.getAttribute('data-image-state') === 'chooser') return;
+      var _st = step3 && step3.getAttribute('data-image-state');
+      if (!step3 || _st === 'chooser' || _st === 'kind') return;   // nothing to dock a picker for yet
       var ai = document.querySelector('.drawer[data-drawer="add-items"]');
       if (ai && ai.dataset.open === 'true') return;              // already docked
       try { if (window.__lbOpenPhotoPane) window.__lbOpenPhotoPane(1); } catch(_){}
@@ -12266,8 +12506,9 @@ else lbEntryGate();
   // "Lookbook exists" = a template has been picked (image-state left the chooser)
   // OR the has-lookbook flag is set (demo bootstrap / activation path).
   function syncSummary(){
-    var has = step3.getAttribute('data-image-state') !== 'chooser'
-           || step3.getAttribute('data-has-lookbook') === 'true';
+    var _s = step3.getAttribute('data-image-state');
+    var has = (_s !== 'chooser' && _s !== 'kind')
+           || (step3.getAttribute('data-has-lookbook') === 'true' && _s !== 'kind');
     summary.setAttribute('data-has-lookbook', has ? 'true' : 'false');
     if (emptyEl)  emptyEl.hidden  = has;
     if (filledEl) filledEl.hidden = !has;
@@ -12277,6 +12518,17 @@ else lbEntryGate();
     if (sumRemove) sumRemove.hidden = !has;
     if (labelEl) labelEl.textContent = has ? 'Edit Lookbook' : 'Add Lookbook';
     if (icoEl)   icoEl.innerHTML     = has ? ICO_EDIT : ICO_ADD;
+    if (has && step3.getAttribute('data-image-state') === 'flipbook') {
+      try {
+        var fs = (typeof window.__fbkSummary === 'function') ? window.__fbkSummary() : null;
+        if (previewEl && fs && previewEl.getAttribute('data-sig') !== 'fbk|' + fs.sig) {
+          previewEl.setAttribute('data-sig', 'fbk|' + fs.sig);
+          previewEl.style.backgroundImage = '';
+          previewEl.innerHTML = fs.html;
+        }
+      } catch(_){}
+      return;
+    }
     if (has) {
       var editor = step3.querySelector('[data-step2-editor]');
       var nSets = editor ? editor.querySelectorAll('.tpl-set').length : 0;
@@ -12472,7 +12724,10 @@ else lbEntryGate();
   var drawer = document.querySelector('[data-lb-drawer]');
   var step3 = document.getElementById('step-3');
   if (!bar || !drawer || !step3) return;
-  function hasLb(){ return step3.getAttribute('data-image-state') !== 'chooser' || step3.getAttribute('data-has-lookbook') === 'true'; }
+  function hasLb(){
+    var st = step3.getAttribute('data-image-state');
+    return st !== 'chooser' && st !== 'kind';   // nothing to remove until a format is chosen
+  }
   function sync(){ bar.hidden = !(drawer.getAttribute('data-open') === 'true' && hasLb()); }
   new MutationObserver(sync).observe(drawer, { attributes:true, attributeFilter:['data-open'] });
   new MutationObserver(sync).observe(step3, { attributes:true, attributeFilter:['data-has-lookbook','data-image-state'] });
