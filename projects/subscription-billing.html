@@ -1572,6 +1572,11 @@ body.an-open .proto-fab, body.an-open .proto-panel { display: none; }
 .sum-card .brand-mark { width: 34px; height: 22px; font-size: 8px; }
 .sum-change { border: 0; background: none; padding: 0; margin-left: 4px; font: inherit; font-size: 13px; font-weight: 500; color: var(--fg); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 .sum-change:hover { color: var(--primary); }
+/* Preheader — the inbox preview line under the subject (PM 2026-10-15) */
+.em-pre { display: block; margin-top: 2px; font-size: 12px; color: var(--fg-secondary); }
+/* Updated badge — marks mails changed on a given day so they can be found in the list */
+.proto-upd { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; background: var(--badge-blue); color: var(--badge-blue-fg); font-size: 9.5px; line-height: 14px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; vertical-align: 1px; }
+.em-meta .proto-upd { display: inline-block; width: auto; margin-top: 0; justify-self: start; }
 </style>
 </head>
 <body>
@@ -4604,7 +4609,7 @@ const SMS_KEEPS = "SMS isn't changing. Those fees keep coming out of your settle
    block is conditional — and with no TFN this mail is the ONLY one they receive (Grace,
    9/14). What keeps working is stated before what locks, because that is the first worry. */
 const cancelBody = (withNumber) => h`
-      <p>Your Shopcord subscription ended on <b>${clock().next}</b>. You won't be charged again.</p>
+      <p>Your Shopcord subscription ended on ${clock().next}. Come back anytime! subscribe again to reopen orders and SMS. ${PLAN.price}/month plus tax, cancel anytime.</p>
       <div class="em-group keeps">
         <div class="em-group-k">What still works</div>
         <ul>
@@ -4757,29 +4762,28 @@ const EMAILS = {
      nothing the vendor has to do, and a button that only navigates asks for a click we are
      not owed. */
   trialEnding: {
-    label: 'Trial ends in 7 days', hint: 'PB 7.11 · 이메일만 — 배너·SMS 없음 (§3.2.2 ⑥)',
+    updated: '10/16',
+    label: 'Trial ends in 7 days · card on file', hint: 'PB 7.11 · PM 10/15 · 체험 종료 D-7 · 결제 수단 있음 · 이메일만',
     figma: '2148:49490',
-    figmaNote: '⚠ 프레임 이름이 "September card campaign" 으로 잘못 붙어 있음',
+    figmaNote: '⚠ 보드는 아직 이전 문구 — PM 10/15 문구로 교체 (Gap K-40)',
     src: 'prd',
-    spec: 'PB 7.11 · §3.2.2 ⑥', to: 'Vendor', chan: ['Email'],
-    subject: () => 'Your free trial ends in 7 days',
-    title: () => 'Your free trial ends in 7 days',
-    sub: () => 'Nothing has been charged so far',
-    open: 'Whether the vendor can reach a cancel link from here is undecided. §3.2.3 says cancelling during a trial keeps the trial to its last day, and the mail states that, but §3.2.2 ⑥ deliberately kept this out of the product surface to avoid prompting churn — so the sentence is there and the link is not. Jennie to confirm.',
+    spec: 'PB 7.11 · §3.2.2 ⑥ · PM 2026-10-15', to: 'Vendor', chan: ['Email'],
+    subject: () => 'Your free trial is ending soon',
+    pre: () => `Your first Shopcord charge runs on ${TRIAL.first}`,
+    title: () => 'Your free trial is ending soon',
+    sub: () => `Your first Shopcord charge runs on ${TRIAL.first}`,
+    cta: 'View subscription',
+    open: 'PB 7.11 asks for the amount as pre-tax plus an estimated tax, and for no card-update wording. This version shows the total as $20 + sales tax and adds a line about changing the card, so PB 7.11 needs amending. Jennie to confirm.',
     body: () => h`
-      <p>Your free trial ends on <b>${TRIAL.first}</b>. That's the day your first charge runs.</p>
-      <p>Your plan doesn't change. You've been on the paid plan since you subscribed, and billing
-        starts on that date.</p>
+      <p>Your free trial ends soon and your upcoming charge is on ${TRIAL.first}. Here are the details:</p>
       <div class="em-box">
-        <div class="em-row"><span class="k">First charge</span><span class="v">${TRIAL.first}</span></div>
+        <div class="em-row"><span class="k">First charge date</span><span class="v">${TRIAL.first}</span></div>
         <div class="em-row"><span class="k">Card</span><span class="v">Visa ····4242</span></div>
-        <div class="em-row"><span class="k">Subtotal</span><span class="v">${PLAN.price}</span></div>
-        <div class="em-row"><span class="k">Estimated sales tax · ${TAX.place} ${TAX.rate}</span><span class="v">${TAX.amt}</span></div>
-        <div class="em-row tot"><span class="k">Estimated total</span><span class="v">${TAX.total}</span></div>
+        <div class="em-row tot"><span class="k">Total</span><span class="v">${PLAN.price.replace('.00', '')} + sales tax</span></div>
       </div>
       <ul class="em-ul">
-        <li>Tax is calculated when the charge runs, so the total may move by a few cents.</li>
-        <li>Cancel before <b>${TRIAL.first}</b> and you keep the trial to its last day. You will not be charged.</li>
+        <li>To use a different card, update it in your Subscription tab before ${TRIAL.first.replace(/, \d{4}$/, '')}.</li>
+        <li>Cancel before ${TRIAL.first} and you keep free access until that date. You will not be charged.</li>
       </ul>`,
   },
 
@@ -4843,19 +4847,18 @@ const EMAILS = {
      record: what stops, what keeps running, and how long the SMS number waits for them.
      Grace, 2026-09-14. **No PB id — needs one.** */
   subCanceled: {
-    label: 'Subscription canceled — with SMS number', hint: 'PB 없음 · 자발적 해지 통지 — PB 7.1.2는 D+7 자동 해지만',
-    figma: '2095:419062',
+    updated: '10/16',
+    label: 'Subscription ended — with SMS number', hint: 'PM 10/15 · 모든 구독 종료(해지 · 체험 종료 · 유예 만료 자동 해지) · status → canceled',
+    figma: '3158:392664',
+    figmaNote: '⚠ 보드는 아직 이전 문구 — PM 10/15 문구로 교체 (Gap K-41)',
     src: 'ours',
-    spec: 'PB 없음 · §3.5 정책만 있음', to: 'Vendor', chan: ['Email'],
+    spec: 'PM 2026-10-15 · PB 없음 · §3.5 정책만 있음', to: 'Vendor', chan: ['Email'],
     subject: () => 'Your Shopcord subscription has ended',
-    title: () => 'Your subscription has ended',
-    sub: () => `Canceled ${clock().next}`,
-    /* Not "Resume". In this product Resume is §3.5's 해지 철회 — free, and only before the
-       period ends — while coming back from a canceled subscription is 재구독, a new cycle
-       charged immediately (§5.5.3). The tab's button says Subscribe for the same reason, so
-       the mail says it too: one action, one name, whichever surface the vendor is on.
-       (Grace set Resume on 9/14, then changed it once the collision was raised.) */
-    cta: 'Subscribe again',
+    pre: () => `Ended on ${clock().next}`,
+    title: () => 'Your Shopcord subscription has ended',
+    sub: () => `Ended on ${clock().next}`,
+    /* View subscription (PM 2026-10-15): the mail sends the vendor to the tab, where Subscribe starts a new subscription. */
+    cta: 'View subscription',
     body: () => cancelBody(true),
   },
 
@@ -4864,14 +4867,16 @@ const EMAILS = {
      is a catalogue and Grace needs to see both shapes without switching scenarios first
      (9/14). This is the ONLY mail a vendor without a TFN receives. */
   subCanceledNoTfn: {
-    label: 'Subscription canceled — no SMS number', hint: 'PB 없음 · 번호 없는 벤더의 형태 — 프로덕션은 한 템플릿',
+    updated: '10/16',
+    label: 'Subscription ended — no SMS number', hint: 'PM 10/15 · 번호 없는 벤더의 형태 — 프로덕션은 한 템플릿',
     figma: null,
     src: 'ours',
-    spec: 'PB 없음 · §3.5 정책만 있음', to: 'Vendor', chan: ['Email'],
+    spec: 'PM 2026-10-15 · PB 없음 · §3.5 정책만 있음', to: 'Vendor', chan: ['Email'],
     subject: () => 'Your Shopcord subscription has ended',
-    title: () => 'Your subscription has ended',
-    sub: () => `Canceled ${clock().next}`,
-    cta: 'Subscribe again',
+    pre: () => `Ended on ${clock().next}`,
+    title: () => 'Your Shopcord subscription has ended',
+    sub: () => `Ended on ${clock().next}`,
+    cta: 'View subscription',
     body: () => cancelBody(false),
   },
 
@@ -5153,26 +5158,32 @@ const EMAILS = {
 
 
   campaign: {
-    label: 'September card campaign', hint: 'PB 7.9 · 컷오버 전 카드 등록 캠페인 (§10.1)',
+    updated: '10/16',
+    label: 'Trial ends in 7 days · no card', hint: 'PM 10/15 · PB 7.9 대체 · 체험 종료 D-7 · 결제 수단 없음 · 이메일만',
     figma: '317:819624',
-    figmaNote: '⚠ 내용이 "Your Free Period Is Ending" · 주문 처리 잠금 안내 없음 (K-30 A5)',
-    src: 'prd',
-    spec: 'PB 7.9 · §10.1 · §10.3', to: 'Vendor', chan: ['Email', 'SMS', 'In-app'],
-    subject: () => `Your free period ends ${LAUNCH} — add a card to continue`,
-    title: () => 'Your free period is ending', sub: () => `Add a card before ${LAUNCH}`,
-    cta: 'Add a card',
-    sms: () => `Shopcord: your free period ends soon. Add a card before ${LAUNCH} to keep your subscription. SMS fees keep coming out of your settlement. shopcord.com/billing`,
-    open: 'Depends on the vendor-only ToS being finished — the registration consent references it (F-3, legal-led). L-5 confirmed there is no notice-period constraint.',
+    figmaNote: '⚠ 보드는 아직 9월 캠페인 문구 — PM 10/15 문구로 교체 (Gap K-40)',
+    src: 'prd', specOff: ['SMS', 'In-app'],
+    spec: 'PB 7.9 → PM 2026-10-15 · §3.2.2 · §10.1', to: 'Vendor', chan: ['Email'],
+    subject: () => 'Your free trial is ending soon',
+    pre: () => `Add a card and subscribe before ${TRIAL.first}`,
+    title: () => 'Your free trial is ending soon',
+    sub: () => `Add a card and subscribe before ${TRIAL.first}`,
+    cta: 'Add a card &amp; subscribe',
+    open: 'Who receives this: §3.2.2 ② makes a card a condition of starting a trial, so a trial with no card exists only if vendors are moved onto one without a card. It also replaces the September card campaign (PB 7.9 — email, SMS and in-app, before Oct 5) with a per-vendor email 7 days before each trial ends. Jennie to confirm, and PB 7.9 · §10.1 to be amended.',
     body: () => h`
-      <p>Shopcord has been free for you until now. From <b>${LAUNCH}</b> the subscription is
-        <b>${PLAN.price} a month plus sales tax</b>, charged to a card you keep on file.</p>
-      <ul class="em-ul">
-        <li>Add a card before then and nothing is interrupted.</li>
-        <li>Without a card your subscription doesn't start. Your store stays open and orders keep
-          arriving, but <b>opening and confirming them needs a subscription</b>.</li>
-        <li>Adding a card later restores everything at once.</li>
-        <li>${SMS_KEEPS}</li>
-      </ul>`,
+      <p>Your free period ends in 7 days.</p>
+      <p>Your free period on Shopcord ends on ${TRIAL.first}, and there’s no card on your account yet.
+        To keep using Shopcord, go to My Account › Subscription and add a card before then. Nothing is
+        charged until ${TRIAL.first}, and your first charge is ${PLAN.price} plus applicable sales tax.</p>
+      <div>
+        <p style="margin:0 0 8px">If no card is on file by ${TRIAL.first}:</p>
+        <ul class="em-ul">
+          <li>Orders keep coming in, but you won’t be able to open or confirm them. Order details lock the day your free period ends.</li>
+          <li>SMS campaigns stop, including any you’ve scheduled. Customer lists and linesheets stay as they are.</li>
+          <li>Nothing is lost. Subscribe later and everything opens again right away.</li>
+        </ul>
+      </div>
+      <p>You can cancel anytime from your Subscription tab.</p>`,
   },
 
   launchOff: {
@@ -5206,7 +5217,7 @@ function emailPreview() {
           <div class="em-logo">shop<span>c</span>ord</div>
           <div class="em-card">
             <div class="em-title">${e.title()}</div>
-            <div class="em-sub">${e.sub()}</div>
+            ${e.sub() ? `<div class="em-sub">${e.sub()}</div>` : ''}
             <div class="em-rule"></div>
             <div class="em-content">
               ${e.body()}
@@ -5235,7 +5246,7 @@ function emailPreview() {
         <div class="em-fig">${e.figma
           ? `<span class="em-fig-k is-yes">FIGMA</span>${e.figma}${e.figmaNote ? ` · ${e.figmaNote}` : ''}`
           : `<span class="em-fig-k is-no">FIGMA 없음</span>${EMAIL_SRC[e.src].cls === 'is-prd' ? '스펙에는 있고 보드에는 아직 없음' : '보드에 프레임 없음'}`}</div>
-        <div class="em-meta">${e.label}</div>
+        <div class="em-meta">${e.label}${e.updated ? `<span class="proto-upd">Updated ${e.updated}</span>` : ''}</div>
         <!-- Channels the build draws, then any the spec assigns and we do not — struck
              through rather than omitted, so a reviewer sees the deviation instead of a
              shorter list that looks intentional (payFail's SMS, K-28). -->
@@ -5245,7 +5256,7 @@ function emailPreview() {
     </div>
     <div class="em-scroll">
       <div class="em-frame">
-        <div class="em-subj">From Shopcord Billing &lt;vendorsupport@shopcord.com&gt;<b>${e.subject()}</b></div>
+        <div class="em-subj">From Shopcord Billing &lt;vendorsupport@shopcord.com&gt;<b>${e.subject()}</b>${e.pre ? `<span class="em-pre">${e.pre()}</span>` : ''}</div>
         ${e.plain ? h`
         <!-- Plain transactional mail as a mail client shows it — anatomy from Figma 507:60876
              (a received Dooray mail, Grace 9/2: "이런게 이메일이잖아"): sender row with avatar and
@@ -6002,7 +6013,7 @@ function renderProto() {
            the same test. Set smsNumber: false on a scenario to see that shape. -->
       ${keys.map(k => h`
         <button class="proto-btn ${S.modal === 'email' && S.emailKey === k ? 'is-active' : ''}" data-act="email" data-val="${k}">
-          ${EMAILS[k].label}<span class="hint">${EMAILS[k].hint}</span>
+          ${EMAILS[k].label}${EMAILS[k].updated ? `<span class="proto-upd">Updated ${EMAILS[k].updated}</span>` : ''}<span class="hint">${EMAILS[k].hint}</span>
         </button>`).join('')}
     </div>`;
     }).join('')}
@@ -7031,38 +7042,35 @@ const ANNOS = [
     edge: ['This is the only positive notification in the set. Without it the vendor who fixed their card never hears that it worked.'],
     refs: 'PB 7.2 · §5.2' },
 
-  { id: 'M-trialEnding', sel: '.email-modal[data-email="trialEnding"] .em-card', title: 'Trial ends in 7 days', tags: 'DEV / PM',
+  { id: 'M-trialEnding', sel: '.email-modal[data-email="trialEnding"] .em-card', title: 'Trial ends in 7 days — card on file', tags: 'DEV / PM',
     bullets: [
-      '<b>PB 7.11, confirmed 9/3 and unbuilt until 9/14.</b> §3.2.2 \u2465 writes down both the mail and its reason: three months is long enough that "I thought it was free" is the default reaction to the first charge.',
-      '<b>It is a chargeback defence, not a courtesy.</b> That reaction becomes a chargeback, and a chargeback costs a fee + immediate cancellation + a resubscribe block (§7). The clickwrap (§3.4) is the other half of the same defence.',
-      'Four facts are fixed by the spec: <b>trial end date · first charge date · amount · card last 4</b>. The end date and the first charge date are <b>one date</b> (§3.2.2 \u2463 \u2014 the end is not a conversion, it is the first charge on the same plan), so the box carries it once.',
-      'Amount is <b>\uc138\uc804 + \uc608\uc0c1 \uc138\uc561</b>. The rate is looked up at charge time (§3.3.1 · PB 2.12.0), so both lines read <b>Estimated</b> and the mail says the total may move.',
+      'Sent 7 days before the trial ends to a vendor on the trial who has a card on file. Email only — no banner, no SMS (§3.2.2 ⑥ · PB 7.11).',
+      'Subject <i>Your free trial is ending soon</i> and preheader <i>Your first Shopcord charge runs on {renewal date}</i>; the same two lines are the mail’s heading and subheading.',
+      'The box gives the first charge date, the card that will be charged (last four) and <code>Total $20 + sales tax</code>. The trial end and the first charge are the same day (§3.2.2 ④).',
+      'Under it: to use a different card, change it on the Subscription tab before that date; cancelling before that date keeps free access to the end and charges nothing (§3.2.3).',
+      '<code>View subscription</code> opens My Account › Subscription.',
     ],
     edge: [
-      '<b>Email only \u2014 no banner, no SMS</b> (§3.2.2 \u2465). A permanent in-app countdown pushes vendors to cancel <i>during</i> the trial, and the end date is on the Subscription tab year-round already (§12.3.1).',
-      '<b>No card-update nudge</b> (9/9). v2.5 abolished card-expiry prompting everywhere (§4.3), and this mail is not an exception.',
-      '<b>No CTA.</b> Same reasoning as <code>restored</code> and <code>cutover</code>: there is nothing the vendor has to do, and a button that only navigates asks for a click we are not owed.',
-      '\ud83d\udd34 <b>The cancel sentence is ours.</b> §3.2.3 gives the fact (cancelling in a trial keeps it to its last day), but §3.2.2 \u2465 kept the trial clock off the product surface to avoid prompting churn. The sentence is in, the link is not \u2014 Jennie to confirm.',
+      '🔴 PB 7.11 asks for the amount as pre-tax plus an estimated tax, and for no card-update wording. This version shows <code>$20 + sales tax</code> and adds the change-card line, so PB 7.11 has to be amended.',
+      'A vendor on the trial with no card on file gets the no-card version of this mail instead.',
     ],
-    refs: 'PB 7.11 · §3.2.2 \u2463\u2465 · §3.2.3 · §3.3.1 · PB 2.12.0' },
+    refs: '§3.2.2 ④⑥ · §3.2.3 · PB 7.11' },
 
-  { id: 'M-subCanceled', sel: '.email-modal[data-email="subCanceled"] .em-card, .email-modal[data-email="subCanceledNoTfn"] .em-card', title: 'Subscription canceled', tags: 'DEV / PM',
+  { id: 'M-subCanceled', sel: '.email-modal[data-email="subCanceled"] .em-card, .email-modal[data-email="subCanceledNoTfn"] .em-card', title: 'Subscription ended', tags: 'DEV / PM',
     bullets: [
-      '<b>The half of §3.5 that had no mail.</b> A subscription ends two ways — the vendor cancels, or grace expires — and only the automatic one was notified (PB 7.1.2). A vendor who cancelled on purpose still needs the record of what stopped and what did not.',
-      '<b>Two groups, opposite markers</b> (PM layout, 9/14). A vendor opens this asking two things — what did I lose, and what do I still have — and one flat list answered both at the same weight. <code>What still works</code> carries §5.5.2, <code>Paused until you subscribe again</code> carries §3.2.1.',
-      'The paused set is §3.2.1\'s boundary, <b>exactly two rows</b>: opening/confirming an order, and <b>SMS Campaigns and Chat</b> — which is how §3.2.1 itself names it (<code>SMS 마케팅 (캠페인·챗)</code>) and how the vendor sees it in the nav.',
-      '<b>재구독 is a condition, not a status</b>, so it leaves the list and sits in its own block: new cycle, immediate first charge, <b>no second trial</b> (§3.2.2 ⑦ · §5.5.3).',
-      'CTA stays <b>Subscribe again</b>, the same words as the Subscription tab button. The PM draft had <i>Subscribe Again to Keep Your Number</i>; keeping the number is the D-30/7/1 reminders\' hook, and a number-specific button cannot be shared by the no-SMS shape.',
+      'Sent when the subscription status changes to canceled, however it ended: cancelled by the vendor, a trial that ended, or grace running out. One mail for every case (§3.5 · §5.5).',
+      'Subject <i>Your Shopcord subscription has ended</i> and preheader <i>Ended on {end date}</i>, which are also the mail’s heading and subheading. It opens with the end date and the way back: <i>Come back anytime! subscribe again to reopen orders and SMS. $20.00/month plus tax, cancel anytime.</i>',
+      'Two groups, opposite markers: <code>What still works</code> (§5.5.2) and <code>Paused until you subscribe again</code> (§3.2.1) — opening and confirming orders, and SMS Campaigns and Chat.',
+      'Subscribing again is a condition, not a status, so it sits in its own block: a new cycle, an immediate first charge, no second trial (§3.2.2 ⑦ · §5.5.3).',
+      '<code>View subscription</code> opens My Account › Subscription, where Subscribe starts a new subscription.',
     ],
     edge: [
-      '<b>🔴 No PB id — needs one.</b> PB 7.1.2 covers only the D+7 automatic cancellation.',
-      '<b>Two entries, one template.</b> The panel lists <i>with SMS number</i> and <i>no SMS number</i> side by side so both shapes can be reviewed. Production sends one, picked by whether the vendor ever onboarded SMS.',
-      '<b>No number means no SMS anywhere in the mail</b> (Grace, 9/14) — the credits line and the number block drop out, and the locked-feature line names only order opening/confirming. Telling a vendor who never switched SMS on that it is now off is noise. Release 1 has no SMS surface, so it always sends this shape.',
-      'The number is described as <b>held until a date</b>, never as deleted on one — we cannot promise a carrier will keep it, and no PRD carries the rule at all. The PM draft said <i>removed for good</i>; that states a certainty we do not have.',
-      '<b>🔴 Cut pending dev: "your SMS Campaigns &amp; Chat history is removed".</b> No PRD carries a retention or deletion rule for message history, <code>NUMBER_HOLD_MONTHS</code> covers the number only, and the claim contradicts this same mail\'s <i>your store, orders and data are all still here</i>. Opt-out records may also carry a legal retention duty. Grace, 9/14: 개발팀 확인 후 결정.',
-      'Held credits are <b>pre-deduction</b>, so a scheduled campaign\'s hold releases back to Available rather than being lost (선불 스펙 — Hold 해제, 차감 전이므로 환불 아님). The mail says they come back, which is better news than "they stay held".',
+      '🔴 PB 7.1.2 sends its own mail for the automatic cancellation after grace. This mail now covers that case too, so PB 7.1.2 has to point here. No PB row covers a vendor-initiated cancellation yet.',
+      'Two entries, one template: with SMS number and no SMS number. Production sends one, picked by whether the vendor ever onboarded SMS.',
+      'Without a number the paused list names only order opening and confirming and the number block drops out, but the opening line still names SMS.',
+      'The number is described as held until a date, never as deleted on one.',
     ],
-    refs: '§3.5 · §5.5.2 · §5.5.3 · §3.2.1' },
+    refs: '§3.5 · §5.5 · §3.2.1 · §3.2.2 ⑦ · PB 7.1.2' },
 
   { id: 'M-numberD30', sel: '.email-modal[data-email="numberD30"] .em-card', title: 'Reserved number — 30 days left', tags: 'DEV / PM',
     bullets: [
@@ -7176,13 +7184,21 @@ const ANNOS = [
     ],
     refs: '§6.3.3 · §6.3.4 · §6.4-3 · §6.6 · §8.1 · §5.3 ③' },
 
-  { id: 'M-campaign', sel: '.email-modal[data-email="campaign"] .em-card', title: 'September card campaign', tags: 'DEV / PM',
-    bullets: ['A <b>one-off migration campaign</b>, not a lifecycle trigger: existing vendors must register a card before the Oct 5 cutover (§10.1).',
-      'Email + SMS + in-app, the urgent set.',
-      '<b>It has to say that order processing locks on 10/5</b> without a subscription — PB 7.9 and §10.1 both require the warning, and it is the consequence a vendor actually acts on.'],
-    edge: ['<b>Must follow L-5\'s notice requirements</b> — this is a pricing/billing change to existing vendors, so the wording is a legal item, not a marketing one.',
-      '§10.3 fixes the mandatory clauses for vendor communication; this mail has to carry them.'],
-    refs: 'PB 7.9 · §10.1 · §10.3 · L-5' },
+  { id: 'M-campaign', sel: '.email-modal[data-email="campaign"] .em-card', title: 'Trial ends in 7 days — no card on file', tags: 'DEV / PM',
+    bullets: [
+      'Sent 7 days before the trial ends to a vendor on the trial whose payment method is empty. Email only.',
+      'Subject <i>Your free trial is ending soon</i> and preheader <i>Add a card and subscribe before {trial end date}</i>; the same two lines are the mail’s heading and subheading. The body opens with <i>Your free period ends in {N} days.</i>',
+      'The mail gives the end date, says no card is on file and where to add one (My Account › Subscription), and that the first charge, $20.00 plus applicable sales tax, falls on the renewal date.',
+      'It lists what happens with no card by that date: orders keep arriving but cannot be opened or confirmed, SMS campaigns stop, and nothing is lost (§10.1 · §4.2).',
+      '<code>Add a card &amp; subscribe</code> opens My Account › Subscription, where Subscribe starts the card step (§14.2).',
+    ],
+    edge: [
+      '🔴 §3.2.2 ② makes a card a condition of starting a trial, so a trial with no card exists only if vendors are moved onto one without a card. Who receives this has to be confirmed.',
+      '🔴 This replaces the September card campaign (PB 7.9): one dated campaign by email, SMS and in-app becomes a per-vendor email 7 days before each trial ends. PB 7.9 and §10.1 have to be amended.',
+      'The subject says free trial and the body says free period.',
+      'Scheduled campaigns stopping has to be checked against the SMS PRD.',
+    ],
+    refs: '§3.2.2 · §10.1 · §4.2 · §14.2 · PB 7.9' },
 
   { id: 'M-launchOff', sel: '.email-modal[data-email="launchOff"] .em-card', title: 'Launch day · no card on file', tags: 'DEV / PM',
     bullets: ['<b>Migration only.</b> The population is vendors who used Shopcord during the <b>free period and never subscribed</b>, so they never had to register a card — PB 7.10 names them exactly: <b>런칭일 미등록 벤더</b>.',

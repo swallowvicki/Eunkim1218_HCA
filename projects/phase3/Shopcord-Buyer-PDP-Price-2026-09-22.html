@@ -131,6 +131,71 @@
   .row-off { font-size: 14px; line-height: 20px; font-weight: 700; color: var(--primary); white-space: nowrap; margin-right: -4px; }   /* 행 할인% — 티켓 규칙(453), 헤더 up to N% 와 같은 색 */
   .vtab .vt-p .row-off { font-size: 12px; margin-right: 4px; }
   .qty-row.is-oos .row-off { color: var(--fg-muted); }
+  /* PRE_A1 — 표 머리 한 번 · 컬러 줄 + 팩 값 · 사이즈 줄 · 날짜와 수량 칸 */
+  .a1-head { margin: 0 0 4px; }
+  .a1-head .a1-grid span { font-size: 11px; line-height: 16px; color: var(--fg-muted); text-align: right; white-space: nowrap; }
+  .a1-head .a1-grid span:first-child { text-align: left; }
+  .a1-grid { display: grid; column-gap: 8px; row-gap: 2px; align-items: baseline; font-size: 13px; line-height: 20px; font-variant-numeric: tabular-nums; }
+  .qty-row.a1-row { display: block; min-height: 0; padding: 12px 0; margin: 0; border-top: 1px solid var(--border); }
+  .a1-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .a1-top .qty-name { min-width: 0; }
+  .a1-tag { display: inline-flex; align-items: center; height: 18px; padding: 0 8px; border: 1px solid var(--primary); border-radius: 9999px; font-size: 10px; line-height: 12px; font-weight: 600; color: var(--primary); }
+  .a1-pack { flex-shrink: 0; white-space: nowrap; font-size: 12px; line-height: 20px; color: var(--fg-muted); }
+  .a1-pack b { font-size: 14px; font-weight: 700; color: var(--fg); }
+  .a1-body { margin-top: 4px; }
+  .a1-sz { color: var(--fg-secondary); padding-left: 8px; }
+  .a1-p { text-align: right; font-weight: 700; color: var(--fg); white-space: nowrap; }
+  .a1-p.is-sale { color: #ef4444; }
+  .a1-p.is-sp { color: var(--primary); }
+  .a1-c { text-align: right; font-size: 12px; color: var(--fg-muted); white-space: nowrap; }
+  /* Pre Pack 컬러 접기 (PRE_FOLD) — 기본은 펼침, 이름 줄을 누르면 사이즈 표만 접힌다 */
+  .a1-fold { display: inline-flex; align-items: center; gap: 2px; min-width: 0; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+  .a1-fold svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--fg-muted); transition: transform .15s; }
+  .a1-row.is-folded .a1-fold svg { transform: rotate(-90deg); }
+  .a1-row.is-folded .a1-body { display: none; }
+  .a1-bot { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 8px; }
+  .a1-ship { font-size: 12px; line-height: 36px; color: var(--fg-muted); white-space: nowrap; }
+  .a1-row.is-oos .qty-name, .a1-row.is-oos .a1-p, .a1-row.is-oos .a1-pack b { color: var(--fg-muted); }
+  .a1-row.is-oos .a1-ship { font-weight: 500; }
+  /* OPEN_A1 — 컬러 칩 + 사이즈 줄 */
+  .a1-otop { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 10px 0 6px; border-top: 1px solid var(--border); }
+  .a1-otop .qty-name { min-width: 0; }
+  .a1-otop.is-oos .qty-name { color: var(--fg-muted); }
+  .a1-otop .a1-ship { line-height: 20px; }
+  .a1-otag { padding: 8px 0 0; }
+  .a1-head + .qty-row.a1-orow, .a1-otag + .qty-row.a1-orow { border-top: 0; }
+  .qty-row.a1-orow { display: block; min-height: 0; margin: 0; padding: 10px 0; border-top: 1px solid var(--border); }
+  .a1-otop + .qty-row.a1-orow { border-top: 0; padding-top: 2px; }
+  .a1-orow .a1-grid { align-items: center; }
+  .a1-osz { font-size: 14px; font-weight: 500; color: var(--fg); }
+  .a1-ostep { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
+  .a1-orow.is-inline .a1-grid { align-items: center; }
+  .a1-orow.is-inline .stepper { width: 108px; height: 34px; justify-self: end; }
+  .a1-orow.is-inline .stepper button { width: 34px; height: 32px; }
+  .a1-orow.is-oos .a1-osz, .a1-orow.is-oos .a1-p { color: var(--fg-muted); }
+  .chip.is-oos { color: var(--fg-muted); }
+  .a1-ocn { min-width: 0; margin-bottom: 2px; font-size: 14px; font-weight: 500; line-height: 20px; color: var(--fg); }
+  .a1-ocn i { display: inline; margin-left: 8px; }
+  .a1-ocn .a1-tag { margin-left: 6px; vertical-align: 1px; }
+  /* 10-22 Special Price 라벨 = 가격 바로 왼쪽 ("헤더드올리브 화살표 스페셜프라이스 느낌이야 — 저 화살표는 익스펜드 콜렙스" · Baymard: 오퍼 표시는 가격 가까이).
+     Pre = 팩 값 왼쪽 · Open = Price 열 머리 왼쪽(아래 사이즈 값 전부) · 칩=사이즈 = 그 컬러 값 줄 왼쪽. TAG_BY_PRICE=false 면 이름 옆 · 백업 …backup-before-sp-tag-by-price.html */
+  .a1-pack .a1-tag { margin-right: 6px; vertical-align: 1px; }
+  .a1-head .a1-grid .a1-hl { display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; }
+  .a1-head .a1-grid .a1-tag, .a1-grid .a1-ptag .a1-tag { font-size: 10px; line-height: 12px; color: var(--primary); }
+  .a1-grid .a1-ptag { text-align: right; }
+  /* 10-22 Open 도 줄마다 그 가격 바로 왼쪽 ("그럼 미듐이면 어디다 넣을거야" → "가격 옆에 똑같이 넣는게 맞는거같아") — 열 머리 한 번은 M 만 Special 인 경우를 못 말한다.
+     이름 칸 오른쪽 끝(= Price 바로 왼쪽)에 붙이고, 이름이 길면 이름표가 다음 줄로 넘어간다(말줄임 금지). TAG_PER_ROW=false 면 열 머리 · 백업 …backup-before-sp-tag-per-row.html */
+  .a1-osz.has-tag { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 8px; row-gap: 2px; }
+  .a1-osz.has-tag .a1-tag { margin-left: auto; font-weight: 600; }
+  .a1-sz.has-tag { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 8px; row-gap: 2px; }
+  .a1-sz.has-tag .a1-tag { margin-left: auto; font-weight: 600; }
+  /* 10-22 이름 15자 — 이름표가 다음 줄로 떨어지면 Pre Pack 은 다음 사이즈 것처럼 보였다("이건 좀 아닌듯"). 이름표는 늘 가격 줄에, 이름이 줄을 바꾼다(말줄임 없음) · 백업 …backup-before-tag-nowrap.html */
+  .a1-osz.has-tag, .a1-sz.has-tag { flex-wrap: nowrap; align-items: flex-start; }
+  .a1-osz.has-tag > span:first-child, .a1-sz.has-tag > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+  .a1-osz.has-tag .a1-tag, .a1-sz.has-tag .a1-tag { flex-shrink: 0; margin-top: 1px; }
+  .a1-orow .a1-grid:has(.has-tag) { align-items: start; }   /* 이름이 두 줄이어도 가격은 첫 줄(이름표와 같은 줄) */   /* PM ② 팩 안 일부 사이즈만 Special — 그 사이즈 행 값 왼쪽 */
+  .a1-ocn i { font-style: normal; font-size: 11px; font-weight: 500; color: var(--fg-muted); }
+  .a1-orow.is-oos .a1-ocn { color: var(--fg-muted); }
   .qty-inl { font-size: 12px; line-height: 20px; color: var(--fg-muted); }
   .qty-inl .cp { display: inline-block; white-space: nowrap; }
   .vtab { flex-basis: 100%; display: grid; column-gap: 14px; row-gap: 2px; margin-top: 4px; font-size: 12px; line-height: 18px; font-variant-numeric: tabular-nums; }
@@ -306,11 +371,22 @@
   .demo-ctl-item.is-current small { color: #9d4862; opacity: .8; }
   .demo-ctl-check { width: 14px; flex-shrink: 0; color: #e21d76; }
   .demo-ctl-sep { height: 1px; background: #f3eee8; margin: 6px 4px; }
+  /* 10-26 "12px 확정이야" — Special Price 라벨 글자 10 → 12px(높이 18 → 20). 칸이 모자라면 라벨은 가격 옆에 두고 사이즈 이름이 두 줄로(10-22 규칙 그대로).
+     html[data-tag12] 일 때만 — TAG_12 = false 면 예전 10px · 백업 …backup-before-tag12.html */
+  html[data-tag12] .a1-tag, html[data-tag12] .a1-head .a1-grid .a1-tag, html[data-tag12] .a1-grid .a1-ptag .a1-tag { font-size: 12px; line-height: 16px; height: 20px; }
+  /* 10-28 "3줄이후 Show all" — 팩 구성(사이즈 / 수량) 글이 3줄을 넘으면 3줄에서 자르고(아래 fade) 밑에 Show all(펼치면 Show less).
+     3줄 이내면 버튼 없음. RATIO_CLAMP=false 면 예전처럼 다 보임 · 백업 …backup-before-ratio-clamp.html */
+  /* 10-28 "3번째줄에서 반정도는 fade되면서 … 가려진 느낌" — … 대신 3줄째를 흐리게(같은 신호 두 번 안 씀). 10-28 "fade를 더" → 3줄째 시작부터 거의 다 사라지게(예전 2.4lh→3lh 8% · 백업 …backup-before-ratio-fade2.html). 3줄 이내면 흐림 없음 · 백업 …backup-before-ratio-fade.html */
+  .rclamp .rc-t { display: block; max-height: 3lh; overflow: hidden; }
+  .rclamp.is-clamped:not(.is-open) .rc-t { -webkit-mask-image: linear-gradient(to bottom, #000 1.9lh, transparent 2.9lh); mask-image: linear-gradient(to bottom, #000 1.9lh, transparent 2.9lh); }
+  .rclamp.is-open .rc-t { max-height: none; }
+  .rc-btn { display: block; width: 100%; margin-top: 4px; padding: 0; border: 0; background: none; font: inherit; font-weight: 400; color: inherit; text-align: inherit; text-decoration: underline; /* 10-28 "weight을 레귤러로" (예전 600 세미볼드) */ cursor: pointer; }
 </style>
 </head>
 <body>
 
-<div class="brief">
+<!-- 10-19 "PDP, PLP에 저 위에 넣은 화면 삭제해줘" — 설명 블록 숨김. 되돌리려면 hidden 을 지운다 -->
+<div class="brief" hidden>
   <h1>Buyer PDP — 옵션별 가격 표기</h1>
   <p>Figma <b>92-6589</b>(Pre Pack) · <b>92-6327</b>(Open Pack) — 최신. 아래 전환 바로 판매방식 · 가격 종류 · 옵션별 가격 · 데이터 양을 바꿔가며 보세요(우측 하단 톱니바퀴에도 같은 항목이 있습니다).
      가격 아래 한 줄 — 세일이면 <b>할인 전 WS에 취소선, MSRP는 그대로</b>(<code>WS $<s>10.00</s> · MSRP $45.00</code>). <b>Special Price</b>도 티켓 규칙(Figma 453-109931, 10-13)대로 분홍 박스 안에 <b>할인% + 가격 + WS 취소선</b>, MSRP는 박스 밖 참고 줄 — Sale은 Special이 있으면 안 씁니다. 행(컬러 · 사이즈)도 같은 규칙: <code>15% $17.00/pc  WS $<s>20.00</s> · MSRP $42.00</code>. 재고 <b>일부 Out of Stock</b>이면 품절 컬러 행은 회색 + <code>Out of Stock</code>, 수량을 담을 수 없고, <b>헤더 가격·할인율은 살 수 있는 컬러로만</b> 계산합니다(전부 품절이면 전체로). 가격종류 <b>4가지 모두</b>는 WS · Sale · MSRP · Special Price가 다 있는 아이템입니다 — 티켓 규칙상 Special이 Sale을 대체해 Special Price와 같게 보입니다.
@@ -324,6 +400,13 @@
     <span class="demo-bar-seg">
       <button type="button" data-method="pre">Pre Pack</button>
       <button type="button" data-method="open">Open Pack</button>
+    </span>
+  </div>
+  <div class="demo-bar-row" data-oaxis-row>
+    <span class="demo-bar-label">Open 칩</span>
+    <span class="demo-bar-seg">
+      <button type="button" data-oaxis="color">칩 = 컬러 · 줄 = 사이즈</button>
+      <button type="button" data-oaxis="size">칩 = 사이즈 · 줄 = 컬러</button>
     </span>
   </div>
   <div class="demo-bar-row">
@@ -341,7 +424,20 @@
       <button type="button" class="pt-new" data-ptype="c6">⑥ +Sale+Special</button>
       <button type="button" class="pt-new" data-ptype="c7">⑦ +Special+MSRP</button>
       <button type="button" class="pt-new" data-ptype="c8">⑧ 넷 다</button>
+      <button type="button" class="pt-new" data-ptype="c9">⑨ Special ≥ Sale (역전)</button>
       <button type="button" data-ptype="mixed">옵션마다 다름</button>
+    </span>
+  </div>
+  <div class="demo-bar-row">
+    <span class="demo-bar-label">가격 케이스</span>
+    <span class="demo-bar-seg">
+      <button type="button" data-pcase="off">끔</button>
+      <button type="button" data-pcase="1">① 전부 Sale</button>
+      <button type="button" data-pcase="2">② 일부 Sale · WS 숨김</button>
+      <button type="button" data-pcase="3">③ 일부 Sale · 더 쌈</button>
+      <button type="button" data-pcase="4">④ 전부 Special</button>
+      <button type="button" data-pcase="5">⑤ 일부 Special</button>
+      <button type="button" data-pcase="6">⑥ 할인 없음</button>
     </span>
   </div>
   <div class="demo-bar-row">
@@ -357,12 +453,16 @@
     <span class="demo-bar-seg">
       <button type="button" data-data="normal">보통 값</button>
       <button type="button" data-data="max">최대값</button>
+      <button type="button" data-data="worst">최악의 데이터</button>
+      <button type="button" data-data="one">옵션 1개 (Size)</button>
     </span>
   </div>
   <div class="demo-bar-row" data-oos-row>
     <span class="demo-bar-label">재고</span>
     <span class="demo-bar-seg">
-      <button type="button" data-stock="all">전부 In Stock</button>
+      <button type="button" data-stock="all">전부 Pre Order</button>
+      <button type="button" data-stock="instock">전부 In Stock</button>
+      <button type="button" data-stock="mixsize">사이즈마다 다름</button>
       <button type="button" data-stock="some">일부 Out of Stock</button>
       <button type="button" data-stock="none">전부 Out of Stock</button>
     </span>
@@ -385,7 +485,7 @@
 
   <div class="body">
     <h2 class="item-name" id="itemName">Relaxed Linen Dress</h2>
-    <p class="item-style">FG-SS25-999</p>
+    <p class="item-style" id="itemStyle">FG-SS25-999</p>
 
     <div class="price" id="priceBox"></div>
     <p class="price-msrp" id="priceMsrp">MSRP $45.00</p>
@@ -398,7 +498,7 @@
       <div class="block-head">
         <span class="block-label">Size / Pack <b id="packSummary">1pack x 7pcs</b></span>
       </div>
-      <div class="prepack-box" id="packRatio">S-M-L / 2-3-2</div>
+      <div class="prepack-box rclamp" data-rk="pdp"><span class="rc-t" id="packRatio">S-M-L / 2-3-2</span></div>
     </div>
 
     <!-- Open Pack 전용 — Size를 칩으로 고른다 -->
@@ -415,7 +515,7 @@
 
     <div class="block">
       <div class="block-head">
-        <span class="block-label">Color</span>
+        <span class="block-label" id="rowsLabel">Color</span>
         <span class="spacer"></span>
         <button class="quick-fill" type="button" id="applyAll">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2 2 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
@@ -500,8 +600,8 @@
     'Ruby Red Sequin': { ws: 25.00, sale: 23.00, special: 22.00, msrp: 55.00 }    /* 어드민 150 / 138 / 330 */
   };
   /* 옵션가격 전환: same = 30색 전부 기준가 · base = 어드민 그대로 · scattered = 30색이 제각각(가드 확인용) */
-  function buildAdminColors() {
-    return ADMIN_COLOR_NAMES.map(function (name, i) {
+  function buildAdminColors(names) {
+    return (names || ADMIN_COLOR_NAMES).map(function (name, i) {
       var own = ADMIN_OWN[name] || ADMIN_BASE;
       var sw = 21.50 + (i % 4);
       var ss = (i % 5 === 1) ? sw : sw - 1.50 - (i % 3) * 0.50;   /* 다섯에 하나는 할인 없음 */
@@ -578,12 +678,33 @@
      변형마다 MSRP 가 비어 있을 수 있어(어드민 빈 칸 = 위 칸 상속, 위도 비면 없음) 칸 단위로 본다: 전부 없으면 칸째 빼고, 일부만 없으면 그 칸 —.
      false 면 예전 버튼 5개 · 백업 …backup-before-combo8.html */
   var COMBO8 = true;
-  var COMBO = { c1: ['regular', 1], c2: ['sale', 1], c3: ['regular', 0], c4: ['special', 1], c5: ['sale', 0], c6: ['special4', 1], c7: ['special', 0], c8: ['special4', 0] };
+  var COMBO = { c1: ['regular', 1], c2: ['sale', 1], c3: ['regular', 0], c4: ['special', 1], c5: ['sale', 0], c6: ['special4', 1], c7: ['special', 0], c8: ['special4', 0], c9: ['special', 0] };
+  /* ══ PM 정책 10/22 (「옵션별 가격 표시 엣지 케이스 예제」) — "PM이 한대로 수정해줘" ══════════════════════════════
+     ① 방어 로직: 행(변형)의 적용가 = Special → Sale → WS. Special 이 그 행의 Sale(없으면 WS) 이상이면 Special 을 건너뛰고 다음 가격. 화면 · 결제 같은 계산기.
+     ② 분홍 패널 = 모든 행이 (실제로) Special 일 때만. 아니면 라벨: 팩 안 사이즈가 전부 Special 이면 팩(컬러) 행에 하나, 일부면 그 사이즈 행에만. Open 은 사이즈 행마다.
+     ③ 할인율 = 반올림(HALF_UP) — 예전 올림. ④ 헤더 ~~WS~~ = 할인 행이 하나라도 있으면(PDP 는 이미 그렇게).
+     ⑤ Pre Pack 팩이 하나(옵션 1개)면 접기 없이 바로 사이즈 행.
+     ⑨ 데모 = 역전: Burgundy Velvet 전 사이즈 · Heathered Olive L 만 Special = Sale + $1 → 그 행은 Sale 적용(Olive 는 S · M 행만 라벨).
+     예전 「Special ≥ WS 면 Special 그대로 받고 분홍 박스 유지」(SP_OVER_WS · SP_BOX_ALWAYS · SP_ALL_SET)는 이 스위치가 켜지면 안 씀. PM_POLICY=false 면 바로 전 · 백업 …backup-before-pm-policy.html */
+  var PM_POLICY = true;
+  var PM_INV = { 'Burgundy Velvet': { S: 1, M: 1, L: 1 }, 'Heathered Olive': { L: 1 } };   /* ⑨ 역전 — Sale 에 더하는 값 */
+  function pmRound(x) { return Math.floor(x + 0.5 + 1e-9); }   /* HALF_UP */
+  if (PM_POLICY) COMBO.c9 = ['special4', 0];   /* ⑨ = 넷 다 + 역전(Sale 이 있어야 Sale 기준 역전이 보임) */
+  /* ══ Special ≥ WS = 보통 가격 (2026-10-21) ══════════════════════════════════════════
+     Special 은 라인시트에서 넣고 WS 는 아이템에서 넣어서 Special 이 WS 보다 높거나 같을 수 있다(실제 앱: Special $8.00 · WS ~~$5.00~~).
+     "스페셜이라 해놓고 홀세일보다 비싸니까" → 그 변형은 `Special Price` 이름표 · % · ~~WS~~ 없이 `$24.50 /pc` 만 — 할인이 아니니까.
+     값은 벤더가 넣은 Special 그대로 받는다. 근거: Shopify 도 compare-at 이 판매가 이하면 세일 표시를 안 한다.
+     (10-21 SP_ANY_PINK 로 대체 — 진짜 Special 이 하나라도 있으면 분홍) ~~헤더 분홍 박스는 모든 옵션이 진짜 Special(WS 보다 쌈)일 때만~~, 아니면 그 행에만 작은 Special Price 표 — 「옵션마다 다름」과 같은 규칙.
+     ⑨ 데모: Burgundy Velvet Special = WS + $1.00($24.50 > $23.50) · Rainbow Tie-Dye Special = WS($22.50). false 면 예전(⑨ 버튼 숨김) · 백업 …backup-before-sp-over-ws.html */
+  var SP_OVER_WS = true;
+  var SP_HIGH = { 'Rainbow Tie-Dye': 0 }, SP_HIGH_ALL = 1.00;   /* WS 에 더하는 값 — 10-21 "분명 아까 스페셜프라이스가 WS보다 높으면 WS가격은 노출 안한다는 케이스 아니야?" — ⑨ 는 상품 전체가 Special ≥ WS(전 컬러 WS + $1.00, Rainbow 만 = WS). 예전 ⑨ 는 2색만 올려 나머지 28색 할인 때문에 분홍 박스 + ~~WS~~ 가 나와 케이스가 안 보였다 · 백업 …backup-before-sp9-all.html */
+  if (!SP_OVER_WS) delete COMBO.c9;
+  window.__spOver = SP_OVER_WS;
   window.__combo8 = COMBO8;
   /* ══ 헤더 줄 배치 = 와이어 ② ⑤ ⑦ (2026-10-13) — 가격 바로 밑 ~~WS~~ 한 줄, MSRP 는 따로 참고 줄(위에 WS 줄이나 Special 박스가 있으면 가는 선으로 나눔).
      세일 할인%는 빨강, Special 할인%는 분홍(와이어 · PLP · 카트와 같음). 예전엔 `WS ~~$20.00~~~ · MSRP $42.00~` 한 줄 · 할인% 늘 분홍. false 면 예전 */
   var HEAD_LINES = true;
-  function pctOf(p, w) { return w > p + 0.005 ? Math.ceil((1 - p / w) * 100 - 0.0001) : 0; }
+  function pctOf(p, w) { return w > p + 0.005 ? (PM_POLICY ? pmRound((1 - p / w) * 100) : Math.ceil((1 - p / w) * 100 - 0.0001)) : 0; }
   /* 행에는 %를 안 쓴다 (2026-10-13 "여기 이렇게 각각 전부 퍼센테지 쓰래?" → "응 행 퍼센트 빼줘") — 티켓 453 은 헤더 · 카드 규칙이고 행 규칙은 없다.
      행은 내는 값 + ~~WS~~ + MSRP(Special 이면 Sale 없음), %는 헤더 up to N% 하나. true 면 행마다 % · 백업 …backup-before-no-row-pct.html */
   var ROW_PCT = false;
@@ -599,12 +720,56 @@
   }
   /* 「옵션마다 다름」 데모 — 한 화면에 네 케이스 (Special 은 라인시트에서 옵션마다 넣는 값) */
   var MIXED = { 'Heathered Olive': 'sale+special', 'Light Wash Blue': 'sale', 'Burgundy Velvet': 'special', 'Charcoal Marled': 'ws' };
+  /* 10-27 가격 케이스 (개발 요청 "이런케이스를 피그마로 정리해달래" → "여기에 PLP, PDP 케이스로 추가해줘") — 변형 2개(A = Heathered Olive, B = Light Wash Blue)로
+     헤더 규칙을 케이스별로 보여준다: 큰 숫자 = 변형마다 내는 값의 최저 · up to N% = 최대 할인율 · ~~WS~~ 는 최저 WS 가 더 높을 때만. MSRP 없음. 사이즈 S · M · L 같은 값.
+     데모 바 「가격 케이스」, 끔이면 원래 데이터. PRICE_CASES = false 면 줄째 숨김 · 백업 …backup-before-price-cases.html */
+  var PRICE_CASES = true;
+  var PCASE = {
+    '1': { A: { ws: 20, sale: 18, t: 'sale' }, B: { ws: 23, sale: 21, t: 'sale' } },
+    '2': { A: { ws: 30, t: 'ws' }, B: { ws: 40, sale: 35, t: 'sale' } },
+    '3': { A: { ws: 30, t: 'ws' }, B: { ws: 25, sale: 22, t: 'sale' } },
+    '4': { A: { ws: 20, sp: 17, t: 'special' }, B: { ws: 23, sp: 20, t: 'special' } },
+    '5': { A: { ws: 30, t: 'ws' }, B: { ws: 40, sp: 35, t: 'special' } },
+    '6': { A: { ws: 30, t: 'ws' }, B: { ws: 40, t: 'ws' } }
+  };
+  var PCASE_NAMES = { A: 'Heathered Olive', B: 'Light Wash Blue' };
+  function pcaseOn() { return PRICE_CASES && state.pcase && state.pcase !== 'off'; }
+  function pcaseColors(k) {
+    var v = function (x) { return { same: x, base: x, scattered: x }; };
+    return ['A', 'B'].map(function (ab) { var d = PCASE[k][ab]; return { name: PCASE_NAMES[ab], ws: v(d.ws), sale: v(d.sale || d.ws), special: v(d.sp || d.sale || d.ws), msrp: v(0) }; });
+  }
+  function setPcase(k) {
+    setWorst(false); setOne(false);
+    if (!k || k === 'off') { COLORS = BASE_COLORS; SIZES = BASE_SIZES; PACK_RATIO = BASE_RATIO; ADMIN_SIZE = BASE_ADMIN_SIZE; if (state.pcasePt) { state.priceType = state.pcasePt; state.pcasePt = null; } state.data = 'normal'; resetQty(false); return; }
+    if (!state.pcasePt) state.pcasePt = state.priceType;
+    COLORS = pcaseColors(k); SIZES = ['S', 'M', 'L']; PACK_RATIO = { S: 2, M: 2, L: 2 }; ADMIN_SIZE = {};
+    state.optionCase = 'base'; state.priceType = 'mixed'; state.spHigh = false; state.noMsrp = false; state.size = 'S'; state.color = PCASE_NAMES.B;   /* Open Pack 은 할인 · 라벨이 있는 B 를 먼저 */
+    COLORS.forEach(function (c) { PACK_QTY[c.name] = 1; UNIT_QTY[c.name] = { S: 1 }; });
+  }
   function optCase(name) {
+    if (pcaseOn()) { var ab = name === PCASE_NAMES.A ? 'A' : 'B'; return PCASE[state.pcase][ab].t; }
     var t = state.priceType;
     if (t === 'mixed') return MIXED[name] || 'sale';
     return t === 'regular' ? 'ws' : t === 'sale' ? 'sale' : t === 'special' ? 'special' : 'sale+special';
   }
-  function hasSpecial(name) { return OPTION_PRICE_RULE ? /special/.test(optCase(name)) : isSpecial(); }
+  function hasSpecial(name) { if (PM_POLICY && OPTION_PRICE_RULE) return unitsOf().some(function (k) { return spAt(name, k); }); return OPTION_PRICE_RULE ? /special/.test(optCase(name)) && spBelowWs(name) : isSpecial(); }
+  /* PM ① — 행(변형) 하나의 적용 티어 · 값 */
+  function tierAt(name, k) {
+    var oc = optCase(name), w = fieldOf(name, 'ws', k), sale = /sale/.test(oc) ? fieldOf(name, 'sale', k) : null, base = sale != null ? sale : w;
+    if (/special/.test(oc)) { var sp = fieldOf(name, 'special', k); if (!PM_POLICY || sp < base - 0.005) return { t: 'special', v: sp }; }
+    return sale != null ? { t: 'sale', v: sale } : { t: 'ws', v: w };
+  }
+  function unitsOf() { return !VARIANT_PRICE || !ADMIN_DATA ? [undefined] : isPre() ? Object.keys(PACK_RATIO) : SIZES; }
+  function spAt(name, k) { return tierAt(name, k).t === 'special'; }
+  function spAll(name) { return unitsOf().every(function (k) { return spAt(name, k); }); }
+  /* 라벨 — 팩 행(전부 Special) / 사이즈 행(일부) · 패널이 있으면 없음 */
+  function spTagAt(name, k) { return PM_POLICY && !isSpecial() && spAt(name, k) && !(isPre() && spAll(name)) ? '<span class="a1-tag">Special Price</span>' : ''; }
+  /* 진짜 Special = 변형 하나라도 WS 보다 싼가 (Special ≥ WS 는 보통 가격) */
+  function spBelowWs(name) {
+    if (!SP_OVER_WS) return true;
+    var ks = isPre() ? Object.keys(PACK_RATIO) : SIZES;
+    return ks.some(function (k) { return fieldAt(name, 'special', k) < fieldAt(name, 'ws', k) - 0.005; });
+  }
   function hasSale(name) { return /sale/.test(optCase(name)); }
   /* 헤더는 기존 규칙 그대로 — Special Price 면 패널 + 가격 + MSRP 만 (Figma 92-6327). 4가지 전부는 행에서만 (2026-10-12 "기존규칙을 유지하면서 확정") */
   function plainSpecial() { return SPECIAL_PLAIN && (state.priceType === 'special' || (OPTION_PRICE_RULE && state.priceType === 'special4')); }
@@ -613,9 +778,44 @@
      컬러마다 값이 다르면 취소선은 행으로 내려가고, 행에도 Sale · WS 를 이름 붙여 둘 다 쓴다. 되돌리려면 false (버튼이 숨는다) */
   var SPECIAL4_CASE = true;
   window.__special4 = SPECIAL4_CASE;   /* 아래 전환 스크립트가 버튼을 숨길지 본다 */
-  /* 헤더 분홍 패널 — 살 수 있는 옵션이 전부 Special 일 때만 (일부만이면 패널 대신 그 행에 작은 Special Price 표시) */
+  /* 헤더 분홍 패널 — ~~살 수 있는 옵션이 전부 Special 일 때만~~ → 10-21 "스페셜프라이스가 있으면 무조건 백그라운드가 분홍색이지" — 진짜 Special(WS 보다 쌈)이 하나라도 있으면 분홍 박스. 예전엔 전부일 때만 · 백업 …backup-before-sp-any-pink.html (「옵션마다 다름」도 같음).
+     하나도 없으면(전부 Special ≥ WS) 패널 없음. SP_ANY_PINK=false 면 예전(전부일 때만, 일부면 그 행에 작은 Special Price 표) */
+  var SP_ANY_PINK = true;
+  /* 10-21 "스페셜프라이스 케이스인데 분홍색박스 있어야지" — Special 이 있으면 WS 보다 높아도 분홍 박스 + Special Price 이름표는 그대로, 빠지는 건 할인% 와 ~~WS~~ 뿐(WS 보다 싼 변형이 없으면 둘 다 0). SP_BOX_ALWAYS=false 면 바로 전(전부 ≥ WS 면 박스 없이 값만) · 백업 …backup-before-sp-box-always.html */
+  var SP_BOX_ALWAYS = true;
+  var SP_ALL_SET = true;
+  var TAG_BY_PRICE = true;
+  /* 10-26 "스페셜프라이스 뱃지를 가운데에 두지말고 최대한 가격(17.00)옆으로 붙여서" — 라벨은 이름 칸 오른쪽 끝이라 가격 숫자(칸 안 오른쪽 정렬)와 20px 넘게 떴다.
+     그린 뒤 옆 가격 칸의 숫자 왼쪽 끝을 재서 라벨을 숫자 6px 앞까지 옮김(자리 · 줄바꿈은 그대로). TAG_SNUG = false 면 예전 · 백업 …backup-before-tag-snug.html */
+  var TAG_SNUG = true;
+  function snugTags() {
+    if (!TAG_SNUG) return;
+    document.querySelectorAll('.has-tag > .a1-tag').forEach(function (t) {
+      t.style.marginRight = '';
+      var cell = t.parentElement.nextElementSibling; if (!cell || !cell.textContent.trim()) return;
+      var rg = document.createRange(); rg.selectNodeContents(cell);
+      var pr = rg.getBoundingClientRect(), tr = t.getBoundingClientRect();
+      if (!pr.width || !tr.width) return;
+      var dx = Math.round(pr.left - 6 - tr.right);
+      if (dx > 0) t.style.marginRight = (-dx) + 'px';   /* 10-26 "최소 10자정도는 한줄에" — 옮긴 만큼 이름 자리가 넓어지게(transform 이 아니라 여백) */
+    });
+  }
+  var snugQ = false;
+  new MutationObserver(function () { if (snugQ) return; snugQ = true; requestAnimationFrame(function () { snugQ = false; snugTags(); }); }).observe(document.documentElement, { childList: true, subtree: true });
+  window.addEventListener('resize', snugTags);
+  var TAG_12 = true;   /* 10-26 Special Price 라벨 12px — CSS html[data-tag12] 주석 참고 */
+  if (TAG_12) document.documentElement.setAttribute('data-tag12', '');
+  var TAG_PER_ROW = true;   /* Special Price 라벨 = 가격 바로 왼쪽 (CSS 주석 참고) */
+  function spSet(name) { return /special/.test(optCase(name)); }   /* Special 값이 들어 있는가(WS 이상이어도) */
   function isSpecial() {
-    if (OPTION_PRICE_RULE && state.priceType === 'mixed') return pricedColors().every(function (c) { return hasSpecial(c.name); });
+    if (PM_POLICY && OPTION_PRICE_RULE) return (state.priceType === 'mixed' || /special/.test(state.priceType)) && pricedColors().every(function (c) { return spAll(c.name); });
+    /* 10-22 "그게 스페셜 프라이스가 없는 옵션이 있을 수있잖아" → 덱 11장 규칙으로: 분홍 박스 = 모든 옵션에 Special 값이 있을 때(할인 여부 무관 — ⑨ 처럼 WS 이상이어도 박스),
+       일부만 있으면 박스 없이 그 행에 작은 Special Price 라벨. 비율 기준 없음. SP_ALL_SET=false 면 바로 전(하나라도 있으면 박스) · 백업 …backup-before-sp-all-set.html */
+    if (SP_OVER_WS && SP_BOX_ALWAYS && OPTION_PRICE_RULE) return state.priceType === 'mixed' ? pricedColors()[SP_ALL_SET ? 'every' : 'some'](function (c) { return spSet(c.name); }) : /special/.test(state.priceType);
+    if (OPTION_PRICE_RULE && (state.priceType === 'mixed' || (SP_OVER_WS && /special/.test(state.priceType)))) {
+      var hs = function (c) { return hasSpecial(c.name); };
+      return SP_ANY_PINK ? pricedColors().some(hs) : pricedColors().every(hs);
+    }
     return state.priceType === 'special' || state.priceType === 'special4';
   }
   function isSpecial4() { return !OPTION_PRICE_RULE && state.priceType === 'special4'; }
@@ -625,12 +825,12 @@
      헤더 가격(`up to N% $19.50~`)은 살 수 있는 컬러만으로 계산한다 — 품절 컬러가 제일 싸면 바이어가 못 사는 값을 말하게 된다.
      전부 품절이면 전체로 계산한다. 사용자: "살 수 있는 옵션만으로 계산하고 회색 케이스 넣어줘"
      되돌리려면 false — 재고 전환이 숨고 늘 전 컬러로 계산한다 */
-  var OOS_CASE = true;
+  var OOS_CASE = false;   /* 10-19 "이번스콥에서 아웃오브스탁은 안하기로 했으니 모두 삭제" — 품절 회색 행 · Out of Stock 문구 · 재고 버튼 「일부/전부 Out of Stock」 없음. 백업 …backup-before-no-oos.html */
   window.__oos = OOS_CASE;
-  /* 일부 품절일 때 어느 컬러인가 — Rainbow Tie-Dye 는 할인율이 제일 큰 컬러(13.3% → up to 14%)라 빠지면 헤더가 바뀐다 */
+  /* 일부 품절일 때 어느 컬러인가 — Rainbow Tie-Dye 는 할인율이 제일 큰 컬러(13.3% → up to 13%, 10-22 반올림)라 빠지면 헤더가 바뀐다 */
   var OOS_SOME = ADMIN_DATA ? ['Rainbow Tie-Dye', 'Charcoal Marled'] : ['Green'];
   function isOos(name) {
-    if (!OOS_CASE || state.stock === 'all') return false;
+    if (!OOS_CASE || (state.stock !== 'some' && state.stock !== 'none')) return false;   /* 전부 Pre Order · 전부 In Stock · 사이즈마다 다름 은 품절 없음 */
     return state.stock === 'none' || OOS_SOME.indexOf(name) >= 0;
   }
   /* 헤더 계산에 쓰는 컬러 — 살 수 있는 것만, 하나도 없으면 전부 */
@@ -663,8 +863,94 @@
   /* 2026-10-12 전체 일관성 점검 — 데모 아이템은 전 컬러 Pre Order(어드민 04/20/2027)라 사진 위 IN STOCK 배지는 숨김. 재고 전환에서 In Stock 이 생기는 경우는 없음 */
   if (FLOW_QTY && ADMIN_DATA) { var bs = document.getElementById('badgeStock'); if (bs) bs.hidden = true; }
   var SHIP_DATE = FLOW_QTY ? '04/20/27' : '04/20/26';
+  /* ══ 변형마다 재고 · 날짜 (2026-10-14 Figma 148-44279 확인 — "PDP에 프리오더 날짜 같은거 잘 들어갔는지") ══
+     어드민 Open Pack 은 사이즈마다 재고 · 날짜를 따로 넣는데 PDP 는 날짜를 하나만 갖고 있었다. 이제 변형마다 갖는다.
+     표기: Pre Order 일 때만 `Preorder 04/20/27`, In Stock 은 아무것도 안 쓴다("In Stock을 쓰는건 아냐! 프리오더인경우에만 날짜를 써주면돼"), Out of Stock 은 그대로.
+     한 컬러(또는 사이즈) 안에서 다 같으면 이름 줄에 한 번, 다르면 줄마다. Pre Pack 은 팩마다 하나.
+     데모 「재고」: 전부 Pre Order(어드민 데모) · 전부 In Stock(Figma 148-44279) · 사이즈마다 다름(Olive S In Stock · M 04/20/27 · L 05/15/27, Pre Pack 은 Olive In Stock · Burgundy 05/15/27).
+     false 면 예전(전부 같은 날짜) · 백업 …backup-before-variant-stock.html */
+  var VARIANT_STOCK = true;
+  /* 날짜는 늘 옵션 줄마다 (2026-10-14 "각 옵션별로 날짜가 있다니까???") — 다 같아도 이름 줄에 모으지 않는다. 날짜는 그 변형에 붙는 값이라 그 줄에. false 면 같을 때 이름 줄에 한 번 */
+  var DATE_PER_ROW = true;
+  /* Open Pack 고른 컬러(사이즈) 이름 줄 없앰 — 칩과 같은 정보 반복. false 면 이름 줄 · 백업 …backup-before-no-title.html */
+  var NO_TITLE = true;
+  /* Open Pack 표 머리 첫 칸에서 `Size`(사이즈 칩이면 `Color`) 뺌 — 바로 위 묶음 제목이 같은 말 (2026-10-14 "표 머리 Size는 빼줘"). → 같은 날 `per pc` 도 삭제("Per pc는 삭제" — 위 헤더 가격이 이미 `/pc`), 첫 칸은 비움. false 면 `Size (per pc)` · 백업 …backup-before-head-per-pc.html */
+  var HEAD_NO_AXIS = true;
+  function stockOf(name, sz) {
+    if (isOos(name)) return { k: 'oos' };
+    if (!VARIANT_STOCK) return { k: 'pre', d: SHIP_DATE };
+    if (state.data === 'worst' && (state.stock === 'all' || state.stock === 'mixsize')) return worstStock(name, sz);
+    if (state.stock === 'instock') return { k: 'in' };
+    if (state.stock === 'mixsize') {
+      if (name === 'Heathered Olive') return sz === 'L' ? { k: 'pre', d: '05/15/27' } : sz === 'M' ? { k: 'pre', d: SHIP_DATE } : { k: 'in' };
+      if (name === 'Burgundy Velvet' && !sz) return { k: 'pre', d: '05/15/27' };
+    }
+    return { k: 'pre', d: SHIP_DATE };
+  }
+  var SHIP_WORD = 'Est. Ship date';   /* 10-22 "Est. Ship date 04/20/27 이게 현재 정책과 맞아 이대로 해야해" — Figma 와 같은 날짜 문구. 예전 10-12 「Preorder」 대체. 'Preorder' 로 되돌리려면 이 값만 · 백업 …backup-before-est-ship.html */
+  function shipLabel(st) { return st.k === 'oos' ? 'Out of Stock' : st.k === 'in' ? '' : (isPre() && !PREORDER_WORD ? 'Est.ship date ' : SHIP_WORD + ' ') + st.d; }
   var CART_PRE = { 'Heathered Olive': 2, 'Burgundy Velvet': 1, 'Rainbow Tie-Dye': 1 };
   var CART_OPEN = { 'Heathered Olive': { S: 1, M: 2, L: 3 }, 'Burgundy Velvet': { S: 2, M: 2, L: 2 } };
+  /* ══ 최악의 데이터 (2026-10-15 "지금 디자인이 최선인지" 점검 → "응 우선 해줘") ══
+     디자인은 그대로 두고 넘치는 데를 찾는 데모: 사이즈 6개(XS · S · M · L · XL · `XX-Large Petite` 15자), 팩 1-2-2-2-2-1 = 10pcs,
+     30색 × 6사이즈 가격이 전부 다름(WS · Sale · Special · MSRP), 재고 · 날짜 섞임(In Stock 무표기 · 04/20/27 · 05/15/27 · 06/01/27).
+     데모 바 「데이터 → 최악의 데이터」. 옵션가격은 「어드민과 동일」 에서만 사이즈별 값이 들어간다(sizeOverride) */
+  /* 10-15 "사이즈를 30개로 · 컬러도 30개 · 이름이 다 15자 · 가격, 날짜 일부 다름" → 데님 사이즈 `Waist 24 / L 30` (15자).
+     컬러는 어드민 30색(이미 전부 15자). 30 × 30 = 900 변형 — Shopify 상한 2048 안. WORST_N 만 바꾸면 45 · 68 도 된다(이름은 늘 15자)
+     10-15 "900개 인거잖아? 2048개가 된 케이스가 필요해" → 상한을 꽉 채운 32색 × 64사이즈 = 2048.
+     사이즈 쪽을 크게 잡은 이유: 사이즈가 화면의 줄(행)이라 더 길어진다. 64색 × 32사이즈로 보려면 WORST_C = 64, WORST_N = 32 */
+  var WORST_N = 64, WORST_C = 32;
+  var WORST_COLOR_NAMES = ADMIN_COLOR_NAMES.concat(['Olive Drab Knit', 'Mint Green Lawn']);
+  for (var wc = 1; WORST_COLOR_NAMES.length < WORST_C; wc++) WORST_COLOR_NAMES.push('Swatch No. ' + ('000' + wc).slice(-4));   /* 15자 */
+  WORST_COLOR_NAMES = WORST_COLOR_NAMES.slice(0, WORST_C);
+  var BASE_COLORS = COLORS, WORST_COLORS = buildAdminColors(WORST_COLOR_NAMES);
+  var WORST_SIZES = [];
+  for (var wi = 0; WORST_SIZES.length < WORST_N; wi++) [30, 32].forEach(function (len) { if (WORST_SIZES.length < WORST_N) WORST_SIZES.push('Waist ' + (24 + wi) + ' / L ' + len); });
+  var WORST_RATIO = {};
+  WORST_SIZES.forEach(function (sz, j) { WORST_RATIO[sz] = j % 3 === 0 ? 2 : 1; });
+  var BASE_SIZES = SIZES, BASE_RATIO = PACK_RATIO, BASE_ADMIN_SIZE = ADMIN_SIZE;
+  var WORST_SIZE = {};
+  WORST_COLOR_NAMES.forEach(function (n, i) {
+    WORST_SIZE[n] = {};
+    WORST_SIZES.forEach(function (sz, j) {
+      var ws = 20 + (i % 5) + (j % 6) * 0.5, sale = (i + j) % 4 === 0 ? ws : ws - 1.5 - (j % 2) * 0.5;
+      WORST_SIZE[n][sz] = { ws: +ws.toFixed(2), sale: +sale.toFixed(2), special: +(sale - 0.75).toFixed(2), msrp: 42 + (j % 6) * 2 + (i % 3) };
+    });
+  });
+  /* ══ 옵션 1개 (2026-10-19 "오픈팩이랑 프리팩이랑 둘다 옵션을 1개만 선택해서 세팅했을때에 나오는 그림들 — PDP도") ══
+     아이템 세팅 SAMPLE 「옵션 1개 (Size)」와 같은 상품: FG-SS25-101 · S/M/L · WS 10.50 · Sale 10.00 · Special 9.80 · MSRP 22.00 · 팩 2-2-2(6pcs).
+     컬러가 없다 → 컬러 하나(이름 '')로 두고 화면에서 컬러 자리를 숨긴다: Open = 컬러 칩 블록 숨김 · 목록 제목 Size,
+     Pre = 팩 한 줄(이름 'Pack' — 아이템 세팅 팩 줄과 같은 이름) · Update quantity for all 숨김. 데모 바 「데이터 → 옵션 1개 (Size)」 */
+  var ONE_IMG = 'data:image/jpeg;base64,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';
+  var ONE_COLOR = (function () { var v = function (x) { return { same: x, base: x, scattered: x }; }; return { name: '', ws: v(10.50), sale: v(10.00), special: v(9.80), msrp: v(22.00) }; })();
+  var BASE_GALLERY = null;
+  function setOne(on) {
+    COLORS = on ? [ONE_COLOR] : BASE_COLORS;
+    SIZES = on ? ['S', 'M', 'L'] : BASE_SIZES;
+    PACK_RATIO = on ? { S: 2, M: 2, L: 2 } : BASE_RATIO;
+    ADMIN_SIZE = on ? {} : BASE_ADMIN_SIZE;
+    if (SIZES.indexOf(state.size) < 0) state.size = SIZES[0];
+    $('itemName').textContent = on ? 'FG-SS25-101' : 'Relaxed Linen Dress';
+    $('itemStyle').hidden = on;
+    var g = document.querySelectorAll('.gallery-half');
+    if (!BASE_GALLERY) BASE_GALLERY = [].map.call(g, function (e) { return e.style.backgroundImage; });
+    g.forEach(function (e, i) { e.style.backgroundImage = on ? "url('" + ONE_IMG + "')" : BASE_GALLERY[i]; });
+    if (on) { state.optionCase = 'base'; state.openAxis = 'color'; state.color = ''; PACK_QTY[''] = 1; UNIT_QTY[''] = { S: 1, M: 2, L: 3 }; }   /* 카트 p101 과 같은 수량 */
+  }
+  function oneOn() { return state.data === 'one'; }
+  function setWorst(on) {
+    SIZES = on ? WORST_SIZES : BASE_SIZES;
+    COLORS = on ? WORST_COLORS : BASE_COLORS;
+    PACK_RATIO = on ? WORST_RATIO : BASE_RATIO;
+    ADMIN_SIZE = on ? WORST_SIZE : BASE_ADMIN_SIZE;
+    if (SIZES.indexOf(state.size) < 0) state.size = SIZES[0];
+    if (on) { state.optionCase = 'base'; COLORS.forEach(function (c, i) { PACK_QTY[c.name] = i < 3 ? i + 1 : 0; UNIT_QTY[c.name] = {}; if (i < 2) SIZES.slice(0, 6).forEach(function (sz, j) { UNIT_QTY[c.name][sz] = (j % 3) + 1; }); }); }
+  }
+  function worstStock(name, sz) {
+    var i = WORST_COLOR_NAMES.indexOf(name), j = sz ? WORST_SIZES.indexOf(sz) : 0;
+    var k = (i + j) % 4;
+    return k === 0 ? { k: 'in' } : { k: 'pre', d: ['04/20/27', '05/15/27', '06/01/27'][k - 1] };
+  }
   function resetQty(big) {
     COLORS.forEach(function (c, i) {
       if (FLOW_QTY && ADMIN_DATA && !big) {
@@ -700,13 +986,15 @@
     return n;
   }
 
-  function pcs() { return isMax() ? 999 : (ADMIN_DATA ? 6 : 7); }   /* 어드민 S2-M2-L2 = 6pcs */
+  function pcs() { if (state.data === 'worst') { var t = 0; Object.keys(PACK_RATIO).forEach(function (k) { t += PACK_RATIO[k]; }); return t; } return isMax() ? 999 : (ADMIN_DATA ? 6 : 7); }   /* 어드민 S2-M2-L2 = 6pcs */
   function colorOf(n) {
     for (var i = 0; i < COLORS.length; i++) if (COLORS[i].name === n) return COLORS[i];
     return COLORS[0];
   }
   /* 낱개가 = 정가 × 컬러 배수 × (세일이면 할인) */
   function fieldAt(colorName, f, s) {
+    if (PM_POLICY && state.spHigh && f === 'special' && PM_INV[colorName] && PM_INV[colorName][s] != null) return fieldAt(colorName, 'sale', s) + PM_INV[colorName][s];
+    if (!PM_POLICY && SP_OVER_WS && state.spHigh && f === 'special') return fieldAt(colorName, 'ws', s) + (SP_HIGH[colorName] != null ? SP_HIGH[colorName] : SP_HIGH_ALL);
     var o = sizeOverride(colorName, s);
     return o ? o[f] : colorOf(colorName)[f][state.optionCase];
   }
@@ -723,6 +1011,10 @@
   }
   /* 바이어가 실제로 내는 값 — 세일/Special 이면 sale, 아니면 ws */
   function pcPrice(colorName, s) {
+    if (PM_POLICY && OPTION_PRICE_RULE) {
+      if (!s && isPre() && VARIANT_PRICE && ADMIN_DATA) { var t = 0, n = 0; Object.keys(PACK_RATIO).forEach(function (k) { t += tierAt(colorName, k).v * PACK_RATIO[k]; n += PACK_RATIO[k]; }); return Math.round(t / n * 10000) / 10000; }
+      return tierAt(colorName, s).v;
+    }
     if (OPTION_PRICE_RULE) {
       var oc = optCase(colorName);
       return fieldOf(colorName, /special/.test(oc) ? 'special' : oc === 'sale' || oc === 'sale+special' ? 'sale' : 'ws', s);
@@ -762,8 +1054,11 @@
   function offExact_name(c) { return offExact(c.name); }
   function offCap() {
     var m = Math.max.apply(null, eachUnit(offExact));
+    if (PM_POLICY) return m > 0 ? pmRound(m) : 0;   /* PM ③ 반올림 */
     return m > 0 ? Math.ceil(m - 0.0001) : 0;   /* 5.00% 가 6% 로 새지 않게 */
   }
+  /* 10-27 사용자 · 제니 결정 — 헤더 · 카드의 ~~WS~~ 는 가장 낮은 WS 가 큰 숫자(변형마다 내는 값의 최저)보다 높을 때만. 같거나 낮으면 줄째 숨김(예: A WS 30 · Sale 없음 / B WS 40 · Sale 35 → $30.00~ 만). false 면 예전 · 백업 …backup-before-ws-above.html */
+  var WS_ABOVE_ONLY = true;
   function rangeOf(fn) {
     var v = eachUnit(fn);
     return { lo: Math.min.apply(null, v), hi: Math.max.apply(null, v) };
@@ -771,9 +1066,15 @@
   /* 옵션마다 값이 달라도 범위($19.50 – $23.00)를 쓰지 않고 최저가에 `~`($19.50~)만 붙인다.
      2026-09-30 "range를 보여주지 않고 up to nn%, $00.00~ 이런식으로" · 되돌리려면 false (범위로 돌아간다) */
   var FROM_PRICE = true;
-  function moneyRange(r) { return r.lo === r.hi ? money(r.lo) : FROM_PRICE ? money(r.lo) + '~' : money(r.lo) + ' – ' + money(r.hi); }
+  /* 11-04 PM 정책(사용자 "체크하면 무조건 ~" · "바이어 화면도 똑같이"): Price per variant 를 켠 상품은 값이 다 같아도 최저가 뒤 ~, 끈 상품은 ~ 없음(어드민 아이템 리스트와 같은 규칙).
+     false 면 바로 전(변형 값이 다를 때만 ~) · 백업 …backup-before-tilde-pv.html */
+  var TILDE_PV = true;
+  function pdpPV() { return VARIANT_PRICE && ADMIN_DATA; }   /* 이 PDP 상품 = 어드민 데모(따로 가격을 가진 컬러가 있음) = 켬 */
+  function moneyRange(r) { if (TILDE_PV && FROM_PRICE) return money(r.lo) + (pdpPV() ? '~' : ''); return r.lo === r.hi ? money(r.lo) : FROM_PRICE ? money(r.lo) + '~' : money(r.lo) + ' – ' + money(r.hi); }
   /* 파는 단위 하나의 값 */
-  function unitPrice(colorName) { return isPre() ? pcPrice(colorName) * pcs() : pcPrice(colorName); }
+  /* 10-15 최악의 데이터에서 찾음: 평균 개당가 × 86pcs 는 소수 오차로 합계가 $10,887.51 (카트는 $10,887.50) →
+     최악의 데이터에선 행에 쓰는 팩 금액(packOf = Σ 사이즈 값 × 팩 안 수량)을 그대로 쓴다. 기본 데이터는 두 계산이 같아 그대로 둔다 */
+  function unitPrice(colorName) { return isPre() ? (state.data === 'worst' ? packOf(colorName) : pcPrice(colorName) * pcs()) : pcPrice(colorName); }
   function lowPc() { return Math.min.apply(null, pricedColors().map(function (c) { return pcPrice(c.name); })); }
   function highPc() { return Math.max.apply(null, pricedColors().map(function (c) { return pcPrice(c.name); })); }
   function varies() { return highPc() - lowPc() > 0.005; }
@@ -810,6 +1111,7 @@
     var box = $('priceBox');
     var pay = rangeOf(pcPrice), list = rangeOf(listPrice), msrp = rangeOf(msrpOf);
     var cap = offCap();
+    var wsUp = !WS_ABOVE_ONLY || list.lo > pay.lo + 0.005;
 
     box.className = 'price' + (isSpecial() ? ' is-special' : '');
     var html = '';
@@ -819,7 +1121,7 @@
        `5–13%`처럼 범위로 쓰면 낮은 쪽이 먼저 읽혀 오히려 역효과다 */
     if (cap > 0 && (TICKET_453 || (!plainSpecial() && !isSpecial4() && !(OPTION_PRICE_RULE && isSpecial())))) html += '<span class="price-off' + (HEAD_LINES && !isSpecial() ? ' is-sale' : '') + '">up to ' + cap + '%</span>';
     html += '<span class="price-main">' + moneyRange(pay) + '</span><span class="price-unit">/pc</span>';
-    if (cap > 0 && !PRICE_LINE) html += '<span class="price-was">WS ' + moneyRange(list) + '</span>';
+    if (cap > 0 && wsUp && !PRICE_LINE) html += '<span class="price-was">WS ' + moneyRange(list) + '</span>';
     html += '</div>';
 
     if (PRICE_LINE) {
@@ -832,7 +1134,7 @@
       };
       if (TICKET_453 && HEAD_LINES) {
         /* 와이어 ②⑤⑦: [Special Price] / 할인% 가격 /pc / ~~WS~~  ─  MSRP (있으면) */
-        var wl2 = cap > 0 ? strike('WS', list) : '';
+        var wl2 = cap > 0 && wsUp ? strike('WS', list) : '';
         if (wl2) html += '<p class="price-line">' + wl2 + '</p>';
         box.innerHTML = html;
         var mv = eachUnit(msrpOf).filter(function (v) { return v > 0; });
@@ -845,7 +1147,7 @@
       if (TICKET_453) {
         /* 티켓 규칙 — 할인이 있으면 늘 ~~WS~~ (값이 다르면 최저가~). Sale 은 Special 이 있으면 안 씀.
            Special 박스면 WS 만 박스 안, MSRP 는 박스 밖 참고 줄 */
-        var wl = cap > 0 ? strike('WS', list) : '';
+        var wl = cap > 0 && wsUp ? strike('WS', list) : '';
         if (isSpecial()) {
           if (wl) html += '<p class="price-line">' + wl + '</p>';
           box.innerHTML = html;
@@ -857,7 +1159,7 @@
       } else if (!rowsShowPrice() && !(OPTION_PRICE_RULE && isSpecial())) {
         var sale = rangeOf(saleOf);
         if (!plainSpecial() && isSpecial() && sale.hi > pay.lo + 0.005) parts.push(strike('Sale', sale));
-        if (cap > 0 && !plainSpecial()) parts.push(strike('WS', list));
+        if (cap > 0 && wsUp && !plainSpecial()) parts.push(strike('WS', list));
       }
       parts.push('MSRP ' + moneyRange(msrp));
       html += '<p class="price-line">' + parts.join(' · ') + '</p>';
@@ -885,7 +1187,63 @@
 
   /* ② Open Pack의 Size 칩 — 최신 노드는 Size가 칩, Color가 행이다.
      차액은 칩에만 붙는다. 칩은 작아서 절대값을 못 담고 가로로 놓여 비교가 안 된다. */
+  /* ══ Open Pack = 위 칩은 컬러, 아래 줄은 사이즈 (2026-10-14 "오픈팩이랑 맞추지 않아도 괜찮아?" · "서로 너무 다른데" → "위의 버튼을 컬러이름 아래 옵션을 사이즈") ══
+     카트 Edit Qty 시트(UI 373:3684)와 같은 구조 — 10-12 열린 질문 「시트(Color 칩 + Size 줄) vs PDP(Size 칩 + Color 줄)」 을 시트 쪽으로 정리.
+     줄 모양은 Pre Pack A1 과 같은 말: 표 머리 한 번 `Size (per pc) · Price · WS · MSRP`, 고른 컬러 이름 줄(오른쪽 날짜), 사이즈마다 한 줄 + 수량 칸.
+     칩 숫자 = 그 컬러에 담은 pcs 합. false 면 예전(Size 칩 + Color 줄) · 백업 …backup-before-open-a1.html */
+  var OPEN_A1 = true;
+  window.__openA1 = OPEN_A1;
+  /* 반대 경우도 데모로 (2026-10-14 "오픈팩에서 반대 케이스도 하나넣어줘 위의 버튼이 사이즈 밑의 옵션이 컬러") — 데모 바 「Open 칩」.
+     같은 표 말(머리 한 번 · 이름 줄 · 줄마다 수량 칸)로 축만 바꾼다: 칩 = 사이즈, 고른 사이즈 이름 줄, 컬러마다 한 줄. 기본은 컬러 칩 */
+  state.openAxis = 'color';
+  function openA1On() { return OPEN_A1 && !isPre() && VARIANT_PRICE && ADMIN_DATA; }
+  function setQtyAt(name, sz, v) { (UNIT_QTY[name] = UNIT_QTY[name] || {})[sz] = v; }
+  function renderColorChips() {
+    $('sizeBlock').hidden = false;
+    $('sizeBlock').querySelector('.block-label').textContent = 'Color';
+    $('rowsLabel').textContent = 'Size';
+    if (!state.color || !COLORS.some(function (c) { return c.name === state.color; })) state.color = COLORS[0].name;
+    var wrap = $('sizeChips'); wrap.innerHTML = '';
+    var shown = state.sizesOpen ? COLORS.length : 8;
+    COLORS.slice(0, shown).forEach(function (c) {
+      var chip = el('button', 'chip' + (state.color === c.name ? ' is-active' : '') + (isOos(c.name) ? ' is-oos' : ''));
+      chip.type = 'button';
+      chip.appendChild(el('span', null, c.name));
+      var n = 0; SIZES.forEach(function (sz) { n += qtyOf(c.name, sz); });
+      if (n > 0) chip.appendChild(el('span', 'chip-count', num(n)));
+      chip.addEventListener('click', function () { state.color = c.name; render(); });
+      wrap.appendChild(chip);
+    });
+    var rest = Math.max(0, COLORS.length - shown);
+    $('sizeMore').hidden = COLORS.length <= 8;
+    $('sizeMore').classList.toggle('is-open', state.sizesOpen);
+    $('sizeMoreLabel').textContent = state.sizesOpen ? 'Show less' : (rest + ' more');
+  }
+  function renderSizeChipsA1() {
+    $('sizeBlock').hidden = false;
+    $('sizeBlock').querySelector('.block-label').textContent = 'Size';
+    $('rowsLabel').textContent = 'Color';
+    var wrap = $('sizeChips'); wrap.innerHTML = '';
+    /* 10-15 최악의 데이터(사이즈 30개)에서 찾음: 사이즈 칩은 자르지 않아 30개가 다 나오고 「22 more」(컬러 기준 글자)가 남았다 → 컬러 칩처럼 8개 + 「N more」 */
+    var shown = state.sizesOpen ? SIZES.length : 8;
+    SIZES.slice(0, shown).forEach(function (sz) {
+      var chip = el('button', 'chip' + (state.size === sz ? ' is-active' : ''));
+      chip.type = 'button';
+      if (SOLD_OUT[sz]) chip.disabled = true;
+      chip.appendChild(el('span', null, sz));
+      var n = 0; COLORS.forEach(function (c) { n += qtyOf(c.name, sz); });
+      if (n > 0) chip.appendChild(el('span', 'chip-count', num(n)));
+      chip.addEventListener('click', function () { state.size = sz; render(); });
+      wrap.appendChild(chip);
+    });
+    $('sizeMore').hidden = SIZES.length <= 8;
+    $('sizeMore').classList.toggle('is-open', state.sizesOpen);
+    $('sizeMoreLabel').textContent = state.sizesOpen ? 'Show less' : (Math.max(0, SIZES.length - shown) + ' more');
+  }
   function renderSizes() {
+    if (openA1On()) return state.openAxis === 'size' ? renderSizeChipsA1() : renderColorChips();
+    $('sizeBlock').querySelector('.block-label').textContent = 'Size';
+    $('rowsLabel').textContent = 'Color';
     $('sizeBlock').hidden = isPre();
     if (isPre()) return;
     var wrap = $('sizeChips');
@@ -914,16 +1272,124 @@
   }
 
   /* ③ 행은 파는 단위의 절대값만 말한다 — 두 방식 모두 Color가 행이다 */
+  /* ══ Pre Pack 행 = A1 (2026-10-14 "Pre Pack 이 문제인거야! 팩인데 가격이 다 달라 … 각각의 가격을 보여주고 또 팩가격도" → A1 선택) ══
+     · 표 머리는 목록 맨 위에 한 번: `Size (per pc) · Price · WS · MSRP` (예전엔 컬러마다 `/pc · WS · MSRP` 반복, `/pc` 만 이름이 아니라 단위였다)
+     · 컬러 줄 = 이름 + 오른쪽 팩 값 `$117.00/pack` (사는 단위가 팩이라)
+     · 사이즈 값이 다르면 그 밑에 S · M · L 줄 — `(2)` 는 위 `S-M-L / 2-2-2` 상자가 말하므로 뺀다. 다 같으면 이름표 없는 숫자 한 줄
+     · 맨 아래 = 왼쪽 날짜 · 오른쪽 수량 칸 + `2 packs · 12 pcs`
+     · 칸은 목록 전체로 정한다(할인이 하나도 없으면 WS 칸, MSRP 가 하나도 없으면 MSRP 칸째 빠짐). Price 색 = 세일 빨강 · Special 분홍(할인일 때만).
+     false 면 바로 전(컬러마다 표 머리 · 팩 값 없음) · 백업 …backup-before-pre-a1.html */
+  var PRE_A1 = true;
+  /* ══ Pre Pack 컬러 접기 (2026-10-15) ══
+     최악의 데이터(32색 × 64사이즈)에서 Pre Pack 이 240,422px → "디폴트로는 다 열리게 보여주는데 접히는 옵션을 주는게 좋을거같아".
+     기본 = 전부 펼침(지금 화면 그대로). 컬러 이름 줄을 누르면 그 컬러의 사이즈 표만 접힌다 — 이름 · 팩 금액 · 날짜 · 수량 칸은 남는다.
+     사이즈 값이 다 같아 표가 한 줄이면 접을 게 없어 꺾쇠도 없다. 되돌리려면 false · 백업 …backup-before-pre-fold.html */
+  /* ══ Pre Pack 사이즈 줄 항상 (2026-10-19) ══ "사이즈 값이 다르면 줄마다, 같으면 한 줄로 하기로 했었는데 개발에서 저렇게 못한대! 그냥 Heathered Olive케이스처럼 다 보여줘야한대" — 값이 같아도 사이즈마다 한 줄. 그래서 모든 컬러에 접기 꺾쇠가 생긴다. 되돌리려면 false(같으면 한 줄) · 백업 …backup-before-all-sizes.html */
+  var PRE_ALL_SIZES = true;
+  var PRE_FOLD = true;
+  /* 10-19 "PDP에서 디폴트를 접는것으로 했어 필요하면 알아서 열게 — 팩가격은 보여주니까" — PDP 만 기본 접힘(카트 · 오더는 펼침 그대로).
+     접혀도 이름 · 팩 값 · 날짜 · 수량 칸은 보인다. 되돌리려면 false(기본 펼침) · 백업 …backup-before-fold-shut.html */
+  var PRE_FOLD_SHUT = true;
+  var FOLD_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+  if (!state.folded) state.folded = {};
+  function preA1On() { return PRE_A1 && isPre() && PRE_PC_ONLY && VARIANT_PRICE && ADMIN_DATA; }
+  function packOf(name) { var t = 0; Object.keys(PACK_RATIO).forEach(function (k) { t += pcPrice(name, k) * PACK_RATIO[k]; }); return t; }
+  function a1Cols() {
+    var w = false, m = false;
+    COLORS.forEach(function (c) { Object.keys(PACK_RATIO).forEach(function (k) { if (listPrice(c.name, k) > pcPrice(c.name, k) + 0.005) w = true; if (msrpOf(c.name, k) > 0) m = true; }); });
+    return { ws: w, msrp: m, tpl: 'minmax(0, 1fr) 62px' + (w ? ' 50px' : '') + (m ? ' 50px' : '') };
+  }
+  function a1Cells(name, k, cols) {
+    var p = pcPrice(name, k), w = listPrice(name, k), m = msrpOf(name, k), disc = w > p + 0.005;
+    var cls = disc ? ((PM_POLICY ? spAt(name, k) : hasSpecial(name)) ? ' is-sp' : ' is-sale') : '';
+    return '<span class="a1-p' + cls + '">' + money(p).slice(1) + '</span>' +
+      (cols.ws ? '<span class="a1-c">' + (disc ? '<s>' + money(w).slice(1) + '</s>' : '\u2014') + '</span>' : '') +
+      (cols.msrp ? '<span class="a1-c">' + (m > 0 ? money(m).slice(1) : '\u2014') + '</span>' : '');
+  }
+  /* 수량 칸 = 가격 줄 밑 (2026-10-14) · false 면 바로 전(가격 줄 오른쪽 끝 108px 칸) · 백업 …backup-before-open-step-below.html */
+  var OPEN_STEP_BELOW = true;
+  function renderOpenA1(list) {
+    var w = false, m = false, pv = [];
+    COLORS.forEach(function (c) { SIZES.forEach(function (sz) { var p = pcPrice(c.name, sz); pv.push(p); if (listPrice(c.name, sz) > p + 0.005) w = true; if (msrpOf(c.name, sz) > 0) m = true; }); });
+    var show = Math.max.apply(null, pv) - Math.min.apply(null, pv) > 0.005 || w;
+    var cols = { ws: w && show, msrp: m && show };
+    /* 수량 칸은 가격 줄 밑으로 (2026-10-14 "두개가 비슷하게 해야되니까 숫자 입력칸을 가격 밑으로 넣는건 어때?") — 숫자 칸이 행 폭을 다 쓰고 Pre Pack 과 칸 폭 · 위치가 같다 */
+    var tpl = 'minmax(0, 1fr)' + (show ? ' 62px' : '') + (cols.ws ? ' 50px' : '') + (cols.msrp ? ' 50px' : '') + (OPEN_STEP_BELOW ? '' : ' 108px');
+    if (state.openAxis === 'size') {
+      var sz0 = state.size;
+      list.appendChild(el('div', 'a1-head', '<div class="a1-grid" style="grid-template-columns:' + tpl + '"><span>' + (HEAD_NO_AXIS ? '' : 'Color (per pc)') + '</span>' + (show ? '<span>Price</span>' : '') + (cols.ws ? '<span>WS</span>' : '') + (cols.msrp ? '<span>MSRP</span>' : '') + '</div>'));
+      var labsS = COLORS.map(function (c) { return shipLabel(stockOf(c.name, sz0)); });
+      var oneS = !DATE_PER_ROW && labsS.every(function (x) { return x === labsS[0]; });
+      if (!NO_TITLE || oneS) list.appendChild(el('div', 'a1-otop', '<span class="qty-name"><span>Size ' + sz0 + '</span></span><span class="a1-ship">' + (oneS ? labsS[0] : '') + '</span>'));
+      COLORS.forEach(function (c, ci) {
+        var q = qtyOf(c.name, sz0), so = isOos(c.name) || SOLD_OUT[sz0] || stockOf(c.name, sz0).k === 'oos';
+        var rowShip = oneS ? '' : labsS[ci];
+        var row = el('div', 'qty-row a1-orow' + (so ? ' is-oos' : ''));
+        var tag = PM_POLICY ? spTagAt(c.name, sz0) : spTag(c.name) ? '<span class="a1-tag">Special Price</span>' : '';
+        /* 컬러 이름은 길어서(15자) 숫자 칸 옆에 두면 글자 중간에서 접힌다 — 이름은 위 한 줄, 숫자 · 수량 칸은 그 밑 (Pre Pack 컬러 줄과 같은 모양) */
+        row.appendChild(el('div', 'a1-ocn', c.name + (TAG_BY_PRICE ? '' : tag) + (isOos(c.name) ? '<i>Out of Stock</i>' : '')));
+        var g = el('div', 'a1-grid', (TAG_BY_PRICE && tag ? '<span class="a1-ptag">' + tag + '</span>' : '<span></span>') + (show ? a1Cells(c.name, sz0, cols) : ''));
+        g.style.gridTemplateColumns = tpl;
+        var st = el('div', 'stepper',
+          '<button type="button" aria-label="Decrease"' + (q === 0 ? ' disabled' : '') + '>' + MINUS + '</button>' +
+          '<span>' + num(q) + '</span>' +
+          '<button type="button" aria-label="Increase"' + (so ? ' disabled' : '') + '>' + PLUS + '</button>');
+        var b = st.querySelectorAll('button');
+        b[0].addEventListener('click', function () { if (qtyOf(c.name, sz0) > 0) { setQtyAt(c.name, sz0, qtyOf(c.name, sz0) - 1); render(); } });
+        b[1].addEventListener('click', function () { setQtyAt(c.name, sz0, qtyOf(c.name, sz0) + 1); render(); });
+        if (OPEN_STEP_BELOW) { row.appendChild(g); var sb = el('div', 'a1-ostep', '<span class="a1-ship">' + rowShip + '</span>'); sb.appendChild(st); row.appendChild(sb); } else { g.appendChild(st); row.appendChild(g); row.classList.add('is-inline'); }
+        list.appendChild(row);
+      });
+      return;
+    }
+    var name = state.color, oos = isOos(name);
+    var tag = spTag(name) ? '<span class="a1-tag">Special Price</span>' : '';
+    var hl = HEAD_NO_AXIS ? '' : 'Size (per pc)';
+    var rowTag = TAG_PER_ROW ? tag : '';   /* 지금 데모 Special 은 컬러 단위라 그 컬러 사이즈 줄 전부에 붙는다 — 사이즈 단위 데이터면 그 사이즈 줄만 */
+    if (TAG_PER_ROW) tag = '';
+    list.appendChild(el('div', 'a1-head', '<div class="a1-grid" style="grid-template-columns:' + tpl + '">' + (TAG_BY_PRICE && tag ? '<span class="a1-hl"><span>' + hl + '</span>' + tag + '</span>' : '<span>' + hl + '</span>') + (show ? '<span>Price</span>' : '') + (cols.ws ? '<span>WS</span>' : '') + (cols.msrp ? '<span>MSRP</span>' : '') + '</div>'));
+    if (TAG_BY_PRICE) tag = '';
+    var labs = SIZES.map(function (sz) { return shipLabel(stockOf(name, sz)); });
+    var one = !DATE_PER_ROW && labs.every(function (x) { return x === labs[0]; });
+    /* 고른 컬러 이름 줄은 안 쓴다 — 위 칩이 이미 말한다 (2026-10-14 "이건 필요없어 위에 이미 정보가 버블버튼으로 있잖아"). 「옵션마다 다름」 의 Special Price 라벨만 남긴다 */
+    if (!NO_TITLE || one) list.appendChild(el('div', 'a1-otop' + (oos ? ' is-oos' : ''), '<span class="qty-name"><span>' + name + '</span>' + tag + '</span><span class="a1-ship">' + (one ? labs[0] : '') + '</span>'));
+    else if (tag) list.appendChild(el('div', 'a1-otag', tag));
+    SIZES.forEach(function (sz, si) {
+      var q = qtyOf(name, sz), soldOut = oos || SOLD_OUT[sz] || stockOf(name, sz).k === 'oos';
+      var rowShip2 = one ? '' : labs[si];
+      var row = el('div', 'qty-row a1-orow' + (soldOut ? ' is-oos' : ''));
+      if (PM_POLICY) rowTag = spTagAt(name, sz);
+      var g = el('div', 'a1-grid', (rowTag ? '<span class="a1-osz has-tag"><span>' + sz + '</span>' + rowTag + '</span>' : '<span class="a1-osz">' + sz + '</span>') + (show ? a1Cells(name, sz, cols) : ''));
+      g.style.gridTemplateColumns = tpl;
+      var st = el('div', 'stepper',
+        '<button type="button" aria-label="Decrease"' + (q === 0 ? ' disabled' : '') + '>' + MINUS + '</button>' +
+        '<span>' + num(q) + '</span>' +
+        '<button type="button" aria-label="Increase"' + (soldOut ? ' disabled' : '') + '>' + PLUS + '</button>');
+      var b = st.querySelectorAll('button');
+      b[0].addEventListener('click', function () { if (qtyOf(name, sz) > 0) { setQtyAt(name, sz, qtyOf(name, sz) - 1); render(); } });
+      b[1].addEventListener('click', function () { setQtyAt(name, sz, qtyOf(name, sz) + 1); render(); });
+      if (OPEN_STEP_BELOW) { row.appendChild(g); var sb2 = el('div', 'a1-ostep', '<span class="a1-ship">' + rowShip2 + '</span>'); sb2.appendChild(st); row.appendChild(sb2); } else { g.appendChild(st); row.appendChild(g); row.classList.add('is-inline'); }
+      list.appendChild(row);
+    });
+  }
   function renderRows() {
     var list = $('qtyList');
     list.innerHTML = '';
+    if (openA1On()) return renderOpenA1(list);
+    var a1 = preA1On(), cols = a1 ? a1Cols() : null;
+    /* 10-22 "접혔을때 저게 보이니까 오히려 헷갈려 … 열었을때에만 보여주고" → B 「맨 위 한 번, 하나라도 펼쳤을 때만」.
+       팩이 하나(옵션 1개, 접기 없음)면 늘 펼친 것. HEAD_WHEN_OPEN=false 면 늘 보임 · 백업 …backup-before-head-when-open.html */
+    var HEAD_WHEN_OPEN = true;
+    var anyOpen = !PRE_FOLD || (PM_POLICY && COLORS.length === 1) || COLORS.some(function (c) { var f = state.folded[c.name]; return f === undefined ? !PRE_FOLD_SHUT : !f; });
+    if (a1 && (!HEAD_WHEN_OPEN || anyOpen)) list.appendChild(el('div', 'a1-head', '<div class="a1-grid" style="grid-template-columns:' + cols.tpl + '"><span>Size (per pc)</span><span>Price</span>' + (cols.ws ? '<span>WS</span>' : '') + (cols.msrp ? '<span>MSRP</span>' : '') + '</div>'));
     /* 행은 품절 컬러까지 다 보여주므로, 행에 가격을 쓸지는 전 컬러로 정한다 (헤더 계산과 다르다) */
     var pv = COLORS.map(function (c) { return pcPrice(c.name); });
     var pay = { lo: Math.min.apply(null, pv), hi: Math.max.apply(null, pv) };
     var ex = COLORS.map(offExact_name);
     var offVaries = Math.max.apply(null, ex) - Math.min.apply(null, ex) > 0.01;
     /* 값이 전부 같으면 행에 아무것도 안 쓴다 — 같은 숫자를 세 번 반복하게 된다 */
-    var show = pay.lo !== pay.hi || (!plainSpecial() && offVaries);
+    /* 10-19 사이즈 줄은 늘(PRE_ALL_SIZES) — 옵션 값이 전부 같아도 Pre Pack 표는 사이즈 줄을 그린다(머리만 있고 내용 없는 모양 방지 · 기본 접힘이라 처음엔 팩 값만) */
+    var show = (PRE_ALL_SIZES && a1) || pay.lo !== pay.hi || (!plainSpecial() && offVaries);
     COLORS.forEach(function (c) {
       var oos = isOos(c.name);
       var row = el('div', 'qty-row' + (oos ? ' is-oos' : ''));
@@ -956,7 +1422,36 @@
       /* Pre Pack 날짜 = 팩 이름 줄 오른쪽 — 카트와 같은 자리 (2026-10-12 "이렇게 하기로 했었는데..... 사라짐").
          날짜는 팩 하나에 붙는 정보라 팩 이름 옆, Open Pack 은 변형(사이즈) 행 밑 그대로. false 면 예전(맨 아래 줄) · 백업 …backup-before-pre-ship-head.html */
       /* 날짜 문구는 바이어 화면 전체 `Preorder` 로 통일 (2026-10-12 "Preorder로 통일해줘" — 예전 Pre Pack 은 Figma PDP 의 `Est.ship date`) */
-      var shipTxt = oos ? 'Out of Stock' : (isPre() && !PREORDER_WORD ? 'Est.ship date ' + SHIP_DATE : 'Preorder ' + SHIP_DATE);
+      var shipTxt = shipLabel(stockOf(c.name, isPre() ? undefined : state.size));
+      if (a1) {
+        var ks = Object.keys(PACK_RATIO);
+        var sig = ks.map(function (k) { return pcPrice(c.name, k) + '|' + listPrice(c.name, k) + '|' + msrpOf(c.name, k); });
+        var one = !PRE_ALL_SIZES && sig.every(function (x) { return x === sig[0]; });
+        var canFold = PRE_FOLD && !one && show && !(PM_POLICY && COLORS.length === 1), folded = canFold && (state.folded[c.name] === undefined ? PRE_FOLD_SHUT : state.folded[c.name]);
+        row.className = 'qty-row a1-row' + (oos ? ' is-oos' : '') + (folded ? ' is-folded' : '');
+        var tag = spTag(c.name) ? '<span class="a1-tag">Special Price</span>' : '';
+        var grid = '';
+        if (show) grid = '<div class="a1-grid" style="grid-template-columns:' + cols.tpl + '">' +
+          (one ? '<span></span>' + a1Cells(c.name, ks[0], cols) : ks.map(function (k) { var st = spTagAt(c.name, k); return (st ? '<span class="a1-sz has-tag"><span>' + k + '</span>' + st + '</span>' : '<span class="a1-sz">' + k + '</span>') + a1Cells(c.name, k, cols); }).join('')) + '</div>';
+        var nm = canFold ? '<button type="button" class="a1-fold" aria-expanded="' + !folded + '"><span>' + (c.name || 'Pack') + '</span>' + FOLD_ICON + '</button>' : '<span>' + (c.name || 'Pack') + '</span>';   /* 옵션 1개 = 접기 없는 'Pack' 행 (PM ⑤) */
+        row.appendChild(el('div', 'a1-top', '<span class="qty-name">' + nm + (TAG_BY_PRICE ? '' : tag) + '</span><span class="a1-pack">' + (TAG_BY_PRICE ? tag : '') + '<b>' + money(packOf(c.name)) + '</b>/pack</span>'));
+        if (canFold) row.querySelector('.a1-fold').addEventListener('click', function () { state.folded[c.name] = !folded; render(); });
+        if (grid) row.appendChild(el('div', 'a1-body', grid));
+        var qa = qtyOf(c.name);
+        var sta = el('div', 'stepper',
+          '<button type="button" aria-label="Decrease"' + (qa === 0 ? ' disabled' : '') + '>' + MINUS + '</button>' +
+          '<span>' + num(qa) + '</span>' +
+          '<button type="button" aria-label="Increase"' + (oos ? ' disabled' : '') + '>' + PLUS + '</button>');
+        var ba = sta.querySelectorAll('button');
+        ba[0].addEventListener('click', function () { if (qtyOf(c.name) > 0) { setQty(c.name, qtyOf(c.name) - 1); render(); } });
+        ba[1].addEventListener('click', function () { setQty(c.name, qtyOf(c.name) + 1); render(); });
+        var bot = el('div', 'a1-bot', '<span class="a1-ship">' + shipTxt + '</span>');
+        var stp = el('div', 'qty-step'); stp.appendChild(sta);
+        stp.appendChild(el('span', 'qty-step-sub', num(qa) + ' pack' + (qa === 1 ? '' : 's') + ' · ' + num(qa * pcs()) + ' pc' + (qa * pcs() === 1 ? '' : 's')));
+        bot.appendChild(stp); row.appendChild(bot);
+        list.appendChild(row);
+        return;
+      }
       var head = PDP_PRE_SHIP_HEAD && isPre();
       if (head) {
         row.classList.add('has-top');
@@ -992,7 +1487,8 @@
 
   /* 일부 옵션만 Special 일 때 그 행에 작은 라벨 — 헤더 패널이 없으니 왜 취소선이 없는지 알 수 있게 (헤더 패널과 같은 모양) */
   function spTag(name) {
-    return OPTION_PRICE_RULE && state.priceType === 'mixed' && !isSpecial() && hasSpecial(name) ? '<span class="qty-sp">Special Price</span>' : '';
+    if (PM_POLICY && OPTION_PRICE_RULE) return !isSpecial() && isPre() && spAll(name) ? '<span class="qty-sp">Special Price</span>' : '';   /* 팩 안 사이즈 전부 Special → 팩 행에 하나 */
+    return OPTION_PRICE_RULE && (state.priceType === 'mixed' || (SP_OVER_WS && state.spHigh)) && !isSpecial() && (SP_ALL_SET ? spSet(name) : hasSpecial(name)) ? '<span class="qty-sp">Special Price</span>' : '';
   }
   /* Pre Pack 행 가격 — 피스당(사이즈마다 다르면 최저가~) + 할인된 행만 WS 취소선, 아래 회색으로 팩 금액 */
   /* ══ Pre Pack 행 = 전부 개당 (2026-10-12 「③ 전부 개당」 선택) ══════════════════════════════
@@ -1133,12 +1629,13 @@
 
   function renderStatic() {
     $('prepackBlock').hidden = !isPre();
-    $('itemName').textContent = isMax()
+    $('itemName').textContent = oneOn() ? 'FG-SS25-101' : isMax()
       ? 'Relaxed Linen DressRelaxed Linen Dress Relaxed Linen DressRelaxed'
       : 'Relaxed Linen Dress';
     $('packSummary').textContent = '1pack x ' + pcs() + 'pcs';
     $('packRatio').textContent = isMax()
       ? 'S-M-L-S-M-L-S-M-L / 3-2-3-3-2-3-3-2-3'
+      : state.data === 'worst' ? Object.keys(PACK_RATIO).join('-') + ' / ' + Object.keys(PACK_RATIO).map(function (k) { return PACK_RATIO[k]; }).join('-')
       : (ADMIN_DATA ? 'S-M-L / 2-2-2' : 'S-M-L / 2-3-2');
     $('attrLabel').textContent = isPre() ? 'Attribute' : 'Material / Fabric composition';
     $('attrText').textContent = isMax()
@@ -1146,7 +1643,14 @@
       : '60% Linen, 40% Cotton. Woven, breathable. Machine wash cold.';
   }
 
-  function render() { renderStatic(); renderPrice(); renderSizes(); renderRows(); renderTotal(); }
+  function render() { renderStatic(); renderPrice(); renderSizes(); renderRows(); renderTotal(); renderOne(); }
+  /* 옵션 1개 — 컬러 자리 숨기기 */
+  function renderOne() {
+    var one = oneOn();
+    if (one && !isPre()) $('sizeBlock').hidden = true;
+    if (one) $('rowsLabel').textContent = isPre() ? '' : 'Size';
+    $('applyAll').hidden = one && isPre();
+  }
 
 
   $('totalHead').addEventListener('click', function () {
@@ -1155,6 +1659,8 @@
   });
   $('sizeMoreBtn').addEventListener('click', function () { state.sizesOpen = !state.sizesOpen; renderSizes(); });
   $('applyAll').addEventListener('click', function () {
+    if (openA1On() && state.openAxis === 'size') { var fc = COLORS.filter(function (c) { return !isOos(c.name); })[0]; var qs = (fc && qtyOf(fc.name, state.size)) || 1; COLORS.forEach(function (c) { if (!isOos(c.name)) setQtyAt(c.name, state.size, qs); }); render(); return; }
+    if (openA1On()) { var q0 = qtyOf(state.color, SIZES[0]) || 1; if (!isOos(state.color)) SIZES.forEach(function (sz) { if (!SOLD_OUT[sz]) setQtyAt(state.color, sz, q0); }); render(); return; }
     var first = COLORS.filter(function (c) { return !isOos(c.name); })[0];
     var q = (first && qtyOf(first.name)) || 1;
     COLORS.forEach(function (c) { if (!isOos(c.name)) setQty(c.name, q); });
@@ -1162,10 +1668,22 @@
   });
 
   window.__set = function (k, v) {
-    if (k === 'priceType') { state.noMsrp = false; if (COMBO[v]) { state.combo = v; state.noMsrp = !!COMBO[v][1]; v = COMBO[v][0]; } }
+    if (k === 'priceType') { state.noMsrp = false; state.spHigh = v === 'c9'; if (COMBO[v]) { state.combo = v; state.noMsrp = !!COMBO[v][1]; v = COMBO[v][0]; } }
     state[k] = v;
     if (k === 'data') {
+      setWorst(false); setOne(false);
       resetQty(v === 'max');
+      if (v === 'worst') setWorst(true);
+      if (v === 'one') setOne(true);
+    }
+    var pmark = function (attr, val) { document.querySelectorAll('[data-' + attr + ']').forEach(function (b) { b.classList.toggle('is-current', b.dataset[attr] === val); }); };
+    if (k === 'pcase') {
+      if (v !== 'off' || state.pcaseActive) { var prevPt = state.pcasePt || state.priceType; setPcase(v); pmark('data', 'normal'); pmark('ptype', v === 'off' ? (state.combo && COMBO[state.combo] ? state.combo : state.priceType) : 'mixed'); }
+      state.pcaseActive = v !== 'off';
+    } else if (state.pcaseActive && (k === 'priceType' || k === 'data' || k === 'optionCase')) {
+      var keep = state[k]; state.pcase = 'off'; setPcase('off'); state.pcaseActive = false; state[k] = keep;
+      if (k === 'data') { if (keep === 'worst') setWorst(true); if (keep === 'one') setOne(true); if (keep === 'max') resetQty(true); }
+      pmark('pcase', 'off');
     }
     state.open = false; render();
   };
@@ -1204,6 +1722,7 @@
     <button class="demo-ctl-item pt-new" type="button" data-ptype="c6"><span class="demo-ctl-check"></span><span>⑥ WS + Sale + Special<small>④ 와 같음 — 세일가 안 보임</small></span></button>
     <button class="demo-ctl-item pt-new" type="button" data-ptype="c7"><span class="demo-ctl-check"></span><span>⑦ WS + Special + MSRP<small>④ + 박스 밖 MSRP</small></span></button>
     <button class="demo-ctl-item pt-new" type="button" data-ptype="c8"><span class="demo-ctl-check"></span><span>⑧ 넷 다<small>⑦ 과 같음 — 세일가 안 보임</small></span></button>
+    <button class="demo-ctl-item pt-new" type="button" data-ptype="c9"><span class="demo-ctl-check"></span><span>⑨ Special ≥ Sale (역전)<small>Burgundy 전 사이즈 · Olive L Special = Sale + $1 → 그 행은 Sale 적용</small></span></button>
     <button class="demo-ctl-item" type="button" data-ptype="mixed">
       <span class="demo-ctl-check"></span><span>옵션마다 다름<small>Olive ③ · Light Wash ② · Burgundy ④ · Charcoal ①</small></span>
     </button>
@@ -1229,7 +1748,13 @@
     <div class="demo-ctl-sep" data-oos-row></div>
     <div class="demo-ctl-title" data-oos-row>STOCK</div>
     <button class="demo-ctl-item" type="button" data-stock="all">
-      <span class="demo-ctl-check"></span><span>전부 In Stock<small>모든 컬러를 살 수 있음</small></span>
+      <span class="demo-ctl-check"></span><span>전부 Pre Order<small>어드민 데모 그대로 — 전부 04/20/2027</small></span>
+    </button>
+    <button class="demo-ctl-item" type="button" data-stock="instock">
+      <span class="demo-ctl-check"></span><span>전부 In Stock<small>Figma 148-44279 값 — 날짜 안 씀</small></span>
+    </button>
+    <button class="demo-ctl-item" type="button" data-stock="mixsize">
+      <span class="demo-ctl-check"></span><span>사이즈마다 다름<small>Olive S In Stock · M 04/20/27 · L 05/15/27</small></span>
     </button>
     <button class="demo-ctl-item" type="button" data-stock="some">
       <span class="demo-ctl-check"></span><span>일부 Out of Stock<small>품절 컬러는 회색 · 헤더 가격은 살 수 있는 컬러로만</small></span>
@@ -1253,6 +1778,12 @@
     </a>
     <a class="demo-ctl-item" data-file="Shopcord-Admin-Order-2026-10-12.html" href="Shopcord-Admin-Order-2026-10-12.html">
       <span class="demo-ctl-check"></span><span>Vendor Admin Orders<small>Figma 381-21731 · 리스트 · 상세</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-Linesheet-2026-10-19.html" href="Shopcord-Admin-Linesheet-2026-10-19.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Linesheet<small>Figma 410-77903 · Special Price 일괄 변경</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-ItemList-2026-10-27.html" href="Shopcord-Admin-ItemList-2026-10-27.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Item List<small>Figma 823-11957 · 838-22718 · 그리드 · 리스트 · Price range</small></span>
     </a>
     <a class="demo-ctl-item" data-file="pack-model-explainer.html" href="pack-model-explainer.html">
       <span class="demo-ctl-check"></span><span>Pre Pack 모델 설명<small>박스 그림으로 비교</small></span>
@@ -1297,13 +1828,57 @@
   if (window.__special4 === false) document.querySelectorAll('[data-ptype=special4]').forEach(function (b) { b.hidden = true; });
   group('method', 'method', 'pre');
   document.querySelectorAll(window.__combo8 ? '.pt-old' : '.pt-new').forEach(function (b) { b.hidden = true; });
+  if (!window.__spOver) document.querySelectorAll('[data-ptype="c9"]').forEach(function (b) { b.hidden = true; });
   group('ptype', 'priceType', window.__combo8 ? 'c5' : 'sale');
   group('ocase', 'optionCase', 'base');
+  group('oaxis', 'openAxis', 'color');
+  /* 10-19 "여기 전환이 안돼!" — Pre Pack 에서 Open 칩을 누르면 값만 바뀌고 화면은 Pre 그대로였다 → 판매방식도 Open Pack 으로 같이 바꾼다 */
+  document.querySelectorAll('[data-oaxis]').forEach(function (b) { b.addEventListener('click', function () { var m = document.querySelector('.demo-bar [data-method=open]'); if (m && !m.classList.contains('is-current')) m.click(); }); });
+  if (window.__openA1 === false) document.querySelectorAll('[data-oaxis-row]').forEach(function (b) { b.hidden = true; });
   group('data', 'data', 'normal');
+  group('pcase', 'pcase', 'off');
   group('stock', 'stock', 'all');
-  if (window.__oos === false) document.querySelectorAll('[data-oos-row], [data-stock]').forEach(function (b) { b.hidden = true; });
+  /* 품절만 숨긴다 — 「전부 Pre Order · 전부 In Stock · 사이즈마다 다름」(변형마다 날짜)은 남긴다 */
+  if (window.__oos === false) document.querySelectorAll('[data-stock=some], [data-stock=none]').forEach(function (b) { b.hidden = true; });
   ctl.querySelector('.demo-ctl-btn').addEventListener('click', function (e) { e.stopPropagation(); ctl.classList.toggle('is-open'); });
   document.addEventListener('click', function (e) { if (!ctl.contains(e.target)) ctl.classList.remove('is-open'); });
+})();
+</script>
+<script>
+/* 10-28 팩 구성 글 3줄 넘으면 Show all — .rclamp 안 .rc-t 를 재서 넘칠 때만 버튼을 붙인다(글이 바뀌거나 폭이 바뀌면 다시 잼) */
+var RATIO_CLAMP = true; // 10-28 팩 구성 글 3줄 넘으면 Show all · false 면 예전처럼 다 보임
+(function () {
+  if (!RATIO_CLAMP) { document.querySelectorAll('.rclamp').forEach(function (el) { el.classList.remove('rclamp'); }); return; }
+  var open = {}, timer = 0;
+  function pass() {
+    timer = 0;
+    document.querySelectorAll('.rclamp').forEach(function (el) {
+      var t = el.querySelector('.rc-t'); if (!t) return;
+      var sig = t.textContent + '|' + el.clientWidth;
+      if (el.getAttribute('data-rc') === sig) return;
+      var k = el.getAttribute('data-rk') || '', b = el.querySelector('.rc-btn');
+      if (b) b.remove();
+      el.classList.remove('is-open', 'is-clamped');
+      if (!t.clientHeight) return;                       // 숨어 있으면 보일 때 다시
+      el.setAttribute('data-rc', sig);
+      if (t.scrollHeight <= t.clientHeight + 1) return;  // 3줄 이내
+      el.classList.add('is-clamped');
+      el.classList.toggle('is-open', !!open[k]);
+      b = document.createElement('button'); b.type = 'button'; b.className = 'rc-btn';
+      b.textContent = open[k] ? 'Show less' : 'Show all';
+      el.appendChild(b);
+    });
+  }
+  function later() { if (!timer) timer = setTimeout(pass, 0); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.rc-btn'); if (!b) return;
+    e.stopPropagation(); e.preventDefault();
+    var el = b.closest('.rclamp'), k = el.getAttribute('data-rk') || '';
+    open[k] = !open[k]; el.classList.toggle('is-open', open[k]); b.textContent = open[k] ? 'Show less' : 'Show all';
+  }, true);
+  new MutationObserver(later).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden', 'style'] });
+  window.addEventListener('resize', later);
+  pass();
 })();
 </script>
 </body>

@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>if (location.hash === '#embed' || window.__EMBED) document.documentElement.classList.add('is-embed');</script>
+<script>/* 사이드바 롤백 스위치 — false 면 예전 사이드바 */ var SIDEBAR_APP = true; if (SIDEBAR_APP) document.documentElement.setAttribute("data-sidebar", "new");</script>
+
 <!-- 사진은 파일 안에 넣었다(data URI) — 2026-10-12 "파일 안에 직접 넣어줘". Unsplash 주소를 걸어 두면 회사 네트워크에서 503 으로 빈칸이 됐다. 원래 주소는 README -->
 
 <meta charset="UTF-8">
@@ -220,6 +223,13 @@
   .section-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
   .section-title { font-size: 16px; line-height: 24px; font-weight: 600; margin: 0; }
   .section-hint { font-size: 12px; line-height: 16px; font-weight: 500; color: var(--fg-muted); }
+  /* 10-22 변형 개수 = 옵션1 값 수 × 옵션2 값 수 / 2,048 — Options 제목 줄 오른쪽 ("응 Options 제목 줄 오른쪽에 넣어줘"). 꽉 차서 값 입력이 막히면 진하게(예전 (Max. 30) 과 같은 방식). VAR_COUNT=false 면 숨김 · 백업 …backup-before-variant-count.html */
+  .var-count { font-variant-numeric: tabular-nums; }
+  .var-count.is-at-max { color: var(--fg); font-weight: 600; }
+  /* 라인시트 저장 차단 띠(.sp-warn.sp-err)와 같은 모양 */
+  .var-limit-band { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 8px 12px; border-radius: 8px; background: #fdecec; color: #b42318; font-size: 13px; }
+  .var-limit-band[hidden] { display: none; }
+  .var-limit-band svg { width: 16px; height: 16px; flex-shrink: 0; }
   .section-spacer { flex: 1; }
 
   .info-i { width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center; color: var(--fg-muted); cursor: help; flex-shrink: 0; }
@@ -240,6 +250,14 @@
   .tip::after { content: ''; position: absolute; top: var(--caret-y, 12px); border: 7px solid transparent; }
   .tip[data-side="right"]::after { left: -13px; border-right-color: var(--tip-bg); }
   .tip[data-side="left"]::after  { right: -13px; border-left-color: var(--tip-bg); }
+  /* VARY_TIP — 어드민 오더의 팩 툴팁(14pcs / Pack)과 같은 모양: 검정 #111 · 8px 모서리 · 굵은 제목 + 본문, 칸 아래 가운데, 꼬리 위 */
+  .vary-tip {
+    position: fixed; z-index: 500; padding: 8px 12px; border-radius: 8px; background: #111; color: #fff;
+    font-size: 12px; line-height: 18px; white-space: nowrap; pointer-events: none; display: none;
+  }
+  .vary-tip.is-visible { display: block; }
+  .vary-tip::after { content: ''; position: absolute; top: -12px; left: var(--caret-x, 50%); margin-left: -6px; border: 6px solid transparent; border-bottom-color: #111; }
+  .vary-tip b { display: block; font-weight: 600; margin-bottom: 4px; }
 
   .field { margin-bottom: 12px; }
   .field:last-child { margin-bottom: 0; }
@@ -365,6 +383,12 @@
     pointer-events: none; z-index: 200; opacity: 0; transition: opacity .12s;
   }
   .image-hover-preview.is-visible { opacity: 1; }
+  /* 11-05 사용자 "후버시 사진도 사이즈 맞춰줘"(dev 캡처) — dev 처럼 사진 비율 2:3 그대로 크게: 288×432, 안쪽 여백 없이 테두리 1px · 모서리 8, 드로어 왼쪽 16px.
+     예전 195×260(3:4 라 사진 위아래가 잘림). PREVIEW_DEV=false 면 예전 · 백업 …backup-before-preview-size.html */
+  /* 11-05 사용자 "후버했을때 리스트이미지에서 스트록도 라이브랑 맞춰줘" — dev 캡처 기준: 호버해도 진한 테두리 X · 커지지 않음(✕ 버튼만 보임).
+     TILE_HOVER_LIVE=false 면 예전(진한 테두리 + 1.04배) · 백업 …backup-before-tile-hover.html */
+  .tile-hover-live .image-tile:hover { border-color: var(--border-input); transform: none; }
+  .preview-dev .image-hover-preview { width: 288px; height: 432px; padding: 0; border-radius: 8px; border-color: #e5e5e5; }
   .image-dropzone {
     border: 1px dashed var(--fg); border-radius: var(--radius); height: 40px; background: var(--card);   /* 원본과 동일 */
     display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -438,6 +462,7 @@
     background: var(--muted); border: 1px solid var(--border); border-radius: 6px;
     font-size: 12px; line-height: 16px; font-weight: 500; color: var(--fg);
   }
+  .opt-value-chip.is-dup { border-color: #1f1f1f; }
   .opt-value-remove {
     width: 12px; height: 12px; padding: 0; background: none; border: none;
     color: var(--fg-secondary); cursor: pointer;
@@ -541,6 +566,9 @@
   .vt-group-head.is-fold { cursor: pointer; }
   .vt-group-head.is-fold:hover { background: #efebe6; }
   .vt-group-head.is-fold .vt-group-name { min-width: 108px; }
+  /* VARIES_CUE — 바이어 화면 Show all 과 같은 밑줄 글자 */
+  .vt-varies-cue { display: block; width: max-content; font-size: 12px; line-height: 12px;   /* 이름 20 + 12 = 입력칸 32 — 줄 높이 44 그대로 */ font-weight: 400; color: var(--fg-secondary); text-decoration: underline; }
+  .vt-group-head.is-fold:hover .vt-varies-cue { color: var(--fg); }
   .vt-fold { flex-shrink: 0; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--fg-muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
   .vt-fold:hover { color: var(--fg-secondary); background: rgba(0,0,0,.05); }
   .vt-fold svg { width: 10px; height: 10px; transition: transform .15s; }
@@ -559,6 +587,7 @@
   /* 미리 채워진(물려받은) 값도 검정 — 개발팀: 회색이면 비활성화처럼 보인다 (2026-10-12, 실제 화면도 #1f1f1f 로 바꿈).
      JS 의 PREFILL_BLACK 로 켜고 끈다 · 백업 …backup-before-prefill-black.html */
   body.prefill-black .vt-input::placeholder { color: #1f1f1f; }
+  .vt-input.is-varies::placeholder { color: #1f1f1f; }   /* VARIES_MIXED — Mixed 는 늘 #1f1f1f */
   /* 직접 넣은 값 — 물려받은 칸(회색 placeholder)과는 글자색(검정)만으로 이미 구별된다.
      핑크 배경·테두리를 썼다가 뺐다 (2026-09-29: "너무 빨간색이라서 뭔가 에러같아") —
      AS-IS 입력칸엔 없는 색이고, 이 화면에서 핑크는 오류·경고로 읽힌다. 예전: primary-soft 배경 + primary-ink 600 */
@@ -636,6 +665,7 @@
   .stock-pick.is-missing .sp-sub { color: var(--fg-muted); }
   /* Apply to all 행에서 아직 아무것도 안 고른 상태 — 가격 칸의 회색 placeholder 와 같은 뜻 */
   .stock-pick.is-placeholder .sp-main { color: var(--fg-muted); }
+  .stock-pick .sp-main.is-empty { color: var(--fg-muted); }   /* STOCK_DATE_ONLY — 날짜 없는 Pre Order */
   .stock-pick svg { width: 10px; height: 10px; flex-shrink: 0; color: var(--fg-secondary); }
   .stock-pop {
     position: fixed; z-index: 400; width: 200px; padding: 4px;
@@ -751,6 +781,14 @@
   .toggle-pill[disabled] { opacity: .4; cursor: not-allowed; }
   .toggle-pill[disabled]:hover { background: transparent; }
   .toggle-pill svg { width: 14px; height: 14px; }
+  /* 11-04 사용자 "선택하는 박스가 네모가 아니라 양끝 동그랗게 … 프리팩, 오픈팩 / 인액티브 액티브" + "왜 프리팩에만 체크아이콘이 있어? 그거 삭제"
+     = Figma(Container 흰 배경 · 테두리 #F3EEE8 · 끝 둥글게 · 안쪽 4 · 간격 8, 버튼 120×36 · 끝 둥글게 · 14px), 아이템 리스트 .seg 와 같은 모양.
+     PILL_SEG=false 면 예전 네모 · 백업 …backup-before-pill-seg.html */
+  .pill-seg .toggle-pills { background: #fff; border: 1px solid #f3eee8; border-radius: 9999px; padding: 4px; gap: 8px; }
+  .pill-seg .toggle-pill, .pill-seg .status-pills .toggle-pill { width: 120px; height: 36px; padding: 0 16px; border-radius: 9999px; font-size: 14px; }
+  .pill-seg .toggle-pill:not(.is-active) { color: #6b6b6b; }
+  .pill-seg .toggle-pill.is-active { background: #1f1f1f; }
+  .pill-seg #sellingToggle .toggle-pill svg { display: none; }
 
   .pack-card { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
   .pack-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; }
@@ -836,13 +874,98 @@
   .ls-ext svg { width: 12px; height: 12px; }
 
   /* ── Design note ── */
+
+  /* ══ 사이드바 = 실제 앱(Customers 화면 캡처 · cord-demo ShopcordSidebar.tsx) (2026-10-19 "왼쪽 메뉴를 오른쪽 커스토머페이지의 메뉴처럼 맞춰줘")
+     Dashboard · Item · Linesheet · Orders | Customers | SMS Campaigns · SMS Chat, 접기 버튼, My Account. 알림 점은 안 넣음.
+     되돌리려면 head 의 SIDEBAR_APP = false (예전 사이드바가 다시 보임) · 백업 …backup-before-sidebar.html */
+  html[data-sidebar="new"] .sb-old { display: none !important; }
+  html:not([data-sidebar="new"]) .sb-new { display: none !important; }
+  .scb { position: relative; height: 100%; display: flex; flex-direction: column; background: #fefefd; border: 1px solid #f2ede7; border-radius: 10px; font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; box-sizing: border-box; }
+  .scb *, .scb *::before, .scb *::after { box-sizing: border-box; }
+  .scb-brand { display: flex; align-items: center; gap: 8px; padding: 24px 12px 20px 24px; }
+  .scb-brand svg { flex-shrink: 0; }
+  .scb-collapse { position: absolute; right: -14px; top: 22px; width: 28px; height: 28px; padding: 0; border-radius: 50%; border: 1px solid #ececec; background: #fff; color: #6b6b6b; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,.05); z-index: 2; }
+  .scb-collapse svg { width: 14px; height: 14px; }
+  .scb-nav { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+  .scb-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; font-size: 14px; line-height: 20px; font-weight: 500; color: #6b6b6b; text-decoration: none; cursor: pointer; }
+  .scb-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .scb-item:hover { background: rgba(0,0,0,.03); }
+  .scb-item.is-on { background: rgba(253,242,248,.6); color: #e11d74; font-weight: 600; }
+  .scb-sep { height: 1px; margin: 6px 8px; background: #f2ede7; }
+  .scb-acct { display: flex; align-items: center; gap: 10px; width: auto; margin: 0 12px; padding: 10px 2px; border: 0; border-top: 1px solid #f2ede7; border-radius: 0 0 10px 10px; background: none; font: inherit; text-align: left; cursor: pointer; }
+  .scb-acct:hover { background: rgba(0,0,0,.03); }
+  .scb-av { width: 32px; height: 32px; flex-shrink: 0; border-radius: 10px; background: #e11d74; color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+  .scb-av svg { width: 16px; height: 16px; }
+  .scb-acct b { flex: 1; font-size: 14px; font-weight: 700; color: #1f1f1f; }
+  .scb-acct > svg { width: 16px; height: 16px; color: #a3a3a3; }
+  /* ══ Price per pack/variant 해제 확인 모달 (PV_OFF_MODAL, 2026-10-19) ══ */
+  .pv-dim { position: fixed; inset: 0; z-index: 900; background: rgba(15,23,42,.45); display: flex; align-items: center; justify-content: center; }
+  .pv-modal { width: 440px; max-width: calc(100vw - 32px); background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 20px 48px rgba(0,0,0,.2); font-size: 14px; line-height: 20px; color: var(--fg); }
+  .pv-modal h3 { margin: 0 0 8px; font-size: 18px; line-height: 26px; font-weight: 600; }
+  .pv-modal p { margin: 0 0 8px; color: var(--fg-secondary); }
+  .pv-modal .pv-prices { margin: 12px 0; padding: 10px 12px; border-radius: 8px; background: var(--muted); color: var(--fg); font-variant-numeric: tabular-nums; }
+  .pv-modal small { display: block; font-size: 12px; color: var(--fg-muted); }
+  .pv-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+  .pv-btns button { height: 36px; padding: 0 16px; border-radius: 6px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .pv-btns .pv-no { border: 1px solid var(--border-input, #e2e8f0); background: #fff; color: var(--fg); }
+  .pv-btns .pv-yes { border: 1px solid var(--fg); background: var(--fg); color: #fff; }
+  /* 11-03 PV_APP — 앱 확인 창(DS Popup-Discard) 모양: 폭 360 · 제목 왼쪽 32px 동그라미 아이콘(11-03 사용자 Figma = Icon / OctagonAlert 빨강 #c0392b — "이게 맞아") · 본문 한 덩어리 · Cancel / 검정 Turn off 반반 폭 */
+  .pv-modal.pv-app { width: 360px; color: #1f1f1f; }
+  .pv-modal.pv-app .pv-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .pv-modal.pv-app .pv-ico { flex: none; width: 32px; height: 32px; border-radius: 50%; background: #fef7f6; color: #c0392b; display: inline-flex; align-items: center; justify-content: center; }
+  .pv-modal.pv-app .pv-ico svg { width: 16px; height: 16px; }
+  .pv-modal.pv-app h3 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; color: #0a0a0a; }
+  .pv-modal.pv-app p { margin: 0; color: #1f1f1f; }
+  .pv-modal.pv-app .pv-btns { margin-top: 24px; }
+  .pv-modal.pv-app .pv-btns button { flex: 1; }
+  .pv-modal.pv-app .pv-btns .pv-yes { border-color: #1f1f1f; background: #1f1f1f; }
+  /* 10-28 "아이템을 클릭하면 저게 오른쪽에서 드로어로 나와야함" — 아이템 리스트(…ItemList-2026-10-27.html) 안에 iframe 으로 띄울 때(#embed · window.__EMBED)는
+     뒤 목록 · 흐린 막을 숨기고 드로어만. 닫기 · Cancel · Save · 넓히기는 바깥에 알린다. 단독으로 열면 지금 그대로 · 백업 …backup-before-embed-drawer.html */
+  html.is-embed, html.is-embed body { background: transparent; }
+  html.is-embed .app, html.is-embed .scrim { display: none; }
+  html.is-embed .drawer, html.is-embed .drawer.is-wide { width: 100%; max-width: none; border-left: 0; box-shadow: none; }
 </style>
 </head>
 <body>
 
 <!-- ══════════ Items list ══════════ -->
 <div class="app">
-  <aside class="sidebar">
+  <aside class="sidebar sb-new" style="width:288px">
+  <div class="scb">
+    <div class="scb-brand"><svg width="17" height="22" viewBox="0 0 16.5221 21.6574" fill="none" >
+        <path d="M16.3394 12.7537L10.8993 7.97016H14.6165C15.2208 7.97016 15.7108 7.4845 15.7108 6.88559V1.08475C15.7108 0.485835 15.2208 0.000178457 14.6165 0.000178457H3.48262C3.17881 0.000178457 2.95995 0.196868 2.88469 0.438306L0.0746318 8.29756C-0.0508721 8.53242 -0.027914 8.84364 0.211104 9.05373L5.48099 13.6876H1.38426C0.779953 13.6876 0.289927 14.1732 0.289927 14.7721V20.5732C0.289927 21.1721 0.779953 21.6578 1.38426 21.6578H13.0275C13.3201 21.6578 13.527 21.4601 13.587 21.2242L16.4608 13.3983C16.5646 13.1969 16.5429 12.9329 16.3394 12.7539V12.7537Z" fill="#FFF2F5" />
+        <path d="M15.9818 13.688H5.48153L13.4102 20.6599C13.588 20.8162 13.636 21.0328 13.5872 21.2244L16.4611 13.3986C16.3756 13.5644 16.2055 13.688 15.9818 13.688Z" fill="#FDF2F8" />
+        <path d="M16.3394 12.754L10.8994 7.97052H0.626469C0.370614 7.97052 0.175216 8.10982 0.0749658 8.29792C-0.050538 8.53278 -0.02758 8.84399 0.211439 9.05408L5.48133 13.6879H15.9818C16.2055 13.6879 16.3757 13.5643 16.4611 13.3985C16.5649 13.197 16.5433 12.933 16.3397 12.754H16.3394Z" fill="#BE185D" />
+        <path d="M13.4104 20.6599L5.48168 13.688H1.3847C0.780391 13.688 0.290365 14.1736 0.290365 14.7726V20.5737C0.290365 21.1726 0.780391 21.6582 1.3847 21.6582H13.028C13.3206 21.6582 13.5274 21.4605 13.5874 21.2247C13.6361 21.033 13.5882 20.8164 13.4104 20.6601V20.6599Z" fill="#E11D74" />
+        <path d="M0.626607 7.97037H10.8996L3.06781 1.08395C2.86476 0.905461 2.81757 0.654163 2.88491 0.438512L0.0748494 8.29776C0.175355 8.10967 0.370753 7.97037 0.626352 7.97037H0.626607Z" fill="#FBCFE8" />
+      </svg><svg width="103" height="22" viewBox="0 0 103.308 21.5535" fill="none" >
+        <path d="M4.94994 16.9198C1.97059 16.9198 0.0469189 15.3285 0 13.1053H3.472C3.49546 13.7137 3.94119 14.0179 4.90302 14.0179C5.98216 14.0179 6.33405 13.6435 6.33405 13.1521C6.33405 12.3798 5.48951 12.3096 4.41037 12.1458C2.81513 11.9117 0.187675 11.5139 0.187675 8.72903C0.187675 6.38881 2.04097 4.75065 4.92648 4.75065C7.81199 4.75065 9.59491 6.41221 9.66529 8.49501H6.24021C6.14637 7.95676 5.67718 7.65253 4.9734 7.65253C4.1054 7.65253 3.75351 8.09717 3.75351 8.56522C3.75351 9.26728 4.59805 9.36089 5.67718 9.52471C7.3428 9.75873 9.89988 10.2034 9.89988 12.9414C9.89988 15.3285 7.92929 16.9198 4.94994 16.9198Z" fill="#1F1F1F" />
+        <path d="M11.8433 16.6156V0H15.3622V6.2952C16.066 5.2889 17.0513 4.75065 18.2477 4.75065C20.6875 4.75065 23.2915 6.38881 23.2915 10.6246V16.6156H19.7726V10.6246C19.7726 8.79924 18.8811 8.02697 17.5674 8.02697C16.3006 8.02697 15.3622 8.84604 15.3622 10.6246V16.6156H11.8433Z" fill="#1F1F1F" />
+        <path d="M31.0785 16.9198C27.4188 16.9198 24.8383 14.3456 24.8383 10.8352C24.8383 7.3249 27.4188 4.75065 31.0785 4.75065C34.7382 4.75065 37.3187 7.3249 37.3187 10.8352C37.3187 14.3456 34.7382 16.9198 31.0785 16.9198ZM31.0785 13.6435C32.6737 13.6435 33.7529 12.4968 33.7529 10.8352C33.7529 9.17367 32.6737 8.02697 31.0785 8.02697C29.4832 8.02697 28.4041 9.17367 28.4041 10.8352C28.4041 12.4968 29.4832 13.6435 31.0785 13.6435Z" fill="#1F1F1F" />
+        <path d="M38.8721 21.5535V10.9522C38.8721 7.06747 41.4995 4.75065 45.0419 4.75065C48.725 4.75065 51.3056 7.25469 51.3056 10.9756C51.3056 15.0008 48.3028 16.9198 45.6753 16.9198C44.2912 16.9198 43.1182 16.3816 42.391 15.3519V21.5535H38.8721ZM45.0654 13.6435C46.6606 13.6435 47.7397 12.4968 47.7397 10.8352C47.7397 9.17367 46.6606 8.02697 45.0654 8.02697C43.4701 8.02697 42.391 9.17367 42.391 10.8352C42.391 12.4968 43.4701 13.6435 45.0654 13.6435Z" fill="#1F1F1F" />
+        <path d="M58.643 16.9198C54.9833 16.9198 52.4028 14.3456 52.4028 10.8352C52.4028 7.3249 54.9833 4.75065 58.643 4.75065C61.8569 4.75065 64.2029 6.73984 64.6955 9.59491H61.1297C60.7309 8.63542 59.816 8.02697 58.643 8.02697C57.0478 8.02697 55.9686 9.17367 55.9686 10.8352C55.9686 12.4968 57.0478 13.6435 58.643 13.6435C59.816 13.6435 60.7309 13.035 61.1297 12.0756H64.6955C64.2029 14.9306 61.8569 16.9198 58.643 16.9198Z" fill="#FB4294" />
+        <path d="M71.9785 16.9198C68.3188 16.9198 65.7383 14.3456 65.7383 10.8352C65.7383 7.3249 68.3188 4.75065 71.9785 4.75065C75.6382 4.75065 78.2187 7.3249 78.2187 10.8352C78.2187 14.3456 75.6382 16.9198 71.9785 16.9198ZM71.9785 13.6435C73.5738 13.6435 74.6529 12.4968 74.6529 10.8352C74.6529 9.17367 73.5738 8.02697 71.9785 8.02697C70.3833 8.02697 69.3041 9.17367 69.3041 10.8352C69.3041 12.4968 70.3833 13.6435 71.9785 13.6435Z" fill="#FB4294" />
+        <path d="M79.7721 16.6156V10.0396C79.7721 6.43561 81.8835 4.75065 84.9801 4.75065C88.0768 4.75065 90.1646 6.41221 90.1881 10.063V10.1332H86.6692V10.0396C86.6692 8.49501 85.9654 8.02697 84.9801 8.02697C83.9948 8.02697 83.291 8.49501 83.291 10.0396V16.6156H79.7721Z" fill="#FB4294" />
+        <path d="M97.1381 16.9198C93.455 16.9198 90.8744 14.4158 90.8744 10.6948C90.8744 6.66964 93.8772 4.75065 96.5047 4.75065C97.8888 4.75065 99.0617 5.2889 99.789 6.3186V0H103.308V10.7182C103.308 14.603 100.68 16.9198 97.1381 16.9198ZM97.1146 13.6435C98.7099 13.6435 99.789 12.4968 99.789 10.8352C99.789 9.17367 98.7099 8.02697 97.1146 8.02697C95.5194 8.02697 94.4402 9.17367 94.4402 10.8352C94.4402 12.4968 95.5194 13.6435 97.1146 13.6435Z" fill="#FB4294" />
+        <rect x="54.7532" y="0" width="7.23155" height="2.06616" rx="0.332061" fill="#E11D74" />
+      </svg></div>
+    <button type="button" class="scb-collapse" aria-label="Collapse sidebar"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5L5.5 8l4.5 4.5"/></svg></button>
+    <nav class="scb-nav">
+      <a class="scb-item" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>Dashboard</a>
+      <a class="scb-item is-on" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5l5.5 3v7L8 14.5 2.5 11.5v-7L8 1.5z"/><path d="M2.5 4.5L8 7.5l5.5-3"/><path d="M8 14.5V7.5"/></svg>Item</a>
+      <a class="scb-item" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M2 6h12"/><path d="M5 2v12"/></svg>Linesheet</a>
+      <a class="scb-item" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10l-1 8H4L3 4z"/><path d="M5.5 4V2.5h5V4"/></svg>Orders</a>
+      <div class="scb-sep"></div>
+      <a class="scb-item" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="5.5" r="2.5"/><path d="M2 13.5c.5-2.4 2-3.5 4-3.5s3.5 1.1 4 3.5"/><circle cx="12" cy="6" r="2"/><path d="M11 10.5c1.7 0 3 1 3.5 3"/></svg>Customers</a>
+      <div class="scb-sep"></div>
+      <a class="scb-item" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5l5 1V11l-5 1z"/><path d="M7 6.5l6-3v9l-6-3"/><path d="M11 13.5v1.5"/></svg>SMS Campaigns</a>
+      <a class="scb-item" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3h11a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H8L5 13.5V11H2.5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/></svg>SMS Chat</a>
+      <div class="scb-sep"></div>
+    </nav>
+    <button type="button" class="scb-acct"><span class="scb-av"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5.5" r="2.5"/><path d="M3.5 13.5c.6-2.6 2.3-3.8 4.5-3.8s3.9 1.2 4.5 3.8"/></svg></span><b>My Account</b><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg></button>
+  </div>
+  </aside>
+  <aside class="sidebar sb-old">
     <div class="sidebar-inner">
       <div class="logo">
         <span class="logo-mark"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 12c3-6 9-9 16-9-2 5-7 8-12 8l-1 5H2z"/></svg></span>
@@ -984,7 +1107,7 @@
     </section>
 
     <!-- Prices -->
-    <section class="section">
+    <section class="section" id="pricesSection">
       <div class="section-head">
         <h2 class="section-title">Prices</h2>
         <span class="section-hint" id="pricesHint">Enter the price for this item</span>
@@ -1005,7 +1128,7 @@
         </div>
       </div>
       <p class="price-hint is-lock" id="pricesLock" hidden>
-        Locked — prices live in the table below. Untick <b style="color:inherit">Price per pack</b> to edit these again.
+        Locked — prices live in the table below. Turn off <b style="color:inherit">Price per pack</b> to edit these again.
       </p>
       <p class="price-hint" id="pricesHint2" hidden>
         This amount covers everything you sell. If a pack or a size needs its own price,
@@ -1036,7 +1159,9 @@
         <h2 class="section-title">Options</h2>
         <span class="section-hint">(Max. 2)</span>
         <span class="section-spacer"></span>
+        <span class="section-hint var-count" id="varCount"></span>
       </div>
+      <div class="var-limit-band" id="varLimitBand" role="alert" hidden><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 7.2v3.6M8 5.2h.01"/></svg>Max 2,048 variants allowed. Remove a value to add more.</div>
       <div class="opt-list" id="optsList"></div>
       <button class="add-option-btn" type="button" id="addOptionBtn">
         <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2.5v9M2.5 7h9"/></svg>
@@ -1060,7 +1185,7 @@
       <div class="pack-view is-active" data-view="pre-pack">
         <div class="pack-card">
           <div class="pack-row">
-            <span class="pack-row-label">Pack by</span>
+            <span class="pack-row-label">Pack By</span>
             <select class="pack-select" id="prePackBy"></select>
           </div>
           <div class="pack-config">
@@ -1074,7 +1199,7 @@
             </div>
           </div>
           <div class="pack-row" id="preGroupRow" hidden>
-            <span class="pack-row-label">Group by</span>
+            <span class="pack-row-label">Group By</span>
             <select class="pack-select" id="preGroupBy"></select>
           </div>
         </div>
@@ -1084,7 +1209,7 @@
       <div class="pack-view" data-view="open-pack">
         <div class="pack-card">
           <div class="pack-row">
-            <span class="pack-row-label">Group by</span>
+            <span class="pack-row-label">Group By</span>
             <select class="pack-select" id="openGroupBy"></select>
           </div>
         </div>
@@ -1100,15 +1225,14 @@
           <button type="button" class="hist-btn" id="histUndo" title="Undo" aria-label="Undo" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/></svg></button>
           <button type="button" class="hist-btn" id="histRedo" title="Redo" aria-label="Redo" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5 5.5 5.5 0 0 0 9.5 20H13"/></svg></button>
         </span>
-        <label class="check" title="Tick when each row needs its own price">
+        <label class="check" title="Turn on when each row needs its own price">
           <input type="checkbox" id="priceVarToggle">
-          <span id="priceVarLabel">Price per pack</span>
+          <span id="priceVarLabel">Price per variant</span>
         </label>
       </div>
 
       <p class="mode-note" id="priceVarNote" hidden>
-        Each pack now carries its own price. The <b>Prices</b> fields above are locked —
-        untick <b>Price per pack</b> to unlock them.
+        Each variant now has its own price. Turn off <b>Price per variant</b> to use one price for the whole item again.
       </p>
       <div class="vt-card" id="sellTableCard">
         <div class="vt-scroll">
@@ -1118,7 +1242,7 @@
           <span class="vt-col vt-col-price is-price" id="vtColWs">WS PRICE</span>
           <span class="vt-col vt-col-price is-price" id="vtColSale">SALE PRICE</span>
           <span class="vt-col vt-col-price is-price" id="vtColMsrp">MSRP</span>
-          <span class="vt-col vt-col-stock" aria-hidden="true"></span><!-- AS-IS처럼 재고엔 제목이 없다 — 값(In Stock / Pre Order)이 곧 이름이다 -->
+          <span class="vt-col vt-col-stock" id="vtColStock" aria-hidden="true"></span><!-- AS-IS처럼 재고엔 제목이 없다 — 값(In Stock / Pre Order)이 곧 이름이다. 10-29 부터 STOCK_DATE_ONLY 가 Est. Ship Date 를 넣는다 -->
           <span class="vt-col vt-col-ship">EST. SHIP DATE<span class="info-i" data-tip="Estimated Date this item will leave your warehouse."><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 6.5V10"/><circle cx="7" cy="4.2" r=".5" fill="currentColor" stroke="none"/></svg></span></span>
         </div>
         <div class="vt-fillrow" id="vtFillAll"></div>
@@ -1260,11 +1384,30 @@
      팩 값 = Σ 사이즈 가격 × 팩 안 수량 (바이어 PDP 의 팩 행). 근거: NuORDER 'Price per size'(기본가 + 사이즈별 덮어쓰기).
      되돌리려면 false — 팩 한 줄에 피스당 가격(TABLE_PER_PC) */
   var PRE_BY_SIZE = true;
-  function preBySize() { return PRE_BY_SIZE && TABLE_PER_PC && isPrePack() && state.priceVar && packAxes().length === 1; }
+  /* 10-19 옵션 1개 Pre Pack 도 "지금 우리가 새로 만든거랑 똑같이" — 팩 하나(key 'pack:*') ▸ 사이즈 줄. 재고는 팩 줄에만 */
+  function onePack() { return ONE_OPTION_FLAT && packAxes().length === 0; }
+  function preBySize() { return PRE_BY_SIZE && TABLE_PER_PC && isPrePack() && state.priceVar && (packAxes().length === 1 || onePack()); }
   function packLine() { return TABLE_PER_PC && SHOW_PACK_TOTAL && isPrePack(); }
   /* Quick pick(추천 옵션 칩 + 값 채우기)을 뺐다 (2026-09-29 사용자: "Quickpick 이거 삭제").
      Phase 2 프로토타입에서 가져온 기능이라 코드는 남겨두고 끈다 — 되돌리려면 true */
   var SHOW_QUICK_PICK = false;
+  /* 10-22 "Value의 갯수가 맥스 30개가 이제 아니야 … Option1 & 2에 있는 Value의 토탈값이 2048" — (Max. 30) 문구 삭제, 상한 = 전체 변형 2,048(옵션1 값 수 × 옵션2 값 수).
+     2,048 을 어디에 보여줄지는 미정(사용자와 논의 중) — 지금은 넘으면 입력만 막힌다. NO_MAX30=false 면 예전(옵션마다 30) · 백업 …backup-before-no-max30.html */
+  var NO_MAX30 = true, MAX_VARIANTS = 2048;
+  function wouldExceed(opt) { var p = 1; state.options.forEach(function (o) { p *= Math.max(1, (o === opt ? o.values.length + 1 : o.values.length)); }); return p > MAX_VARIANTS; }
+  /* 10-30 "중복은 들어가면 안돼" — 같은 옵션 안에 같은 값(앞뒤 공백·대소문자 무시)은 안 들어간다.
+     AS-IS 앱에 중복 문구가 없어 새 문구는 만들지 않고, 이미 있는 칩 테두리를 진하게 해 어디 있는지 보여준다. false 면 예전 · 백업 …backup-before-no-dup-value.html */
+  var NO_DUP_VALUE = true;
+  function dupIndex(opt, v) { var k = v.trim().toLowerCase(); if (!NO_DUP_VALUE || !k) return -1; for (var n = 0; n < opt.values.length; n++) if (String(opt.values[n]).trim().toLowerCase() === k) return n; return -1; }
+  /* 10-30 "콤마로 넣는거는 각각 넣는거야 … XL따로 XXL따로 XXXL따로" — Enter 한 번에 콤마로 나눠 값마다 칩 하나.
+     빈 조각 · 같은 줄 안 중복은 버리고, 15자 제한은 값 하나마다. false 면 예전(통째로 칩 하나) · 백업 …backup-before-comma-values.html */
+  var COMMA_VALUES = true;
+  var KEEP_OVERFLOW = true;   /* 11-02 중복은 버리고 2,048에 걸린 값만 칸에 남김(칩 지워도 유지) · 백업 …backup-before-keep-overflow.html */
+  function splitValues(s) {
+    var out = [];
+    s.split(',').forEach(function (p) { p = p.trim().slice(0, 15); if (p && !out.some(function (o) { return o.toLowerCase() === p.toLowerCase(); })) out.push(p); });
+    return out;
+  }
   var MAX_OPT_VALUES = 30;   /* 옵션 하나에 넣을 수 있는 값의 수 — 라벨 (Max. 30) 과 같은 값 (2026-09-29: 50 아니고 30) */
   var MAX_COLOR_VALUES = [
     'Heathered Olive', 'Light Wash Blue', 'Burgundy Velvet', 'Charcoal Marled', 'Dusty Rose Pink',
@@ -1416,8 +1559,9 @@
       var r = t.getBoundingClientRect();
       var drawerLeft = document.querySelector('.drawer').getBoundingClientRect().left;
       preview.style.backgroundImage = 'url(' + t.dataset.src + ')';
-      preview.style.left = Math.max(8, drawerLeft - 203) + 'px';
-      preview.style.top = Math.min(window.innerHeight - 270, Math.max(8, r.top - 20)) + 'px';
+      var pw = PREVIEW_DEV ? 288 : 195, ph = PREVIEW_DEV ? 432 : 260, gap = PREVIEW_DEV ? 16 : 8;
+      preview.style.left = Math.max(8, drawerLeft - pw - gap) + 'px';
+      preview.style.top = Math.min(window.innerHeight - ph - 10, Math.max(8, r.top - 20)) + 'px';
       preview.classList.add('is-visible');
     });
     grid.addEventListener('mouseleave', hidePreview);
@@ -1465,7 +1609,22 @@
   })();
 
   /* ══════════ Options ══════════ */
+  var VAR_COUNT = true;
+  /* 11-02 QA "2,048을 넘는 옵션으로 입력 시도하는 경우, 어떻게 막히는지" — 칸 · ↵ 비활성화에 더해 Options 카드들 위에 빨간 띠 한 번(칸 밑 아님 — 상한이 두 옵션 합이라).
+     문구 = AS-IS "Max 30 values allowed." 틀(사용자 확정), 모양 = 라인시트 저장 차단 띠(.sp-err). 값 하나 더 넣으면 넘는 옵션이 하나라도 있을 때만. false 면 띠 없음 · 백업 …backup-before-var-limit-band.html */
+  var VAR_LIMIT_BAND = true;
+  function renderVarCount() {
+    var el = document.getElementById('varCount'); if (!el) return;
+    var withV = state.options.filter(function (o) { return o.values.length; });
+    el.hidden = !VAR_COUNT || !NO_MAX30;
+    var n = withV.length ? withV.reduce(function (p, o) { return p * o.values.length; }, 1) : 0;
+    el.textContent = n.toLocaleString('en-US') + ' / ' + MAX_VARIANTS.toLocaleString('en-US') + ' variants';
+    el.classList.toggle('is-at-max', state.options.some(function (o) { return wouldExceed(o); }));
+    var band = document.getElementById('varLimitBand');
+    if (band) band.hidden = !VAR_LIMIT_BAND || !NO_MAX30 || !state.options.some(function (o) { return wouldExceed(o); });
+  }
   function renderOptions() {
+    renderVarCount();
     var list = $('optsList');
     list.innerHTML = '';
 
@@ -1480,7 +1639,7 @@
           '<input type="text" maxlength="15" class="opt-input opt-name-input" placeholder="Color">' +
         '</div>' +
         '<div class="opt-col-value">' +
-          '<label class="opt-field-label">Option Value <span class="info-i" data-tip="(Max. 15 chars.) Enter the selectable values for this option, such as Black, Ivory, S, M, or L.">' + ICON_INFO + '</span><span class="opt-field-hint">(Max. 30)</span></label>' +
+          '<label class="opt-field-label">Option Value <span class="info-i" data-tip="(Max. 15 chars.) Enter the selectable values for this option, such as Black, Ivory, S, M, or L.">' + ICON_INFO + '</span>' + (NO_MAX30 ? '' : '<span class="opt-field-hint">(Max. 30)</span>') + '</label>' +
           '<div class="opt-value-row">' +
             '<div class="opt-value-wrap">' +
               '<span class="opt-value-plus">' + IC_PLUS + '</span>' +
@@ -1511,22 +1670,56 @@
       var enterBtn = fields.querySelector('.opt-enter-btn');
       /* 라벨의 상한을 넘는 값이 그대로 들어가고 있었다 (2026-09-29 최대치 테스트에서 발견).
          꽉 차면 입력칸을 막고, 이유는 이미 떠 있는 (Max. 30) 이 말하도록 그 글씨만 진하게 한다 — 새 문구는 만들지 않는다 */
-      var atMax = opt.values.length >= MAX_OPT_VALUES;
+      var atMax = NO_MAX30 ? wouldExceed(opt) : opt.values.length >= MAX_OPT_VALUES;
       addInput.disabled = atMax;
       enterBtn.disabled = atMax;
       var maxHint = fields.querySelector('.opt-field-hint');
       if (maxHint) maxHint.classList.toggle('is-at-max', atMax);
+      if (COMMA_VALUES) addInput.removeAttribute('maxlength');   /* 15자는 칸 전체가 아니라 값 하나마다 */
       function commit() {
         if (!addInput.value.trim()) return;
-        if (opt.values.length >= MAX_OPT_VALUES) return;
-        opt.values.push(addInput.value.trim());
+        if (!COMMA_VALUES) {
+          if (NO_MAX30 ? wouldExceed(opt) : opt.values.length >= MAX_OPT_VALUES) return;
+          if (dupIndex(opt, addInput.value) >= 0) { markDup(); return; }
+          opt.values.push(addInput.value.trim());
+        } else {
+          /* 새 값은 칩으로, 이미 있는 값이나 상한에 걸린 값은 입력칸에 남겨 둔다 */
+          var left = [];
+          splitValues(addInput.value).forEach(function (v) {
+            /* 11-02 "이미 있는 값이라 안 들어간 것은 남아있을필요가 없지 … 2048이넘어서 안들어간거는 남겨도 되지않아? 그러면 지운담에 다시 넣을 수있잖아"
+               KEEP_OVERFLOW: 중복은 버리고 상한에 걸린 값만 opt.draft 에 남긴다 — 칩을 지워 다시 그려도 칸에 그대로. false 면 예전(중복도 남김, 다시 그리면 사라짐) */
+            if (dupIndex(opt, v) >= 0) { if (!KEEP_OVERFLOW) left.push(v); }
+            else if (NO_MAX30 ? wouldExceed(opt) : opt.values.length >= MAX_OPT_VALUES) left.push(v);
+            else opt.values.push(v);
+          });
+          var keep = left.join(', ');
+          if (KEEP_OVERFLOW) opt.draft = keep;
+          renderOptions(); renderDerived();
+          var c2 = list.querySelectorAll('.opt-card')[i];
+          if (c2) { var a2 = c2.querySelector('.opt-value-add'); a2.value = keep; a2.dispatchEvent(new Event('input')); if (!a2.disabled) a2.focus(); }
+          return;
+        }
         renderOptions(); renderDerived();
         var c = list.querySelectorAll('.opt-card')[i];
         if (c) c.querySelector('.opt-value-add').focus();
       }
+      /* 이미 있는 값을 치면 그 칩만 진한 테두리 — Enter 버튼은 흐린 채로 둔다 */
+      function markDup() {
+        var parts = COMMA_VALUES ? splitValues(addInput.value) : [addInput.value];
+        var ds = parts.map(function (v) { return dupIndex(opt, v); });
+        chips.querySelectorAll('.opt-value-chip').forEach(function (c, ci) { c.classList.toggle('is-dup', ds.indexOf(ci) >= 0); });
+        return ds.length && ds.every(function (d) { return d >= 0; }) ? ds[0] : -1;
+      }
       addInput.addEventListener('input', function () {
-        enterBtn.classList.toggle('is-ready', !!addInput.value.trim());
+        if (COMMA_VALUES) {
+          var cut = addInput.value.split(',').map(function (s) { var lead = s.match(/^\s*/)[0]; return lead + s.slice(lead.length, lead.length + 15); }).join(',');
+          if (cut !== addInput.value) addInput.value = cut;
+        }
+        var d = markDup();
+        enterBtn.classList.toggle('is-ready', !!addInput.value.replace(/,/g, '').trim() && d < 0);
+        if (KEEP_OVERFLOW) opt.draft = addInput.value;
       });
+      if (KEEP_OVERFLOW && opt.draft) { addInput.value = opt.draft; addInput.dispatchEvent(new Event('input')); }
       addInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && addInput.value.trim()) { e.preventDefault(); commit(); }
         else if (e.key === 'Backspace' && !addInput.value && opt.values.length) {
@@ -1675,6 +1868,18 @@
   function unitWord(plural) {
     return isPrePack() ? (plural ? 'packs' : 'pack') : (plural ? 'variants' : 'variant');
   }
+  /* 11-03 사용자 "다 Price per variant가 맞는거같아" — 체크박스 이름은 Pre Pack 도 Price per variant 하나(Figma 2옵션 화면과 같게).
+     이름을 부르는 곳(체크박스 · 표 위 안내 Turn off … · 끄기 확인 창 제목)만. 팩 자체를 말하는 문장(Each pack … · All packs … · among the packs)은 그대로.
+     false 면 Pre Pack = Price per pack · 백업 …backup-before-pv-name.html */
+  /* 11-05 사용자 "둘 다 라이브에 맞춰줘" — 라벨 Pack By · Group By(B 대문자, 라이브 표기). LIVE_BY_CAPS=false 면 예전 Pack by · Group by · 백업 …backup-before-by-caps.html */
+  var LIVE_BY_CAPS = true; if (!LIVE_BY_CAPS) document.querySelectorAll('.pack-row-label').forEach(function (n) { n.textContent = n.textContent.replace(' By', ' by'); });
+  var TILE_HOVER_LIVE = true; if (TILE_HOVER_LIVE) document.documentElement.classList.add('tile-hover-live');
+  var PREVIEW_DEV = true; if (PREVIEW_DEV) document.documentElement.classList.add('preview-dev');
+  var PILL_SEG = true; if (PILL_SEG) document.documentElement.classList.add('pill-seg');
+  var PV_NAME_VARIANT = true;
+  /* 11-04 사용자 "베리언트로 해줘" — 표 위 안내도 Pre Pack 에서 "Each variant now has its own price …". false 면 Each pack · 백업 …backup-before-note-variant.html */
+  var NOTE_VARIANT = true;
+  function pvName() { return PV_NAME_VARIANT ? 'variant' : unitWord(false); }
   /* Faire·Shopify처럼 행마다 세 가격을 모두 넣을 수 있다 (2026-09-28).
      재고는 640에서 쓰지 않는다 (2026-08-20). */
   /* 옵션별 가격은 값이 아니라 모드다 — 켜야 열이 생기고 위 Prices 가 잠긴다.
@@ -1701,7 +1906,21 @@
     }
     return false;
   }
+  /* 10-27 개발 협의 — Price per pack/variant 를 켜면 Prices 섹션 통째로 숨김(잠금 · Locked 안내 · 토스트 없음).
+     켜진 동안 서버는 아이템 WS · Sale 을 변형 중 최저 WS · 최저 Sale 로 저장(Sale 없으면 비움, MSRP 그대로) — 아이템 리스트 Price range 필터용.
+     원래 Prices 는 따로 보관 → 끄면 원복(여기선 숨긴 칸에 값이 그대로 남아 있음). PRICES_HIDE = false 면 예전 회색 잠금 · 백업 …backup-before-prices-hide.html */
+  var PRICES_HIDE = true;
+  var PRICE_NOTE = true;   // 10-29 Price per pack 켜면 표 위 안내(Turn off 문구) 보임
   function syncBaseLock() {
+    if (PRICES_HIDE) {
+      var sec = $('pricesSection'); if (sec) sec.hidden = !!state.priceVar;
+      var h0 = $('pricesLock'); if (h0) h0.hidden = true;
+      /* 10-29 안내는 다시 보임 — "이거 문구도 변경해야겠다" → Turn off 문구로(사용자 확정). PRICE_NOTE=false 면 10-27 처럼 안내 없음 */
+      var m0 = $('priceVarNote');
+      if (m0) { m0.hidden = !(PRICE_NOTE && state.priceVar); m0.innerHTML = 'Each ' + (NOTE_VARIANT ? 'variant' : unitWord(false)) + ' now has its own price. Turn off <b>Price per ' + pvName() + '</b> to use one price for the whole item again.'; }
+      if (typeof syncOptInButtons === 'function') syncOptInButtons();
+      return;
+    }
     var lock = state.priceVar;   /* 모드가 켜져 있으면 잠근다 */
     ['baseWs', 'baseSale', 'baseMsrp'].forEach(function (id) {
       var n = $(id); if (!n) return;
@@ -1711,9 +1930,9 @@
     var hint = $('pricesLock');
     if (hint) hint.hidden = !lock;
     var mn = $('priceVarNote');
-    if (mn) { mn.hidden = !lock; mn.innerHTML = 'Each ' + unitWord(false) +
-      ' now carries its own price. The <b>Prices</b> fields above are locked — untick <b>Price per ' +
-      unitWord(false) + '</b> to unlock them.'; }
+    /* 10-29 "Turn off로 바꿔줘" — Prices 섹션이 숨겨지니 '위 Prices 잠김' 대신, 끄면 한 가격으로 돌아간다는 것만. 미국식(Untick ✗), 끄기 확인 창 버튼 Turn off 와 같은 말 · 백업 …backup-before-turn-off-copy.html */
+    if (mn) { mn.hidden = !lock; mn.innerHTML = 'Each ' + (NOTE_VARIANT ? 'variant' : unitWord(false)) +
+      ' now has its own price. Turn off <b>Price per ' + pvName() + '</b> to use one price for the whole item again.'; }
     /* 표 밑 설명도 같이 바뀐다 — 잠긴 뒤에는 상속을 설명하면 거짓말이 된다 */
     if (typeof syncOptInButtons === 'function') syncOptInButtons();
   }
@@ -1812,10 +2031,16 @@
      되돌리려면 이 값만 false — STOCK | EST. SHIP DATE 두 칸짜리 예전 방식이 그대로 돌아온다.
      (예전 코드는 지우지 않았다: shipCells / syncShipCol 의 아래쪽이 그것이다) */
   var SHIP_IN_STOCK = true;
+  /* 10-29 "프리오더를 선택했으면 프리오더 날짜만 넣어주고 테이블 제목을 Est. Ship Date" — 칸엔 날짜만(In Stock 은 그대로), 열 제목 Est. Ship Date.
+     false 면 예전 두 줄(Pre Order / 날짜) + 제목 없음 · 백업 …backup-before-ship-date-col.html */
+  var STOCK_DATE_ONLY = true;
+  /* 10-29 팩 줄 사이즈 값이 다르면 칸에 `-` 대신 `Mixed`(#1f1f1f) — refreshPackHeads · false 면 `-` */
+  var VARIES_MIXED = true;
+  if (STOCK_DATE_ONLY && SHIP_IN_STOCK) { var vcs = $('vtColStock'); if (vcs) { vcs.textContent = 'Est. Ship Date'; vcs.removeAttribute('aria-hidden'); } }
 
   var CHEV_SVG = '<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 3 3-3"/></svg>';
   var CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
-  var STOCK_OPTS = ['In Stock', 'Out of Stock', 'Pre Order'];
+  var STOCK_OPTS = ['In Stock', 'Pre Order'];   /* 10-19 "이번스콥에서 아웃오브스탁은 안하기로 했으니 모두 삭제" — AS-IS 엔 Out of Stock 도 있다. 되돌리려면 가운데에 다시 넣는다 */
 
   /* ══ 달력 (2026-09-29): AS-IS 와 같은 달력에서 날짜를 누르는 순간이 곧 확정 ══════════
      전에는 글자 칸뿐이라 "날짜를 넣고 뭘 눌러야 하지?"가 비어 있었고, 12/3 같은 값도 들어갔다.
@@ -1863,6 +2088,11 @@
       btn.querySelector('.sp-main').textContent = c.stock || 'In Stock';
       /* 날짜가 없으면 새 문구를 만들지 않고 기존 placeholder 를 그대로 보여준다 */
       if (pre) btn.querySelector('.sp-sub').textContent = c.date || 'mm/dd/yyyy';
+      if (pre && STOCK_DATE_ONLY) {   /* 날짜 한 줄만 — 비었으면 회색 mm/dd/yyyy */
+        btn.querySelector('.sp-main').textContent = c.date || 'mm/dd/yyyy';
+        btn.querySelector('.sp-main').classList.toggle('is-empty', !c.date);
+        btn.querySelector('.sp-sub').remove();
+      }
       btn.setAttribute('aria-label', 'Stock: ' + (c.stock || 'not set') + (pre ? ', ships ' + (c.date || 'date not set') : ''));
     }
     function commit(next) {
@@ -2106,7 +2336,7 @@
     }
 
     var sel = el('select', 'stock-select',
-      '<option>In Stock</option><option>Out of Stock</option><option>Pre Order</option>');
+      '<option>In Stock</option><option>Pre Order</option>');
     sel.value = st.stock;
     sel.addEventListener('change', function () { st.stock = sel.value; st.touched = true; paintDate(); syncShipCol(); });
     stock.appendChild(sel);
@@ -2126,13 +2356,15 @@
 
   /* Rows for the current selling method. Keys are stable so switching
      Pre <-> Open Pack never clobbers what the vendor already typed. */
+  var ONE_OPTION_FLAT = true;
   function sellRows() {
     var axes = liveOptions();
     if (!axes.length) return { groups: [], total: 0 };
 
     if (preBySize()) {
       /* 팩(컬러) 줄 ▸ 팩 안 사이즈 줄. 사이즈 줄 key = 'pack:<컬러>#<사이즈>' — 팩 key 'pack:<컬러>' 는 재고가 쓴다 */
-      var packs = packAxes()[0].values, ratio = ratioAxis();
+      var packs = onePack() ? ['*'] : packAxes()[0].values, ratio = ratioAxis();
+      if (onePack()) state.preGroupBy = 'pack';
       var inPack = ratio.values.filter(function (v) { return parseInt(packQty(v) || '0', 10) > 0; });
       if (!inPack.length) inPack = ratio.values;
       var szLabel = function (v) { var n = parseInt(packQty(v) || '0', 10); return n > 0 ? v + ' (' + n + ')' : v; };
@@ -2144,7 +2376,7 @@
         return { groups: sg, total: packs.length, bySize: true };
       }
       var cg = packs.map(function (c) {
-        return { head: { key: 'pack:' + c, label: c, ownStock: true, fold: true },
+        return { head: { key: 'pack:' + c, label: c === '*' ? 'Pack' : c, ownStock: true, fold: true },
                  rows: inPack.map(function (sz) { return { key: 'pack:' + c + '#' + sz, label: szLabel(sz), noStock: true }; }) };
       });
       return { groups: cg, total: packs.length, bySize: true };
@@ -2180,6 +2412,11 @@
       return { groups: groups, total: head.values.length * tailCombos.length };
     }
 
+    /* 10-19 옵션 1개 — "스몰두개 미듐두개 라지가 두개네 그럼안되지": 묶음 줄 S 아래 변형 줄 S 가 또 나왔다 → 묶음 없이 S · M · L 한 줄씩 (key 는 그대로라 넣은 값 유지).
+       되돌리려면 ONE_OPTION_FLAT = false · 백업 …backup-before-one-option.html */
+    if (ONE_OPTION_FLAT && axes.length === 1) {
+      return { groups: [{ head: null, rows: axes[0].values.map(function (v) { return { key: join([v]), label: v }; }) }], total: axes[0].values.length };
+    }
     if (state.openGroupBy >= axes.length) state.openGroupBy = 0;
     var p = axes[state.openGroupBy];
     var rest = axes.filter(function (_, i) { return i !== state.openGroupBy; });
@@ -2243,7 +2480,7 @@
     closeStockPop();
     bulkKeys = allKeys;
     /* 사이즈별 Pre Pack 이면 가격은 사이즈 줄, 재고는 팩 줄 — Apply to all 의 재고는 팩 key 에 쓴다 */
-    bulkShipKeys = model.bySize ? liveOptions().length && packAxes()[0].values.map(function (c) { return 'pack:' + c; }) : null;
+    bulkShipKeys = model.bySize ? liveOptions().length && (onePack() ? ['pack:*'] : packAxes()[0].values.map(function (c) { return 'pack:' + c; })) : null;
     fill.appendChild(BULK_BY_BUTTON ? bulkApplyBtn(allKeys) : bulkLabel());
     activeFields().forEach(function (f) { fill.appendChild(bulkInput(f)); });
     shipCells(fill, 'all');
@@ -2648,12 +2885,66 @@
            범위 숫자를 칸에 넣었더니 고칠 수 있는 값처럼 보였고("너무 헷갈리는데?"), 글자로 바꿨더니 팩 전체 입력이 막혔다
            ("이렇게 해버리면 Apply all을 못하는거잖아") (2026-10-07). 실제 범위는 마우스를 올리면 */
         /* `Varies` 대신 `-` — 사용자 제안(2026-10-07). 숫자도 단어도 아니라 "한 값이 없다"로만 읽힌다 */
-        input.placeholder = varies ? '-' : (nums.length ? lo.toFixed(2) : basePlaceholder(f));
-        input.title = varies ? lo.toFixed(2) + '\u2013' + hi.toFixed(2) + ' by size \u2014 type a price to set every size' : '';
+        /* 10-29 `-` → `Mixed`, #1f1f1f ("Mixed로 1f 컬러로 해줘") — `-` 는 "값 없음"으로 읽힌다는 지적. false 면 `-` */
+        input.placeholder = varies ? (VARIES_MIXED ? 'Mixed' : '-') : (nums.length ? lo.toFixed(2) : basePlaceholder(f));
+        input.title = varies && VARY_TITLE ? lo.toFixed(2) + '\u2013' + hi.toFixed(2) + ' by size \u2014 type a price to set every size' : '';
+        if (VARY_TIP) { input.title = ''; input.dataset.vtip = varies ? keys.length + ' ' + childWord(rowsBox, keys.length) + ' \u00b7 $' + lo.toFixed(2) + ' \u2013 $' + hi.toFixed(2) : ''; }
         input.classList.toggle('is-varies', !!varies);
       });
+      /* `-` 줄은 열어 보고 싶게 — 접혀 있을 때만 이름 밑에 밑줄 `See prices` (10-29 PM "expand해볼 수 있는 뭔가의 의도가 필요"). 누르면 줄 클릭과 같이 펼친다.
+         이름 옆 버튼은 640 이름 칸(165px)에 15자 이름과 같이 안 들어가 밑줄로 · 단어는 옵션 이름과 상관없이 하나 */
+      var fold = h.querySelector('.vt-fold'), nm = h.querySelector('.vt-group-name'), cue = nm && nm.querySelector('.vt-varies-cue');
+      var show = VARIES_CUE && fold && !fold.classList.contains('is-open') && !!h.querySelector('.vt-input.is-varies');
+      if (show && !cue) txt(nm, 'span', 'vt-varies-cue', 'See prices');
+      if (!show && cue) cue.remove();
     });
   }
+  /* ══ VARY_TIP (10-29, PM 에게 물어볼 안): `-` 칸을 눌러 입력할 때 아래에 요약 말풍선(마우스 올리기는 10-29 뺌) ══════════
+     "3 sizes · $20.00 – $23.00" / "Typing sets all sizes". 칸은 그대로 입력칸이라 표가 움직이지 않는다.
+     목록이 아니라 요약 한 줄 — "만약에 2000개면 어쩌려고" (한 팩 줄은 최대 30줄이지만 그래도 길다). 범위는 칸 안이 아니라 말풍선 안이라 고칠 값처럼 안 보인다.
+     false 면 예전 브라우저 기본 툴팁(title) · 백업 …backup-before-ship-date-col.html */
+  /* 10-30 "여기 툴팁 삭제" — 말풍선도, 예전 브라우저 기본 툴팁(title)도 없다. Mixed 만 남는다.
+     되돌리려면 VARY_TIP = true(말풍선) 또는 VARY_TITLE = true(기본 툴팁) · 백업 …backup-before-no-vary-tip.html */
+  var VARY_TIP = false, VARY_TITLE = false;
+  /* 펼치면 나오는 줄의 축 이름 — 팩(컬러) 줄 밑은 sizes, Group by Size 면 colors. 못 찾으면 options */
+  function childWord(rowsBox, n) {
+    var lab = rowsBox && rowsBox.querySelector('.vt-row-label'), v = lab ? lab.textContent.replace(/‑/g, '-').replace(/\s*\(\d+\)$/, '') : '';
+    var ax = liveOptions().filter(function (a) { return a.values.indexOf(v) >= 0; })[0];
+    var w = ax && ax.name ? ax.name.toLowerCase() : 'option';
+    return n === 1 ? w : w + 's';
+  }
+  (function varyTip() {
+    var tip = el('div', 'vary-tip'), at = null;
+    tip.setAttribute('role', 'tooltip');
+    document.body.appendChild(tip);
+    function place() {
+      var r = at.getBoundingClientRect(), w = tip.offsetWidth;
+      var left = Math.max(8, Math.min(r.left + r.width / 2 - w / 2, window.innerWidth - w - 8));   /* 칸 가운데 아래 */
+      tip.style.left = left + 'px';
+      tip.style.top = (r.bottom + 8) + 'px';
+      tip.style.setProperty('--caret-x', Math.round(r.left + r.width / 2 - left) + 'px');
+    }
+    function show(inp) {
+      if (!VARY_TIP || !inp.dataset.vtip) return;
+      at = inp;
+      tip.innerHTML = '<b></b><span></span>';
+      tip.querySelector('b').textContent = inp.dataset.vtip;
+      tip.querySelector('span').textContent = 'Typing sets all ' + inp.dataset.vtip.split(' ')[1] + '.';
+      tip.classList.add('is-visible');
+      place();
+    }
+    function hide() { tip.classList.remove('is-visible'); at = null; }
+    function pick(e) { return e.target.closest ? e.target.closest('.vt-group-head .vt-input.is-varies') : null; }
+    /* 마우스 올리기는 뺐다 (10-29 "후버는 빼줘") — 칸을 눌러 입력할 때만 */
+    document.addEventListener('focusin', function (e) { var i = pick(e); if (i) show(i); else hide(); });
+    document.addEventListener('focusout', function (e) { if (pick(e)) hide(); });
+    /* 칸을 누르다 드로어가 스크롤돼도 따라간다 */
+    document.querySelector('.drawer-body').addEventListener('scroll', function () { if (at) place(); }, true);
+  })();
+
+  /* false 면 `-` 만 · 백업 …backup-before-ship-date-col.html
+     10-29 끔 — "거기가 그렇게 글이 들어가는게 맞냐고 / 자리도 없는데": 헷갈리는 건 `-` 칸인데 단서가 이름 칸에, 이름 칸엔 자리도 없다 */
+  var VARIES_CUE = false;
   /* 가격 칸 밑 회색 팩 금액 — Apply to all 줄은 늘, 행은 직접 값을 하나라도 넣은 행만 */
   function refreshPackLines() {
     if (!packLine()) return;
@@ -2794,7 +3085,7 @@
   /* Table footnote + the inventory switch state. */
   function syncOptInButtons() {
     var pv = $('priceVarToggle');
-    if (pv) { pv.checked = !!state.priceVar; $('priceVarLabel').textContent = 'Price per ' + unitWord(false); }
+    if (pv) { pv.checked = !!state.priceVar; $('priceVarLabel').textContent = 'Price per ' + pvName(); }
     var stocked = 0;
     Object.keys(state.cells).forEach(function (k) { if (state.cells[k].qty) stocked++; });
 
@@ -2805,7 +3096,7 @@
     var lines = [];
     if (state.priceVar) {
       if (isPrePack()) lines.push(TABLE_PER_PC
-        ? '<b>Prices are per piece</b>, same as Prices above.' +
+        ? '<b>Prices are per piece</b>' + (PRICES_HIDE ? '.' : ', same as Prices above.') +   /* 10-27 Prices 섹션이 숨겨지니 '위 Prices' 언급 뺌 */
           (preBySize() ? (state.preGroupBy === 'size'
             ? ' Stock is set per pack — group by ' + packAxes()[0].name + ' to change it.'
             : ' A pack row fills its sizes; a size row can differ.') : '') +
@@ -2815,9 +3106,10 @@
         : '<b>WS Price and Sale Price are for the whole box; MSRP is per piece.</b>');
     } else if (anyRowPrice()) {
       lines.push('<b>Some rows still have their own price.</b> They are kept but not used — turn <b>Price per ' +
-        unitWord(false) + '</b> back on to see them.');
+        pvName() + '</b> back on to see them.');
     }
-    if (state.priceVar) lines.push('Use <b>Apply to all</b> or a group header to fill many rows at once \u00b7 <b>Tab</b> moves down the column.');
+    var oneFlat = ONE_OPTION_FLAT && liveOptions().length === 1 && !isPrePack();   /* 옵션 1개 Open Pack 은 묶음 줄이 없다 */
+    if (state.priceVar) lines.push('Use <b>Apply to all</b>' + (oneFlat ? '' : ' or a group header') + ' to fill many rows at once \u00b7 <b>Tab</b> moves down the column.');
     note.innerHTML = lines.join('<br>');
   }
 
@@ -2989,6 +3281,8 @@
   /* ══════════ Open Pack grouping ══════════ */
   function renderOpenPack() {
     var axes = liveOptions(), sel = $('openGroupBy');
+    /* 옵션 1개면 묶을 축이 없다 — Group by 줄을 숨긴다 */
+    sel.closest('.pack-card').hidden = ONE_OPTION_FLAT && axes.length === 1;
     if (!axes.length) { sel.innerHTML = '<option>—</option>'; return; }
     if (state.openGroupBy >= axes.length) state.openGroupBy = 0;
     sel.innerHTML = '';
@@ -3003,7 +3297,7 @@
   /* 사이즈별 Pre Pack 의 Group by — 팩(컬러)로 묶기 / 사이즈로 묶기. Open Pack 의 Group by 와 같은 모양 */
   function renderPreGroup() {
     var row = $('preGroupRow'), sel = $('preGroupBy');
-    var on = preBySize();
+    var on = preBySize() && !onePack();   /* 팩이 하나면 묶을 축이 없다 */
     row.hidden = !on;
     if (!on) return;
     var packAx = packAxes()[0], ratio = ratioAxis();
@@ -3084,10 +3378,57 @@
   state.packQty['L'] = '2';
 
 
+  /* 10-19 "Price per variant 클릭했다가 다시 언클릭해서 원복하는경우에 너의 가격이 달라진다 예전가격으로 돌아간다라는거를 모달로 띄워줘야할거같아"
+     — 표에 따로 넣은 가격이 있을 때만 확인. Cancel = 체크 유지, Turn off = 해제(위 Prices 값으로 돌아감).
+     되돌리려면 false(바로 해제) · 백업 …backup-before-pv-modal.html */
+  var PV_OFF_MODAL = true;
+  /* 11-03 사용자 "응 둘 다 해줘" — 확인 창을 앱 확인 창(DS Popup-Discard) 모양으로. 라인시트 Reset all 창과 같은 틀, 버튼은 검정(지우기가 아니라 되돌리기라 빨강 X).
+     문구는 그대로 두되 가격 줄 · 회색 작은 줄을 본문 한 덩어리로(Figma 컴포넌트가 제목 + 본문만). false 면 예전 창 · 백업 …backup-before-pv-app.html */
+  var PV_APP = true;
+  /* 11-03 사용자 "스페셜프라이스에 영향이 있으니 … 최소값을 적용한다는 문구가 필요함" → 확정 문장 두 번째. 라인시트 Special 은 그 상품 팩(변형) 중 가장 낮은 Special 이 기본값.
+     false 면 한 문장 · 백업 …backup-before-pv-sp-note.html */
+  var PV_SP_NOTE = true;
+  /* 11-04 사용자 "여기도 pack이 아니라 베리언트야" — 끄기 확인 창 본문도 Pre Pack 에서 variants(All variants … · among the variants).
+     false 면 Pre Pack = packs · 백업 …backup-before-pv-dialog-variant.html */
+  var PV_DIALOG_VARIANT = true;
+  /* 11-05 사용자 "Confirm이 맞아" — 끄기 확인 창 버튼 = Confirm(dev · Figma 와 같게). false 면 Turn off · 백업 …backup-before-confirm-btn.html */
+  var PV_BTN_CONFIRM = true;
+  function applyPriceVar(on) { state.priceVar = on; $('priceVarToggle').checked = on; renderSellTable(); syncBaseLock(); }
+  function pvOffModal() {
+    var unit = unitWord(false), units = unitWord(true);
+    var fmt = function (f, label) { var v = baseVal(f); return v ? label + ' $' + parseFloat(v).toFixed(2) : null; };
+    var line = [fmt('ws', 'WS'), fmt('sale', 'Sale'), fmt('msrp', 'MSRP')].filter(Boolean).join(' · ') || 'No item price yet';
+    var d = document.createElement('div');
+    d.className = 'pv-dim';
+    if (PV_APP) d.innerHTML = '<div class="pv-modal pv-app" role="alertdialog" aria-modal="true" aria-labelledby="pvT">' +
+      '<div class="pv-head"><span class="pv-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16h.01"/><path d="M12 8v4"/><path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z"/></svg></span><h3 id="pvT">Turn off Price per ' + pvName() + '?</h3></div>' +
+      '<p>All ' + (PV_DIALOG_VARIANT ? 'variants' : units) + ' will use the item price.' + (PV_SP_NOTE ? ' In linesheets, the lowest Special Price among the ' + (PV_DIALOG_VARIANT ? 'variants' : units) + ' will be the default Special Price.' : '') + '</p>' +   /* 11-03 "너무 디테일해" — 다른 확인 창(Discard changes? · Deactivate Linesheet)처럼 한 문장 */
+      '<div class="pv-btns"><button type="button" class="pv-no">Cancel</button><button type="button" class="pv-yes">' + (PV_BTN_CONFIRM ? 'Confirm' : 'Turn off') + '</button></div></div>';
+    else d.innerHTML = '<div class="pv-modal" role="alertdialog" aria-modal="true" aria-labelledby="pvT">' +
+      '<h3 id="pvT">Turn off Price per ' + pvName() + '?</h3>' +
+      '<p>All ' + units + ' will go back to the item price in <b>Prices</b>. The prices you set for each ' + unit + ' won\'t apply.</p>' +
+      '<div class="pv-prices">' + line + ' /pc</div>' +
+      '<small>Turn on Price per ' + pvName() + ' again before saving to bring them back.</small>' +
+      '<div class="pv-btns"><button type="button" class="pv-no">Cancel</button><button type="button" class="pv-yes">' + (PV_BTN_CONFIRM ? 'Confirm' : 'Turn off') + '</button></div></div>';
+    document.body.appendChild(d);
+    var esc = function (e) { if (e.key === 'Escape') close(false); };
+    var close = function (off) { d.remove(); document.removeEventListener('keydown', esc); applyPriceVar(!off); };
+    d.querySelector('.pv-no').onclick = function () { close(false); };
+    d.querySelector('.pv-yes').onclick = function () { close(true); };
+    d.addEventListener('click', function (e) { if (e.target === d) close(false); });
+    document.addEventListener('keydown', esc);
+    d.querySelector('.pv-yes').focus();
+  }
+  /* 11-05 사용자 "턴온했다가 아무것도 체인지 안하고 턴오프하는데도 저 모달이 떠 그건 아닌듯" — 끌 때 가격이 실제로 바뀔 때만 확인.
+     체크를 켠 순간의 표 값을 기억해 두고, 끌 때 그대로면(켰다 바로 끔) 묻지 않고 끈다. 저장할 때부터 켜져 있던 아이템(켠 기억 없음)은 예전처럼 따로 넣은 값이 있으면 확인.
+     false 면 예전(값이 하나라도 있으면 항상 확인) · 백업 …backup-before-pv-off-changed.html */
+  var PV_OFF_ONLY_CHANGED = true, pvOnSnap = null;
+  function cellsSnap() { return JSON.stringify(state.cells); }
   $('priceVarToggle').addEventListener('change', function (e) {
-    state.priceVar = e.target.checked;
-    renderSellTable();
-    syncBaseLock();
+    if (e.target.checked) { applyPriceVar(true); pvOnSnap = cellsSnap(); return; }   /* 표를 그린 뒤의 값을 기억(그리면서 칸 모양이 채워짐) */
+    var untouched = PV_OFF_ONLY_CHANGED && pvOnSnap !== null && cellsSnap() === pvOnSnap;
+    if (!e.target.checked && PV_OFF_MODAL && anyRowPrice() && !untouched) { e.target.checked = true; pvOffModal(); return; }
+    applyPriceVar(e.target.checked);
   });
 
   if (!UNDO_ICONS) $('histBox').hidden = true;
@@ -3099,6 +3440,22 @@
      쥬얼리: Metal(Gold · Silver · Bronze) 팩 × Length(10" · 12" · 13") 비율 2-2-2 = 6pcs, 기준가 WS 18.00 · Sale 16.00 · MSRP 40.00 /pc.
      Gold 는 길이마다 값이 다르고, Silver 는 12" 만 기준가를 물려받고, Bronze 는 세 길이가 같은 값 — 팩 줄 칸 모양 세 가지(-, 회색, 검정)가 다 보이게 */
   window.__loadSample = function (name) {
+    /* 10-19 "오픈팩이랑 프리팩이랑 둘다 옵션을 1개만 선택해서 세팅했을때에 나오는 그림들을 만들어보자! 먼저 아이템세팅!"
+       — 옵션 = Size(S · M · L) 하나. 값은 흐름 데이터의 FG-SS25-101(사이즈만 있는 상품) WS 10.50 · Sale 10.00 · MSRP 22.00, Pre Pack 2-2-2 */
+    if (name === 'one-option') {
+      var nm = document.querySelector('input[placeholder^="Enter Item Name"]');
+      if (nm) nm.value = 'FG-SS25-101';
+      $('baseWs').value = '10.50'; $('baseSale').value = '10.00'; $('baseMsrp').value = '22.00';
+      state.options = [ { name: 'Size', values: ['S', 'M', 'L'], preset: '', sub: -1 } ];
+      state.ratioBy = 0; state.ratioByTouched = true;
+      state.packQty = { 'S': '2', 'M': '2', 'L': '2' };
+      state.cells = {}; state.ship = {}; state.preOpen = {}; state.preGroupBy = 'pack';
+      state.priceVar = false; $('priceVarToggle').checked = false;
+      histPast = []; histFuture = []; syncHistBtns();
+      bulkLast = { stock: 'In Stock', date: '' };
+      renderOptions(); renderDerived(); syncBaseLock();
+      return;
+    }
     if (name !== 'jewelry') { location.reload(); return; }
     var nameIn = document.querySelector('input[placeholder^="Enter Item Name"]');
     if (nameIn) nameIn.value = 'Snake Chain Necklace';
@@ -3120,7 +3477,7 @@
       'pack:Bronze#12"': c('14.00', '12.00', '32.00'),
       'pack:Bronze#13"': c('14.00', '12.00', '32.00')
     };
-    state.ship = {}; state.preOpen = { 'pack:Gold': true }; state.preGroupBy = 'pack';
+    state.ship = {}; state.preOpen = {}; state.preGroupBy = 'pack';   /* 10-19 "벤더 어드민에서도 접혀있게해줘" — PDP 처럼 Pre Pack 은 기본 접힘(팩 줄의 값 · 날짜는 보임), 화살표로 펼침 — 쥬얼리 샘플도 Gold 펼침으로 시작하지 않음 · 백업 …backup-before-admin-fold.html */
     state.priceVar = true; $('priceVarToggle').checked = true;
     state.sellingMethod = 'pre-pack';
     document.querySelectorAll('.toggle-pill').forEach(function (b) { b.classList.toggle('is-active', b.dataset.view === 'pre-pack'); });
@@ -3184,6 +3541,9 @@
     <button class="demo-ctl-item" type="button" data-sample="jewelry">
       <span class="demo-ctl-check"></span><span>쥬얼리<small>Gold · Silver · Bronze × 10" · 12" · 13"</small></span>
     </button>
+    <button class="demo-ctl-item" type="button" data-sample="one-option">
+      <span class="demo-ctl-check"></span><span>옵션 1개 (Size)<small>S · M · L 하나만 — Pre / Open 둘 다</small></span>
+    </button>
     <div class="demo-ctl-sep"></div>
     <div class="demo-ctl-title">LAYOUT</div>
     <a class="demo-ctl-item" data-file="Shopcord-Item-Phase3-2026-08-06.html"
@@ -3202,6 +3562,12 @@
     </a>
     <a class="demo-ctl-item" data-file="Shopcord-Admin-Order-2026-10-12.html" href="Shopcord-Admin-Order-2026-10-12.html">
       <span class="demo-ctl-check"></span><span>Vendor Admin Orders<small>Figma 381-21731 · 리스트 · 상세</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-Linesheet-2026-10-19.html" href="Shopcord-Admin-Linesheet-2026-10-19.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Linesheet<small>Figma 410-77903 · Special Price 일괄 변경</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-ItemList-2026-10-27.html" href="Shopcord-Admin-ItemList-2026-10-27.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Item List<small>Figma 823-11957 · 838-22718 · 그리드 · 리스트 · Price range</small></span>
     </a>
     <div class="demo-ctl-sep"></div>
     <a class="demo-ctl-item" data-file="pack-model-explainer.html" href="pack-model-explainer.html">
@@ -3252,6 +3618,20 @@
   document.addEventListener('click', function (e) {
     if (!ctl.contains(e.target)) ctl.classList.remove('is-open');
   });
+})();
+</script>
+<script>
+/* 10-28 아이템 리스트 안 드로어로 열렸을 때 — 닫기 · Cancel · Save → 닫기, 넓히기 → 바깥 폭도 같이, 톱니 LAYOUT 링크 → 바깥 화면 이동 */
+(function () {
+  if (!document.documentElement.classList.contains('is-embed') || window.parent === window) return;
+  function tell(m) { window.parent.postMessage(m, '*'); }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a.demo-ctl-item[data-file]');
+    if (a) { e.preventDefault(); tell({ type: 'ed-go', file: a.getAttribute('data-file') }); return; }
+    if (e.target.closest('.drawer-close, .drawer-head .btn')) { tell({ type: 'ed-close' }); return; }
+    if (e.target.closest('#drawerExpand')) setTimeout(function () { tell({ type: 'ed-wide', wide: document.querySelector('.drawer').classList.contains('is-wide') }); }, 0);
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !document.querySelector('.pv-btns')) tell({ type: 'ed-close' }); });
 })();
 </script>
 </body>

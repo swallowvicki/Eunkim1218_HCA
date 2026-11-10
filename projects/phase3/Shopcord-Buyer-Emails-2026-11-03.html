@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopcord — Buyer Order Emails</title>
+<style>
+  /* 11-03 바이어 오더 메일 To be(Figma Emails 페이지 To be) — "베리언트별로 가격이 달라졌으니 이메일도". AS-IS 줄 모양("수량 x 가격") 그대로, 줄 단위만 상품 → 변형.
+     Open = 변형마다 한 줄, Pre = 팩(컬러)마다 한 줄 + 밑에 회색 사이즈별 /pc. 10줄 + Show all N Items. 데이터 = Admin Order ORD-20261012-001 */
+  body { margin: 0; background: #ece9e5; font-family: Arial, Helvetica, sans-serif; color: #1f1f1f; }
+  .wrap { width: 600px; margin: 32px auto 80px; background: #fbf7f3; padding: 32px 0 24px; }
+  .logo { text-align: center; font-weight: 700; font-size: 22px; letter-spacing: -.3px; }
+  .logo b { color: #e11d74; }
+  .card { background: #fff; margin: 24px 30px 0; border-radius: 8px; padding: 32px 30px 30px; }
+  .card h1 { margin: 0; text-align: center; font-size: 22px; line-height: 28px; }
+  .card hr { width: 60px; border: 0; border-top: 1px solid #e11d74; margin: 18px auto 30px; }
+  .card p { margin: 0 0 20px; font-size: 16px; line-height: 24px; }
+  .tbl { border: 1px solid #f0ebe6; border-radius: 8px; overflow: hidden; margin-top: 12px; }
+  .row { display: flex; border-top: 1px solid #f0ebe6; }
+  .row:first-child { border-top: 0; }
+  .row > b { width: 160px; flex-shrink: 0; background: #fbf7f3; padding: 16px; font-size: 12px; line-height: 16px; }
+  .row > div { flex: 1; padding: 16px; font-size: 12px; line-height: 16px; min-width: 0; }
+  .row a.trk { display: block; color: #e11d74; text-decoration: underline; }
+  .its { display: flex; flex-direction: column; gap: 8px; }
+  .its .ih { font-weight: 700; }
+  .its .ih i { font-style: normal; font-weight: 400; color: #6b6b6b; }
+  .its .il b { font-weight: 700; }
+  .its .is { font-size: 11px; line-height: 15px; color: #6b6b6b; margin-top: -4px; }
+  .more { margin-top: 8px; text-align: center; font-size: 12px; color: #999; text-decoration: underline; cursor: pointer; background: none; border: 0; font-family: inherit; }
+  .sum { background: #f5f5f5; border-radius: 8px; margin-top: 30px; padding: 16px; font-size: 12px; line-height: 16px; }
+  .sum div { display: flex; padding: 3px 0; }
+  .sum span { width: 144px; flex-shrink: 0; }
+  .sum .tot { font-weight: 700; }
+  .sum.one div { justify-content: space-between; }
+  .sum.one span { width: auto; }
+  .btn { display: block; margin-top: 30px; height: 50px; border-radius: 8px; background: #e63e89; color: #fff; text-align: center; line-height: 50px; font-weight: 700; font-size: 16px; letter-spacing: .3px; }
+  .foot { text-align: center; font-size: 11px; color: #777; margin-top: 40px; }
+  .demo-ctl { position: fixed; right: 20px; bottom: 20px; z-index: 300; }
+  .demo-ctl-btn { width: 40px; height: 40px; border-radius: 9999px; border: none; cursor: pointer; background: #252322; color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.22); display: inline-flex; align-items: center; justify-content: center; }
+  .demo-ctl-btn svg { width: 19px; height: 19px; }
+  .demo-ctl-pop { display: none; position: absolute; right: 0; bottom: 50px; width: 282px; background: #fff; border: 1px solid #eceae7; border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,.16); padding: 6px; max-height: 78vh; overflow: auto; }
+  .demo-ctl.is-open .demo-ctl-pop { display: block; }
+  .demo-ctl-title { font-size: 10px; font-weight: 700; letter-spacing: .6px; color: #a3a3a3; padding: 6px 8px 8px; }
+  .demo-ctl-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px; font-size: 13px; color: #252322; text-decoration: none; }
+  .demo-ctl-item:hover { background: #f4f4f4; }
+  .demo-ctl-item.is-current { background: #f7eef2; color: #9d4862; font-weight: 600; }
+  .demo-ctl-item small { display: block; font-size: 11px; color: #a3a3a3; font-weight: 400; }
+  .demo-ctl-check { width: 14px; flex-shrink: 0; color: #e21d76; }
+</style>
+</head>
+<body>
+<div class="wrap" id="mail"></div>
+<script>
+(function () {
+  /* 데이터 — Admin Order(ORD-20261012-001)와 같은 값. 바이어가 낸 값(Special → Sale → WS) */
+  var PRE = { name: 'Relaxed Linen Dress', style: 'FG-SS25-999', tag: 'Pre Pack', lines: [
+    ['2 x $117.00/pack', 'Heathered Olive', 'S(2) $18.00 · M(2) $19.50 · L(2) $21.00 /pc'],
+    ['1 x $129.00/pack', 'Burgundy Velvet', 'S(2) $21.50 · M(2) $21.50 · L(2) $21.50 /pc'],
+    ['1 x $117.00/pack', 'Rainbow Tie-Dye', 'S(2) $19.50 · M(2) $19.50 · L(2) $19.50 /pc']] };
+  var SHIRT = { name: 'Relaxed Linen Shirt Relaxed Linen Shirt', style: 'FG-SS25-104', tag: 'Open Pack', lines: [
+    ['1 x $16.00/pcs', 'Sky Blue / S'], ['2 x $18.00/pcs', 'Sky Blue / M'], ['3 x $19.80/pcs', 'Sky Blue / L'],
+    ['1 x $16.00/pcs', 'Tan / S'], ['2 x $18.00/pcs', 'Tan / M'], ['3 x $19.80/pcs', 'Tan / L']] };
+  var OPEN = { name: 'Relaxed Linen Dress', style: 'FG-SS25-999', tag: 'Open Pack', lines: [
+    ['1 x $18.00/pcs', 'Heathered Olive / S'], ['2 x $19.50/pcs', 'Heathered Olive / M'], ['3 x $21.00/pcs', 'Heathered Olive / L'],
+    ['2 x $21.50/pcs', 'Burgundy Velvet / S'], ['2 x $21.50/pcs', 'Burgundy Velvet / M'], ['2 x $21.50/pcs', 'Burgundy Velvet / L']] };
+  var SHIP_SHIRT = { name: SHIRT.name, style: SHIRT.style, tag: SHIRT.tag, lines: SHIRT.lines.filter(function (l) { return l[1] !== 'Tan / L'; }) };   /* 04/20/2027 배송분 — Tan L 은 05/15/2027 */
+  var state = { mail: 'placed', all: false };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function items(list) {
+    var total = list.reduce(function (t, it) { return t + it.lines.length; }, 0), n = 0, h = '';
+    list.forEach(function (it) {
+      var ls = state.all ? it.lines : it.lines.filter(function () { return n++ < 10; });
+      if (!state.all && n > 10 && !ls.length) return;
+      if (!ls.length) return;
+      h += '<div class="ih">' + esc(it.name) + ' <i>· ' + it.tag + '</i></div>';
+      ls.forEach(function (l) { h += '<div class="il"><b>' + l[0] + '</b> ' + esc(l[1]) + '</div>' + (l[2] ? '<div class="is">' + l[2] + '</div>' : ''); });
+    });
+    return '<div class="its">' + h + '</div>' + (total > 10 ? '<button type="button" class="more" id="more">' + (state.all ? 'Show less' : 'Show all ' + total + ' Items') + '</button>' : '');
+  }
+  function row(k, v) { return '<div class="row"><b>' + k + '</b><div>' + v + '</div></div>'; }
+  var M = {
+    placed: { t: 'Thanks for your order!', p: 'Your order has been placed with <b>{Vendor}</b> through Shopcord<br><b>{Vendor}</b> will review and confirm it shortly, we\'ll email you as soon as it\'s confirmed. Please note that your card is charged only when each shipment is ready.',
+      rows: function () { return row('Order Number', 'ORD-20261012-001') + row('Order Date', '10/12/2026') + row('Sold By', 'Vendor name') + row('Linesheet', 'Summer Collection 2026') + row('Items', items([PRE, SHIRT, OPEN])); },
+      sum: '<div class="tot"><span>Total Order Amount</span>$951.80</div><div><span>Payment Method</span>Credit Card Ending 8765</div><div><span>Ship To</span>123 Yorkview Dr, New York 98767</div><div><span>Status Line</span>Order Placed</div>', btn: 'VIEW ORDER DETAILS' },
+    vendor: { t: 'Vendor sent you an order!', p: 'Vendor <b>{Vendor Name}</b> has send you an order through Shopcord. Please review your order to confirm and proceed check out. If the order is not right, you can reject the order and let vendor know.',
+      rows: function () { return row('Order Number', 'ORD-20261012-001') + row('Order Date', '10/12/2026') + row('Sold By', 'Vendor name') + row('Linesheet', 'Summer Collection 2026') + row('Items', items([PRE, SHIRT, OPEN])); },
+      sum: '<div class="tot"><span>Total Order Amount</span>$951.80</div>', btn: 'REVIEW ORDER' },
+    confirmed: { t: 'Your order is confirmed', p: '<b>{Vendor}</b> has confirmed your order and is preparing it for shipment. We\'ll send tracking as soon as it\'s on the way. Heads up: your order may arrive in more than one shipment, and your card is charged per shipment as each one ships.',
+      rows: function () { return row('Order Number', 'ORD-20261012-001') + row('Order Date', '10/12/2026') + row('Sold By', 'Vendor name') + row('Linesheet', 'Summer Collection 2026') + row('Items', items([PRE, SHIRT, OPEN])); },
+      sum: '<div class="tot"><span>Total Confirmed Amount</span>$951.80</div><div><span>Payment Method</span>Credit Card Ending 8765</div><div><span>Ship To</span>123 Yorkview Dr, New York 98767</div><div><span>Status Line</span>Confirmed</div>', btn: 'VIEW ORDER DETAILS' },
+    shipped: { t: 'Your shipment is on its way', p: 'Good news—your order from <b>{Vendor}</b> has shipped. Follow it with the tracking link below. Your card has been charged for the items in this shipment.',
+      rows: function () { return row('Shipment Number', 'Shipment ID') + row('Order Number', 'ORD-20261012-001') + row('Sold By', 'Vendor name') + row('Carrier', 'UPS') + row('Tracking Number', '<a class="trk" href="#">#1Z999AA10123456784</a>') + row('Shipped On', '04/20/2027') + row('Items in This Shipment', items([PRE, SHIP_SHIRT, OPEN])); },
+      sum: '<div class="tot"><span>Amount Charged for this Shipment</span>$892.40</div>', one: true, btn: 'TRACK SHIPMENT' }
+  };
+  function render() {
+    var m = M[state.mail];
+    document.getElementById('mail').innerHTML = '<div class="logo">shop<b>cord</b></div><div class="card"><h1>' + m.t + '</h1><hr><p>Hi <b>{Buyer Name}</b>,</p><p>' + m.p + '</p>' +
+      '<div class="tbl">' + m.rows() + '</div><div class="sum' + (m.one ? ' one' : '') + '">' + m.sum + '</div><a class="btn" href="#">' + m.btn + '</a></div>' +
+      '<div class="foot">You\'re receiving this because you placed an order through Shopcord.</div>';
+    var b = document.getElementById('more'); if (b) b.onclick = function () { state.all = !state.all; render(); };
+  }
+  window.__data = function (v) { state.mail = v; state.all = false; render(); };
+  if (window.__SHARE_VIEW && M[window.__SHARE_VIEW]) state.mail = window.__SHARE_VIEW;
+  window.__mail0 = state.mail;
+  render();
+})();
+</script>
+
+<div class="demo-ctl" id="demoCtl">
+  <div class="demo-ctl-pop">
+    <div class="demo-ctl-title">EMAIL</div>
+    <div class="demo-ctl-title">LAYOUT</div>
+    <a class="demo-ctl-item" data-file="Shopcord-Item-Phase3-2026-08-06.html" href="Shopcord-Item-Phase3-2026-08-06.html">
+      <span class="demo-ctl-check"></span><span>640 · 원본 기준<small>평면 단일 컬럼</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Buyer-PDP-Price-2026-09-22.html" href="Shopcord-Buyer-PDP-Price-2026-09-22.html">
+      <span class="demo-ctl-check"></span><span>Buyer PDP · 가격 표기<small>바이어가 보는 상품 화면</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Buyer-PLP-Price-2026-09-29.html" href="Shopcord-Buyer-PLP-Price-2026-09-29.html">
+      <span class="demo-ctl-check"></span><span>Buyer PLP · 가격 표기<small>상품 목록 카드</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Buyer-Cart-2026-10-12.html" href="Shopcord-Buyer-Cart-2026-10-12.html">
+      <span class="demo-ctl-check"></span><span>Buyer Cart · Checkout · Orders<small>Figma UI 373-6495 · 규칙 371-2127 · Order 381-12616</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-Order-2026-10-12.html" href="Shopcord-Admin-Order-2026-10-12.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Orders<small>Figma 381-21731 · 리스트 · 상세</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-Linesheet-2026-10-19.html" href="Shopcord-Admin-Linesheet-2026-10-19.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Linesheet<small>Figma 410-77903 · Special Price 일괄 변경</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-ItemList-2026-10-27.html" href="Shopcord-Admin-ItemList-2026-10-27.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Item List<small>Figma 823-11957 · 838-22718 · 그리드 · 리스트 · Price range</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Buyer-Emails-2026-11-03.html" href="Shopcord-Buyer-Emails-2026-11-03.html">
+      <span class="demo-ctl-check"></span><span>Buyer Order Emails<small>Order Placed · Confirmed · Shipped · Vendor-Created</small></span>
+    </a>
+  </div>
+  <button class="demo-ctl-btn" type="button" aria-label="Demo control">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+      <circle cx="10" cy="10" r="2.6"/>
+      <path d="M10 1.8v2.2M10 16v2.2M3.2 10H1M19 10h-2.2M5.2 5.2 3.6 3.6M16.4 16.4l-1.6-1.6M14.8 5.2l1.6-1.6M3.6 16.4l1.6-1.6"/>
+    </svg>
+  </button>
+</div>
+<script>
+(function () {
+  var ctl = document.getElementById('demoCtl');
+  var here = window.__SHARE_PAGE || location.pathname.split('/').pop();
+  var CHECK = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 7.5l3 3 5-6"/></svg>';
+  ctl.querySelectorAll('.demo-ctl-item[data-file]').forEach(function (a) {
+    if (a.dataset.file === here) {
+      a.classList.add('is-current');
+      a.querySelector('.demo-ctl-check').innerHTML = CHECK;
+      a.addEventListener('click', function (e) { e.preventDefault(); });
+    }
+  });
+  function markData(v) { ctl.querySelectorAll('[data-data]').forEach(function (a) { var on = a.dataset.data === v; a.classList.toggle('is-current', on); a.querySelector('.demo-ctl-check').innerHTML = on ? CHECK : ''; }); }
+  ctl.querySelectorAll('[data-data]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); window.__data(a.dataset.data); markData(a.dataset.data); }); });
+  markData(window.__mail0 || 'placed');
+  ctl.querySelector('.demo-ctl-btn').addEventListener('click', function (e) { e.stopPropagation(); ctl.classList.toggle('is-open'); });
+  document.addEventListener('click', function (e) { if (!ctl.contains(e.target)) ctl.classList.remove('is-open'); });
+})();
+</script>
+</body>
+</html>

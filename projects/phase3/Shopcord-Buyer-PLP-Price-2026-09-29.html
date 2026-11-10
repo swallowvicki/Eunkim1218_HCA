@@ -167,7 +167,8 @@
 </head>
 <body>
 
-<div class="brief">
+<!-- 10-19 "PDP, PLP에 저 위에 넣은 화면 삭제해줘" — 설명 블록 숨김. 되돌리려면 hidden 을 지운다 -->
+<div class="brief" hidden>
   <h1>Buyer PLP — 옵션별 가격 표기</h1>
   <p>Figma <b>148-52245</b>(최신) — 카드 가격은 네 상태입니다. <b>정가</b> <code>$9.80/pc</code> · <b>Special Price</b> 분홍 패널 + 라벨 + 할인% + <code>WS</code> 취소선(티켓 Figma 453-106593, 10-13 — Sale 대체) · <b>세일</b> 빨간 할인율 + <code>WS</code> 취소선 · <b>판매 종료</b> 회색 + <code>No longer available</code>. 카드엔 MSRP가 없습니다.</p>
   <p>옵션마다 값이 다르면 범위 대신 <b>최저가에 <code>~</code></b>(<code>up to 14% $18.00~/pc</code> · PDP 헤더와 같은 숫자, 사이즈까지 보고 최저가). 세일 할인율은 PDP와 같은 <b>up to N%</b>(올림) — 원본은 <code>5%</code>지만 파생값이라 상한으로만 씁니다. <b>일부 옵션만 할인이면 WS 취소선 줄을 뺍니다</b> — 취소선이 "전부 할인"처럼 읽히기 때문입니다.</p>
@@ -200,6 +201,14 @@
       <button type="button" class="pt-new" data-ptype="c6">⑥ +Sale+Special</button>
       <button type="button" class="pt-new" data-ptype="c7">⑦ +Special+MSRP</button>
       <button type="button" class="pt-new" data-ptype="c8">⑧ 넷 다</button>
+      <button type="button" class="pt-new" data-ptype="c9">⑨ Special ≥ Sale (역전)</button>
+    </span>
+  </div>
+  <div class="demo-bar-row">
+    <span class="demo-bar-label">가격 케이스</span>
+    <span class="demo-bar-seg">
+      <button type="button" data-pcase="off">끔</button>
+      <button type="button" data-pcase="on">케이스 6개 보기</button>
     </span>
   </div>
   <div class="demo-bar-row" data-oos-row>
@@ -295,14 +304,32 @@
      ① WS  ② WS+Sale  ③ WS+MSRP  ④ WS+Special  ⑤ WS+Sale+MSRP  ⑥ WS+Sale+Special  ⑦ WS+Special+MSRP  ⑧ 넷 다
      MSRP 는 "있으면 표기, 없으면 표기 안 함". Special 이 있으면 Sale 은 안 보여 ⑥=④ · ⑧=⑦. false 면 예전 버튼 3개 · 백업 …backup-before-combo8.html */
   var COMBO8 = true;
-  var COMBO = { c1: ['regular', 1], c2: ['sale', 1], c3: ['regular', 0], c4: ['special', 1], c5: ['sale', 0], c6: ['special', 1], c7: ['special', 0], c8: ['special', 0] };
+  var COMBO = { c1: ['regular', 1], c2: ['sale', 1], c3: ['regular', 0], c4: ['special', 1], c5: ['sale', 0], c6: ['special', 1], c7: ['special', 0], c8: ['special', 0], c9: ['special', 0] };
+  /* ══ Special ≥ WS = 보통 가격 (2026-10-21) — PDP SP_OVER_WS 와 같은 규칙 ══════════════════════════
+     Special(라인시트)이 WS(아이템)보다 높거나 같은 옵션은 할인이 아니다 → 분홍 패널 · `Special Price` · % · ~~WS~~ 없이 값만.
+     (10-21 SP_ANY_PINK 로 대체 — 진짜 Special 이 하나라도 있으면 분홍) ~~패널은 모든 옵션이 WS 보다 쌀 때만.~~ 일부만이면 패널 없이 `up to N% $17.00~/pc` (PDP 헤더와 같음), 하나도 없으면 `$15.00/pc` 만.
+     ⑨ 데모: 1번 카드 Burgundy Velvet Special = WS + $1.00 · Rainbow Tie-Dye = WS (PDP 와 같은 값). false 면 예전 · 백업 …backup-before-sp-over-ws.html */
+  var SP_OVER_WS = true;
+  var SP_ANY_PINK = true;
+  var SP_BOX_ALWAYS = true;
+  /* ══ PM 정책 10/22 — PDP PM_POLICY 와 같은 규칙: ① 행 적용가 Special → Sale → WS(Special 이 Sale, 없으면 WS 이상이면 건너뜀)
+     ② 분홍 패널 = 모든 변형이 실제로 Special 일 때만, 아니면 패널 없이 up to N% · 최저가~ · ~~WS~~ ③ 할인율 반올림(HALF_UP) ④ ~~WS~~ = 할인 변형이 하나라도 있으면(예전 전부일 때만)
+     ⑨ 데모 = 역전: 1번 카드 Burgundy Velvet(27) · Heathered Olive L(31) Special = Sale + $1. PM_POLICY=false 면 바로 전 · 백업 …backup-before-pm-policy.html */
+  var PM_POLICY = true;
+  var PM_INV_IDX = { 27: 1, 31: 1 };
+  var SALE_COMBOS = { c2: 1, c5: 1, c6: 1, c8: 1, c9: 1 };   /* Sale 값이 있는 조합 — 역전 기준이 Sale */
+  function pmRound(x) { return Math.floor(x + 0.5 + 1e-9); }
+  function capOf(top) { return top > 0 ? (PM_POLICY ? pmRound(top) : Math.ceil(top - 0.0001)) : 0; }
+  var SP_HIGH_IDX = { 28: 0 }, SP_HIGH_ALL = 1.00;   /* ADMIN_VARIANTS 순서: 28 Rainbow = WS, 나머지 WS + $1 — 10-21 "분명 아까 스페셜프라이스가 WS보다 높으면 WS가격은 노출 안한다는 케이스 아니야?" — ⑨ 는 상품 전체가 Special ≥ WS(전 컬러 WS + $1.00, Rainbow 만 = WS). 예전 ⑨ 는 2색만 올려 나머지 28색 할인 때문에 분홍 박스 + ~~WS~~ 가 나와 케이스가 안 보였다 · 백업 …backup-before-sp9-all.html */
+  if (!SP_OVER_WS) delete COMBO.c9;
+  window.__spOver = SP_OVER_WS;
   window.__combo8 = COMBO8;
   var state = { priceType: 'sale', stock: 'all' };
 
   /* ══ Out of Stock (2026-10-02) — PDP 의 OOS_CASE 와 같은 규칙 ═══════════════════════════════
      카드 가격·할인율은 살 수 있는 옵션만으로 계산한다(PDP 헤더와 같은 숫자). 전부 품절이면 전체로 계산하고
      IN STOCK 대신 회색 OUT OF STOCK 배지. 되돌리려면 false — 재고 전환과 ⑨ 카드가 숨고 늘 전 옵션으로 계산 */
-  var OOS_CASE = true;
+  var OOS_CASE = false;   /* 10-19 "이번스콥에서 아웃오브스탁은 안하기로 했으니 모두 삭제" — ⑨ 전부 품절 카드 · OUT OF STOCK 배지 · 재고 전환 없음. 백업 …backup-before-no-oos.html */
   window.__oos = OOS_CASE;
   if (!OOS_CASE) ITEMS = ITEMS.filter(function (it) { return !it.allOos; });
   /* 1번 카드의 품절 옵션 — PDP 와 같은 컬러: Charcoal Marled(기준가 줄의 하나) · Rainbow Tie-Dye(28번째, 할인율 최대) */
@@ -316,7 +343,9 @@
   function allOut(it) { return it.v.every(function (p, i) { return isOos(it, i); }); }
   /* 가격 계산에 쓰는 옵션 — 살 수 있는 것만, 하나도 없으면 전부 */
   function availV(it) {
-    var a = it.v.filter(function (p, i) { return !isOos(it, i); });
+    var a = it.v.map(function (p, i) { if (PM_POLICY) return state.spHigh && it.admin && PM_INV_IDX[i] != null ? { ws: p.ws, sale: p.sale, special: p.sale + PM_INV_IDX[i] } : p;
+      return SP_OVER_WS && state.spHigh && it.admin ? { ws: p.ws, sale: p.sale, special: p.ws + (SP_HIGH_IDX[i] != null ? SP_HIGH_IDX[i] : SP_HIGH_ALL) } : p; })
+      .filter(function (p, i) { return !isOos(it, i); });
     return a.length ? a : it.v;
   }
 
@@ -324,8 +353,14 @@
   /* 옵션마다 값이 달라도 범위($19.50 – $23.00)를 쓰지 않고 최저가에 `~`($19.50~)만 붙인다.
      2026-09-30 "range를 보여주지 않고 up to nn%, $00.00~ 이런식으로" · 되돌리려면 false (범위로 돌아간다) */
   var FROM_PRICE = true;
+  /* 11-04 PM 정책(사용자 "체크하면 무조건 ~" · "바이어 화면도 똑같이"): Price per variant 를 켠 상품은 값이 다 같아도 최저가 뒤 ~, 끈 상품은 ~ 없음(어드민 아이템 리스트와 같은 규칙).
+     false 면 바로 전(변형 값이 다를 때만 ~) · 백업 …backup-before-tilde-pv.html */
+  var TILDE_PV = true, CUR_PV = null;
+  /* 켬 여부 = 변형 값을 따로 가진 상품(same() 로 만든 한 값 상품 · 변형 1개는 끔). 가격 케이스 카드는 전부 켬 */
+  function isPV(it) { return !!it.cv || (it.v.length > 1 && it.v.some(function (p) { return p !== it.v[0]; })); }
   function range(arr) {
     var lo = Math.min.apply(null, arr), hi = Math.max.apply(null, arr);
+    if (TILDE_PV && CUR_PV != null && FROM_PRICE) return money(lo) + (CUR_PV ? '~' : '');
     return hi - lo < 0.005 ? money(lo) : FROM_PRICE ? money(lo) + '~' : money(lo) + ' – ' + money(hi);
   }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -346,24 +381,57 @@
   /* Special 분홍 패널 한 줄 가격 (2026-10-13 "이렇게 밖에 안돼?" · "저렇게 4줄로 나와야돼?") — 149px 패널에서 안쪽 여백을 빼면
      `up to 15% $12.00~/pc`(약 145px)가 안 들어가 할인% · 가격이 두 줄로 접혀 패널이 4줄이 됐다. 할인% 글씨를 12px 로 줄여 3줄로. false 면 예전 · 백업 …backup-before-sp-wide.html */
   var SP_WIDE = true;
+  /* 10-27 사용자 · 제니 결정 — 헤더 · 카드의 ~~WS~~ 는 가장 낮은 WS 가 큰 숫자(변형마다 내는 값의 최저)보다 높을 때만. 같거나 낮으면 줄째 숨김(예: A WS 30 · Sale 없음 / B WS 40 · Sale 35 → $30.00~ 만). false 면 예전 · 백업 …backup-before-ws-above.html */
+  var WS_ABOVE_ONLY = true;
   function discHTML(v, payKey, isSp) {
     var pay = v.map(function (p) { return p[payKey]; });
     var off = v.map(function (p) { return p[payKey] < p.ws - 0.005 ? (1 - p[payKey] / p.ws) * 100 : 0; });
-    var top = Math.max.apply(null, off), cap = top > 0 ? Math.ceil(top - 0.0001) : 0;
-    var allDisc = off.every(function (o) { return o > 0; });
+    var top = Math.max.apply(null, off), cap = capOf(top);
+    var allDisc = PM_POLICY ? cap > 0 : off.every(function (o) { return o > 0; });   /* PM ④ */
     var h = '<div class="pc-line1">' + (cap ? '<span class="pc-pct">up to ' + cap + '%</span>' : '') + amt(pay) + '</div>';
-    if (allDisc) {
+    if (allDisc && (!WS_ABOVE_ONLY || Math.min.apply(null, v.map(function (p) { return p.ws; })) > Math.min.apply(null, pay) + 0.005)) {
       var was = range(v.map(function (p) { return p.ws; })), from = /~$/.test(was);
       h += '<div class="pc-line2">WS <s>' + was.replace(/~$/, '') + '</s>' + (from ? '~' : '') + '</div>';
     }
     return h;
   }
   function amt(pay) { return '<span class="pc-amt"><span class="pc-pay">' + range(pay) + '</span>\u2060<span class="pc-unit">/pc</span></span>'; }
+  /* 10-27 가격 케이스 — PDP 「가격 케이스」 ①~⑥ 과 같은 값 · 같은 규칙을 카드 6장으로(오른쪽 위 번호 = 케이스). 변형 2개(A · B), 변형마다 내는 값 = Special → Sale → WS.
+     분홍 패널은 두 변형 모두 Special 일 때만 · ~~WS~~ 는 최저 WS 가 더 높을 때만(WS_ABOVE_ONLY). PRICE_CASES = false 면 줄째 숨김 · 백업 …backup-before-price-cases.html */
+  var PRICE_CASES = true;
+  var PCASE_V = [
+    [{ ws: 20, sale: 18, t: 'sale' }, { ws: 23, sale: 21, t: 'sale' }],
+    [{ ws: 30, t: 'ws' }, { ws: 40, sale: 35, t: 'sale' }],
+    [{ ws: 30, t: 'ws' }, { ws: 25, sale: 22, t: 'sale' }],
+    [{ ws: 20, sp: 17, t: 'special' }, { ws: 23, sp: 20, t: 'special' }],
+    [{ ws: 30, t: 'ws' }, { ws: 40, sp: 35, t: 'special' }],
+    [{ ws: 30, t: 'ws' }, { ws: 40, t: 'ws' }]
+  ];
+  var CASE_ITEMS = PCASE_V.map(function (cv, i) { return { name: ITEMS[0].name, style: ITEMS[0].style, img: ITEMS[0].img, pre: true, cv: cv, v: cv, caseNo: i + 1 }; });
+  function caseHTML(it) {
+    var ap = it.cv.map(function (d) { var pay = d.t === 'special' ? d.sp : d.t === 'sale' ? d.sale : d.ws; return { ws: d.ws, pay: pay, sp: d.t === 'special' && pay < d.ws - 0.005 }; });
+    var allSp = ap.every(function (p) { return p.sp; });
+    return '<div class="card-price' + (allSp ? ' is-special' + (SP_WIDE ? ' is-wide' : '') : '') + '">' + (allSp ? '<div class="pc-tag">Special Price</div>' : '') + discHTML(ap, 'pay') + '</div>';
+  }
   function priceHTML(it) {
+    CUR_PV = isPV(it);
+    if (it.cv) return caseHTML(it);
     var v = availV(it), t = state.priceType;
     if (it.off) {
       return '<div class="card-price"><div class="pc-line1">' + amt(v.map(function (p) { return p.ws; })) + '</div>' +
         '<div class="pc-gone">No longer available</div></div>';
+    }
+    /* 10-21 "스페셜프라이스 케이스인데 분홍색박스 있어야지" — Special 이 있으면 WS 보다 높아도 분홍 박스 + Special Price 이름표는 그대로, 빠지는 건 할인% 와 ~~WS~~ 뿐(WS 보다 싼 변형이 없으면 둘 다 0). SP_BOX_ALWAYS=false 면 바로 전(전부 ≥ WS 면 박스 없이 값만) · 백업 …backup-before-sp-box-always.html */
+    if (t === 'special' && PM_POLICY) {
+      var saleOn = !!SALE_COMBOS[state.combo || 'c5'];
+      var ap = v.map(function (p) { var base = saleOn ? p.sale : p.ws, sp = p.special < base - 0.005; return { ws: p.ws, pay: sp ? p.special : base, sp: sp }; });
+      var allSp = ap.every(function (p) { return p.sp; });
+      return '<div class="card-price' + (allSp ? ' is-special' + (SP_WIDE ? ' is-wide' : '') : '') + '">' + (allSp ? '<div class="pc-tag">Special Price</div>' : '') + discHTML(ap, 'pay') + '</div>';
+    }
+    if (t === 'special' && SP_OVER_WS && !SP_BOX_ALWAYS) {
+      var real = v.filter(function (p) { return p.special < p.ws - 0.005; }).length;
+      if (!real) return '<div class="card-price"><div class="pc-line1">' + amt(v.map(function (p) { return p.special; })) + '</div></div>';
+      if (real < v.length && !SP_ANY_PINK) return '<div class="card-price">' + discHTML(v, 'special') + '</div>';   /* 10-21 "스페셜프라이스가 있으면 무조건 백그라운드가 분홍색이지" — 진짜 Special(WS 보다 쌈)이 하나라도 있으면 분홍 박스. 예전엔 전부일 때만 · 백업 …backup-before-sp-any-pink.html */
     }
     if (t === 'special' && TICKET_453) return '<div class="card-price is-special' + (SP_WIDE ? ' is-wide' : '') + '"><div class="pc-tag">Special Price</div>' + discHTML(v, 'special') + '</div>';
     if (t === 'special') {
@@ -376,11 +444,11 @@
     var pay = v.map(function (p) { return p.sale; });
     var off = v.map(function (p) { return p.sale < p.ws - 0.005 ? (1 - p.sale / p.ws) * 100 : 0; });
     var top = Math.max.apply(null, off);
-    var cap = top > 0 ? Math.ceil(top - 0.0001) : 0;   /* 5.00% 가 6% 로 새지 않게 */
-    var allDisc = off.every(function (o) { return o > 0; });
+    var cap = capOf(top);   /* 5.00% 가 6% 로 새지 않게 · PM 은 반올림 */
+    var allDisc = PM_POLICY ? cap > 0 : off.every(function (o) { return o > 0; });
     var h = '<div class="card-price"><div class="pc-line1">' +
       (cap ? '<span class="pc-pct">up to ' + cap + '%</span>' : '') + amt(pay) + '</div>';
-    if (allDisc) {
+    if (allDisc && (!WS_ABOVE_ONLY || Math.min.apply(null, v.map(function (p) { return p.ws; })) > Math.min.apply(null, pay) + 0.005)) {
       var was = range(v.map(function (p) { return p.ws; })), from = /~$/.test(was);   /* `~` 는 취소선 밖에 */
       h += '<div class="pc-line2">WS <s>' + was.replace(/~$/, '') + '</s>' + (from ? '~' : '') + '</div>';
     }
@@ -390,7 +458,8 @@
   function render() {
     var grid = document.getElementById('grid');
     grid.innerHTML = '';
-    ITEMS.forEach(function (it, idx) {
+    var LIST = PRICE_CASES && state.pcase === 'on' ? CASE_ITEMS : ITEMS;
+    LIST.forEach(function (it, idx) {
       var card = document.createElement('div');
       card.className = 'card';
       if (it.off) card.classList.add('is-off');
@@ -400,6 +469,7 @@
       card.innerHTML =
         '<div class="card-img"><div class="card-photo" style="background-image:url(\'' + (it.img || IMG[idx % IMG.length]) + '\')"></div>' +
           '<div class="card-badges">' + badges + '</div>' +
+          (it.caseNo ? '<span class="case-tag">' + it.caseNo + '</span>' : '') +
           (CASE_TAG ? '<span class="case-tag" title="케이스 번호 — 설명 목록 참고">' + (idx + 1) + '</span>' : '') +
           '<div class="card-shade"></div><div class="card-dots"><i></i><i></i><i></i><i></i><i></i></div>' +
         '</div>' +
@@ -412,10 +482,10 @@
         '</div>';
       grid.appendChild(card);
     });
-    document.getElementById('itemCount').textContent = ITEMS.length + ' items';
+    document.getElementById('itemCount').textContent = LIST.length + ' items';
   }
 
-  window.__set = function (k, v) { if (k === 'priceType' && COMBO[v]) v = COMBO[v][0]; state[k] = v; render(); };
+  window.__set = function (k, v) { if (k === 'priceType') { state.spHigh = v === 'c9'; state.combo = v; } if (k === 'priceType' && COMBO[v]) v = COMBO[v][0]; state[k] = v; render(); };
   render();
 })();
 </script>
@@ -460,6 +530,12 @@
     <a class="demo-ctl-item" data-file="Shopcord-Admin-Order-2026-10-12.html" href="Shopcord-Admin-Order-2026-10-12.html">
       <span class="demo-ctl-check"></span><span>Vendor Admin Orders<small>Figma 381-21731 · 리스트 · 상세</small></span>
     </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-Linesheet-2026-10-19.html" href="Shopcord-Admin-Linesheet-2026-10-19.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Linesheet<small>Figma 410-77903 · Special Price 일괄 변경</small></span>
+    </a>
+    <a class="demo-ctl-item" data-file="Shopcord-Admin-ItemList-2026-10-27.html" href="Shopcord-Admin-ItemList-2026-10-27.html">
+      <span class="demo-ctl-check"></span><span>Vendor Admin Item List<small>Figma 823-11957 · 838-22718 · 그리드 · 리스트 · Price range</small></span>
+    </a>
     <a class="demo-ctl-item" data-file="pack-model-explainer.html" href="pack-model-explainer.html">
       <span class="demo-ctl-check"></span><span>Pre Pack 모델 설명<small>박스 그림으로 비교</small></span>
     </a>
@@ -499,8 +575,10 @@
     mark(initial);
   }
   document.querySelectorAll(window.__combo8 ? '.pt-old' : '.pt-new').forEach(function (b) { b.hidden = true; });
+  if (!window.__spOver) document.querySelectorAll('[data-ptype="c9"]').forEach(function (b) { b.hidden = true; });
   group('ptype', 'priceType', window.__combo8 ? 'c5' : 'sale');
   group('stock', 'stock', 'all');
+  group('pcase', 'pcase', 'off');
   if (window.__oos === false) document.querySelectorAll('[data-oos-row], [data-stock]').forEach(function (b) { b.hidden = true; });
   ctl.querySelector('.demo-ctl-btn').addEventListener('click', function (e) { e.stopPropagation(); ctl.classList.toggle('is-open'); });
   document.addEventListener('click', function (e) { if (!ctl.contains(e.target)) ctl.classList.remove('is-open'); });
